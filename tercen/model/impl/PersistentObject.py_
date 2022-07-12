@@ -1,0 +1,7 @@
+class PersistentObject(PersistentObjectBase):
+    def __init__(self, m=None):
+        if m is None:
+            super().__init__(m)
+            self.isDeleted = False
+        else:
+            self.fromJson(m)
