@@ -13,6 +13,13 @@ class TestUserService(unittest.TestCase):
         user = self.client.userService.get('test')
         self.assertIsNotNone(user)
         self.assertEqual(user.name, 'test')
+        # print(user.email)
+
+    def test_find_user(self):
+        users = self.client.userService.findUserByEmail(["test@tercen.com"])
+        self.assertIsNotNone(users)
+        self.assertEqual(len(users), 1)
+        self.assertEqual(users[0].email, "test@tercen.com")
 
     def test_create_team(self):
         team = Team()

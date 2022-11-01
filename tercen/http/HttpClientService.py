@@ -16,9 +16,6 @@ class HttpClientService:
         super().__init__()
         self.tercenClient = None
 
-    def findStartKeys(self, param, startKey, endKey, limit, skip, descending, useFactory):
-        pass
-
     def getHttpClient(self):
         return self.tercenClient.httpClient
 
@@ -85,6 +82,20 @@ class HttpClientService:
             response = self.tercenClient.httpClient.delete(url.uri, None)
             if response.code() != 200:
                 self.onResponseError(response)
+        except BaseException as e:
+            self.onError(e)
+
+# self.findKeys("findByOwner", keys, useFactory)
+
+    def findKeys(self, view_name, keys, useFactory=False):
+        try:
+            params = {'useFactory': str(useFactory).lower()}
+            url = self.getServiceUri(self.getBaseUri()).resolve(URI.create(view_name)).replaceQueryParameters(params)
+            response = self.getHttpClient().post(url.toString(), None, encodeTSON(keys))
+            if response.code() != 200:
+                self.onResponseError(response)
+            else:
+                return list(map(lambda x: self.fromJson(x, useFactory=useFactory), decodeTSON(response.body().bytes())))
         except BaseException as e:
             self.onError(e)
 
