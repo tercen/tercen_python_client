@@ -260,7 +260,6 @@ class MultiPartMixTransformer:
 
 
 def encodeTSON(obj):
-    print(obj)
     tson_bytes = ptson.encodeTSON(obj)
     tson_bytes.seek(0)
     return tson_bytes.read()

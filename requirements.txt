@@ -1,1 +1,1 @@
--e git+https://github.com/tercen/pytson@2f82c5e671946c6e7a2b55ff3c40427df1003cd7#egg=pytson
+-e git+https://github.com/tercen/pytson@1.1#egg=pytson
