@@ -1,3 +1,8 @@
 .idea
 .pytest_cache
 venv
+.vscode
+.pytest_cache
+build
+testenv
+*pyc

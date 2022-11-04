@@ -1,8 +1,18 @@
 import unittest
 import numpy as np
+import numpy.testing as npt
 import pandas as pd
+import tempfile, string, random, os, sys
+import zlib
+
+import json
+import pytson as ptson
+import tercen.util.http_utils as utl
 from tercen.client.factory import TercenClient
-from tercen.model.base import Project
+from tercen.model.base import Project, FileDocument, Table
+
+
+
 
 
 class TestTercen(unittest.TestCase):
@@ -12,41 +22,89 @@ class TestTercen(unittest.TestCase):
 
         self.data = self.create_data()
 
-        #=================================================
         # Create project
-        # Note, unit test for project creation is run elsewhere (test_project)
+        # Note: unit test for project creation is run elsewhere (test_project)
         obj = Project()
         obj.name = 'python_project'
         obj.acl.owner = 'test'
         self.project = self.client.projectService.create(obj)
-        #=================================================
 
 
-    def tearDown(self) -> None:
+    def tearDown(self):
+        self.client.fileService.delete(self.fileDoc.id, self.fileDoc.rev)
         self.client.teamService.delete(self.project.id, self.project.rev)
 
-
-        return super().tearDown()
-
     def create_data(self):
-        num_vars = 3
-        num_obs = 15
-        num_replicates = 1
+        numVars = 3
+        numObs = 15
+        numReplicates = 1
 
-        total_vals   = num_vars * num_obs * num_replicates
-        
-        var_vals    = ['var{}'.format( v+1 ) for v in range(0,num_vars) for v1 in range(0, num_obs) for v2 in range(0, num_replicates)]
-        obs_vals    = ['obs{}'.format( v+1 ) for v1 in range(0,num_vars) for v in range(0, num_obs)  for v2 in range(0, num_replicates)]
+        totalVals   = numVars * numObs * numReplicates
+        varVals    = ['var{}'.format( v+1 ) for v in range(0,numVars) for v1 in range(0, numObs) for v2 in range(0, numReplicates)]
+        obsVals    = ['obs{}'.format( v+1 ) for v1 in range(0,numVars) for v in range(0, numObs)  for v2 in range(0, numReplicates)]
 
         data = pd.DataFrame( data={
-            "Observation": obs_vals,
-            "Variable": var_vals,
-            "Measurement": np.random.rand( total_vals)
+            "Observation": obsVals,
+            "Variable": varVals,
+            "Measurement": np.random.rand( totalVals)
         } )
 
         return data
 
-    def test_create_data_task(self) -> None:
+
+    def df_to_bytes(self, df):
+        nDigits = 10
+        fName = tempfile.gettempdir().join('/')
+        fName.join(random.choices(string.ascii_uppercase + string.digits, k=nDigits))
+
+        tbl = utl.pandas_to_table( df )
+        tblBytes = zlib.compress( str.encode( json.dumps(tbl.toJson())) )
+
+        return tblBytes
+
+    def test_transfer_file_document(self) -> None:
+        df = self.create_data()
+        dfBytes = self.df_to_bytes(df)
+
+        self.fileDoc = FileDocument()
+        self.fileDoc.name = "input_datatable"
+        self.fileDoc.projectId = self.project.id
+        self.fileDoc.acl.owner = self.project.acl.owner
+        self.fileDoc.metadata.contentEncoding = "gzip"
+
+        self.fileDoc = self.client.fileService.upload(self.fileDoc, dfBytes)
+
+        dwnFileDoc = self.client.fileService.get( self.fileDoc.id )
+        
+
+        fileDownloaded = self.client.fileService.download( self.fileDoc.id )
+        dwnDf = utl.table_bytes_to_pandas(fileDownloaded)
+
+        assert(  dwnFileDoc.id == self.fileDoc.id )
+        npt.assert_array_equal( df.iloc[:,0], dwnDf.iloc[:,0] )
+        npt.assert_array_equal( df.iloc[:,1], dwnDf.iloc[:,1] )
+        npt.assert_array_equal( df.iloc[:,2], dwnDf.iloc[:,2] )
+        
+  
+    def test_csv_task(self) -> None:
+        # TODO Port python equivalent
+        # task = CSVTask$new()
+        # task$state = InitState$new()
+        # task$fileDocumentId = fileDoc$id
+        # task$owner = project$acl$owner
+        # task$projectId = project$id
+        
+        # task = client$taskService$create(task)
+        # client$taskService$runTask(task$id)
+        # task = client$taskService$waitDone(task$id)
+        # if (inherits(task$state, 'FailedState')){
+        #   stop(task$state$reason)
+        # }
+        
+        
+        # table_schema = client$tableSchemaService$get(task$schemaId)
+        # client$tableSchemaService$update(table_schema)
+        #assert(False)
         assert(False)
 
     def test_select(self):
