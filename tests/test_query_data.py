@@ -9,7 +9,7 @@ import json
 import pytson as ptson
 import tercen.util.http_utils as utl
 from tercen.client.factory import TercenClient
-from tercen.model.base import Project, FileDocument, Table
+from tercen.model.base import Project, FileDocument, CSVTask, InitState
 
 
 
@@ -28,11 +28,19 @@ class TestTercen(unittest.TestCase):
         obj.name = 'python_project'
         obj.acl.owner = 'test'
         self.project = self.client.projectService.create(obj)
+        
+        self.addCleanup(self.clear_project_files)
+        
 
+    def clear_project_files(self):
+        if( hasattr(self, 'fileDoc')):
+            self.client.fileService.delete(self.fileDoc.id, self.fileDoc.rev)
 
-    def tearDown(self):
-        self.client.fileService.delete(self.fileDoc.id, self.fileDoc.rev)
-        self.client.teamService.delete(self.project.id, self.project.rev)
+        if( hasattr(self, 'csvTask')):
+            self.client.taskService.delete(self.csvTask.id, self.csvTask.rev)
+
+        self.client.projectService.delete(self.project.id, self.project.rev)
+        
 
     def create_data(self):
         numVars = 3
@@ -62,17 +70,26 @@ class TestTercen(unittest.TestCase):
 
         return tblBytes
 
-    def test_transfer_file_document(self) -> None:
-        df = self.create_data()
+    def upload_file_doc(self, df):
         dfBytes = self.df_to_bytes(df)
 
-        self.fileDoc = FileDocument()
-        self.fileDoc.name = "input_datatable"
-        self.fileDoc.projectId = self.project.id
-        self.fileDoc.acl.owner = self.project.acl.owner
-        self.fileDoc.metadata.contentEncoding = "gzip"
+        fileDoc = FileDocument()
+        fileDoc.name = "input_datatable"
+        fileDoc.projectId = self.project.id
+        fileDoc.acl.owner = self.project.acl.owner
+        fileDoc.metadata.contentEncoding = "gzip"
 
-        self.fileDoc = self.client.fileService.upload(self.fileDoc, dfBytes)
+        fileDoc = self.client.fileService.upload(fileDoc, dfBytes)
+
+        return fileDoc
+
+
+
+    def test_transfer_file_document(self) -> None:
+        df = self.create_data()
+
+        self.fileDoc = self.upload_file_doc(df)
+        
 
         dwnFileDoc = self.client.fileService.get( self.fileDoc.id )
         
@@ -87,24 +104,22 @@ class TestTercen(unittest.TestCase):
         
   
     def test_csv_task(self) -> None:
-        # TODO Port python equivalent
-        # task = CSVTask$new()
-        # task$state = InitState$new()
-        # task$fileDocumentId = fileDoc$id
-        # task$owner = project$acl$owner
-        # task$projectId = project$id
+
+        df = self.create_data()
+        self.fileDoc = self.upload_file_doc(df)
         
-        # task = client$taskService$create(task)
-        # client$taskService$runTask(task$id)
-        # task = client$taskService$waitDone(task$id)
-        # if (inherits(task$state, 'FailedState')){
-        #   stop(task$state$reason)
-        # }
+        task = CSVTask()
+        task.state = InitState()
+        task.fileDocumentId = self.fileDoc.id
+        task.projectId = self.project.id
+        task.owner = self.project.acl.owner
         
-        
-        # table_schema = client$tableSchemaService$get(task$schemaId)
-        # client$tableSchemaService$update(table_schema)
-        #assert(False)
+        task = self.client.taskService.create( task )
+        self.client.taskService.runTask(task)
+        self.csvTask = self.client.taskService.waitDone(task.id)
+
+        tableSchema = self.client.tableSchemaService.get(self.csvTask.schemaId)
+
         assert(False)
 
     def test_select(self):
