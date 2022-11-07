@@ -57,8 +57,8 @@ def bytes_to_pandas( tableBytes ) -> pd.DataFrame:
 
     # s = BytesIO(zlib.decompress(tableBytes))
     s = BytesIO(tableBytes)
-    dwnJson = ptson.decodeTSON(s)
-    dwnTbl.fromJson(dwnJson)
+    dwnTson = ptson.decodeTSON(s)
+    dwnTbl.fromJson(dwnTson)
 
     # From table to pandas
     dwnDf = pd.DataFrame()
