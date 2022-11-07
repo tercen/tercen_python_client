@@ -2,9 +2,14 @@ import numpy as np
 import pandas as pd
 import json, zlib
 
+from io import BytesIO
+import tempfile, string, random
+
+import pytson as ptson
+
 from tercen.model.base import Table, Column
 
-def pandas_to_table(df) -> Table:
+def __pandas_to_table__(df) -> Table:
     tbl = Table()
     tbl.nRows = int(  df.shape[0] )
     tbl.columns = []
@@ -33,9 +38,26 @@ def pandas_to_table(df) -> Table:
 
     return tbl
 
-def table_bytes_to_pandas( tableBytes ) -> pd.DataFrame:
+def pandas_to_bytes(df):
+    nDigits = 10
+    fName = tempfile.gettempdir().join('/')
+    fName.join(random.choices(string.ascii_uppercase + string.digits, k=nDigits))
+
+    tbl = __pandas_to_table__( df )
+    
+    # zlib.compress( str.encode( json.dumps(tbl.toJson())) )
+    tsonObj = ptson.encodeTSON(tbl.toJson() )
+    tblBytes = tsonObj.getvalue()
+
+    return tblBytes
+
+def bytes_to_pandas( tableBytes ) -> pd.DataFrame:
     dwnTbl = Table()
-    dwnJson = json.loads(zlib.decompress(tableBytes).decode())
+    
+
+    # s = BytesIO(zlib.decompress(tableBytes))
+    s = BytesIO(tableBytes)
+    dwnJson = ptson.decodeTSON(s)
     dwnTbl.fromJson(dwnJson)
 
     # From table to pandas

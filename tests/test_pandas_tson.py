@@ -40,7 +40,24 @@ class TestTercen(unittest.TestCase):
 
 
     def test_table_bytes_to_pandas(self):
-        assert(False)
+
+        dfBytes = utl.pandas_to_bytes(self.df)
+
+        dfDecoded = utl.bytes_to_pandas(dfBytes)
+
+        
+        assert(len(dfDecoded) == 45)
+        
+        cnames = list(dfDecoded.columns.values)
+        assert(len(cnames) == 3)
+        assert(cnames[0] == "Observation")
+        assert(cnames[1] == "Variable")
+        assert(cnames[2] == "Measurement")
+
+        npt.assert_array_equal( dfDecoded.iloc[:,0], self.df.iloc[:,0] )
+        npt.assert_array_equal( dfDecoded.iloc[:,1], self.df.iloc[:,1] )
+        npt.assert_array_equal( dfDecoded.iloc[:,2], self.df.iloc[:,2] )
+        
 
 
         
