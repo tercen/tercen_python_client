@@ -3,6 +3,7 @@ import pandas as pd
 import json, zlib
 
 from io import BytesIO
+from collections.abc import Sequence 
 import tempfile, string, random
 
 import pytson as ptson
@@ -51,6 +52,30 @@ def pandas_to_bytes(df):
 
     return tblBytes
 
+def __decode_list_props__(jsonList) -> list:
+    for i in range(0, len(jsonList)):
+        entry = jsonList[i]
+        if entry.__class__.__name__ == 'dict' :
+            jsonList[i] = decode_tson_strings(entry)
+
+    return jsonList
+
+def decode_tson_strings(jsonDict) -> dict:
+    for key, value in jsonDict.items():
+        if value.__class__.__name__ == 'dict' :
+            jsonDict[key] = decode_tson_strings(value)
+        elif not isinstance(value, str) and isinstance(value, (Sequence, np.ndarray)) and len(value) > 1:
+            if isinstance(value[0], str):
+                for i in range(0, len(value)):
+                    if( str.startswith(value[i], '\x01') ):
+                        value[i] = str.removeprefix(value[i], '\x01')
+                jsonDict[key] = value
+            else:
+                jsonDict[key] = __decode_list_props__(value)
+                        
+
+    return jsonDict
+
 def bytes_to_pandas( tableBytes ) -> pd.DataFrame:
     dwnTbl = Table()
     
@@ -58,6 +83,7 @@ def bytes_to_pandas( tableBytes ) -> pd.DataFrame:
     # s = BytesIO(zlib.decompress(tableBytes))
     s = BytesIO(tableBytes)
     dwnTson = ptson.decodeTSON(s)
+    
     dwnTbl.fromJson(dwnTson)
 
     # From table to pandas
