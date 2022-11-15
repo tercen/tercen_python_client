@@ -2,10 +2,8 @@ import unittest
 import numpy as np
 import numpy.testing as npt
 import pandas as pd
-import tempfile, string, random, os, sys
 
-import tercen.util.http_utils as utl
-from tercen.model.base import Table, Column
+import tercen.util.helper_functions as utl
 
 
 

@@ -7,9 +7,9 @@ import zlib
 
 import json
 import pytson as ptson
-import tercen.util.http_utils as utl
+import tercen.util.helper_functions as utl
 from tercen.client.factory import TercenClient
-from tercen.model.base import Project, FileDocument, CSVTask, InitState
+from tercen.model.base import Project, FileDocument, CSVTask, InitState, DoneState, CubeAxisQuery, CubeQuery, Factor
 
 
 
@@ -17,7 +17,7 @@ from tercen.model.base import Project, FileDocument, CSVTask, InitState
 
 class TestTercen(unittest.TestCase):
     def setUp(self):
-        self.client = TercenClient("http://172.42.0.42:5400/")
+        self.client = TercenClient("http://127.0.0.1:5402/")
         self.client.userService.connect('test', 'test')
 
         self.data = self.create_data()
@@ -28,17 +28,30 @@ class TestTercen(unittest.TestCase):
         obj.name = 'python_project'
         obj.acl.owner = 'test'
         self.project = self.client.projectService.create(obj)
+
+        # obj = Workflow()
+        # obj.name = "test_workflow"
+        # obj.acl.owner = 'test'
+        # obj.projectId = self.project.id
+        # self.workflow = self.client.workflowService.create(obj)
         
+        # dataStep = DataStep()
+        # dataStep.name = "CSV_Step"
+        # dataStep.state = InitState()
+        
+        # self.workflow.steps.append(dataStep)
+        
+
         self.addCleanup(self.clear_project_files)
         
+    def clear_csv_task(self):
+        self.client.taskService.delete(self.csvTask.id, self.csvTask.rev)
 
     def clear_project_files(self):
         if( hasattr(self, 'fileDoc')):
             self.client.fileService.delete(self.fileDoc.id, self.fileDoc.rev)
 
-        if( hasattr(self, 'csvTask')):
-            self.client.taskService.delete(self.csvTask.id, self.csvTask.rev)
-
+        # self.client.projectService.delete(self.workflow.id, self.workflow.rev)
         self.client.projectService.delete(self.project.id, self.project.rev)
         
 
@@ -59,19 +72,8 @@ class TestTercen(unittest.TestCase):
 
         return data
 
-
-    def df_to_bytes(self, df):
-        nDigits = 10
-        fName = tempfile.gettempdir().join('/')
-        fName.join(random.choices(string.ascii_uppercase + string.digits, k=nDigits))
-
-        tbl = utl.pandas_to_table( df )
-        tblBytes = zlib.compress( str.encode( json.dumps(tbl.toJson())) )
-
-        return tblBytes
-
     def upload_file_doc(self, df):
-        dfBytes = self.df_to_bytes(df)
+        dfBytes = utl.pandas_to_bytes(df)
 
         fileDoc = FileDocument()
         fileDoc.name = "input_datatable"
@@ -83,9 +85,26 @@ class TestTercen(unittest.TestCase):
 
         return fileDoc
 
+    def create_csv_task(self, df) -> CSVTask:
+        self.fileDoc = self.upload_file_doc(df)
+        
+        task = CSVTask()
+        task.state = InitState()
+        task.fileDocumentId = self.fileDoc.id
+        task.projectId = self.project.id
+        task.owner = self.project.acl.owner
 
+        task = self.client.taskService.create( task )
+        self.client.taskService.runTask(task.id)
+        csvTask = self.client.taskService.waitDone(task.id)
+
+        return csvTask
+
+    
 
     def test_transfer_file_document(self) -> None:
+        #TODO regenerate requirements.txt
+        #TODO finish ci.yml
         df = self.create_data()
 
         self.fileDoc = self.upload_file_doc(df)
@@ -95,7 +114,7 @@ class TestTercen(unittest.TestCase):
         
 
         fileDownloaded = self.client.fileService.download( self.fileDoc.id )
-        dwnDf = utl.table_bytes_to_pandas(fileDownloaded)
+        dwnDf = utl.bytes_to_pandas(fileDownloaded)
 
         assert(  dwnFileDoc.id == self.fileDoc.id )
         npt.assert_array_equal( df.iloc[:,0], dwnDf.iloc[:,0] )
@@ -104,24 +123,57 @@ class TestTercen(unittest.TestCase):
         
   
     def test_csv_task(self) -> None:
+        self.addCleanup(self.clear_csv_task)
 
         df = self.create_data()
-        self.fileDoc = self.upload_file_doc(df)
+        self.csvTask = self.create_csv_task(df)
+
+        assert( isinstance( self.csvTask.state, DoneState ))
+        assert( self.csvTask.duration > 0 )
+        assert( not self.csvTask.schemaId is None )
         
-        task = CSVTask()
-        task.state = InitState()
-        task.fileDocumentId = self.fileDoc.id
-        task.projectId = self.project.id
-        task.owner = self.project.acl.owner
+
+    def test_table_schema(self) -> None:
+        # http://127.0.0.1:5402/test/w/9b611b90f412969d6f617f559f005bc6/ds/2ca54ff5-5b7f-44e9-870b-48facabc41ae
+
+        cubeQuery = self.client.workflowService.getCubeQuery("9b611b90f412969d6f617f559f005bc6", 
+                                              "2ca54ff5-5b7f-44e9-870b-48facabc41ae")
+        #self.addCleanup(self.clear_csv_task)
+
+        #df = self.create_data()
+        #self.csvTask = self.create_csv_task(df)
+        #tableSchema = self.client.tableSchemaService.get(self.csvTask.schemaId)
+
+        # query = CubeQuery()
+        # query.relation = utl.as_relation(tableSchema)
         
-        task = self.client.taskService.create( task )
-        self.client.taskService.runTask(task)
-        self.csvTask = self.client.taskService.waitDone(task.id)
+        # cols = []
+        # col = Factor()
+        # col.name = ''
+        # col.type = 'string'
+        # cols.append(col)
+        # query.colColumns = cols
 
-        tableSchema = self.client.tableSchemaService.get(self.csvTask.schemaId)
+        # rows = []
+        # row = Factor()
+        # row.name = ''
+        # row.type = 'string'
+        # tableSchema.columns[0].name
 
-        assert(False)
+        # axisQueries = []
+        # axisQuery = CubeAxisQuery()
+        # axisQuery.yAxis.name = ''
+        # axisQuery.yAxis.type = 'double'
+        # axisQueries.append(axisQuery)
+        # query.axisQueries = axisQueries
 
+        # TODO Create schema
+
+        assert(True)
+
+    def tercen_context(self, cubeQuery):
+        
+        print('a')
     def test_select(self):
         assert(False)
 

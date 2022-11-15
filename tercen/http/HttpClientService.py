@@ -6,7 +6,6 @@ import io
 
 from tercen.base.BaseObject import BaseObject
 
-
 class TercenError(Exception):
     pass
 
@@ -280,4 +279,5 @@ def decodeTSON(bytes):
     iobytes = io.BytesIO()
     iobytes.write(bytes)
     iobytes.seek(0)
-    return ptson.decodeTSON(iobytes)
+    decodedTson =ptson.decodeTSON(iobytes)
+    return decodedTson
