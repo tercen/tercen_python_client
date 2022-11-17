@@ -26,7 +26,7 @@ def pandas_to_table(df) -> Table:
             column.type = 'string'
         elif( dtypes[i] == "float64"):
             column.type = 'double'
-        elif( dtypes[i] == "int64"):
+        elif( dtypes[i] == "int64" or dtypes[i] == "int32"):
             column.type = 'int32'
         else:
             raise "Bad column type"

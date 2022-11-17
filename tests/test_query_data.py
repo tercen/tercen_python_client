@@ -103,8 +103,6 @@ class TestTercen(unittest.TestCase):
     
 
     def test_transfer_file_document(self) -> None:
-        #TODO regenerate requirements.txt
-        #TODO finish ci.yml
         df = self.create_data()
 
         self.fileDoc = self.upload_file_doc(df)
@@ -132,57 +130,6 @@ class TestTercen(unittest.TestCase):
         assert( self.csvTask.duration > 0 )
         assert( not self.csvTask.schemaId is None )
         
-
-    def test_table_schema(self) -> None:
-        # http://127.0.0.1:5402/test/w/9b611b90f412969d6f617f559f005bc6/ds/2ca54ff5-5b7f-44e9-870b-48facabc41ae
-
-        cubeQuery = self.client.workflowService.getCubeQuery("9b611b90f412969d6f617f559f005bc6", 
-                                              "2ca54ff5-5b7f-44e9-870b-48facabc41ae")
-        #self.addCleanup(self.clear_csv_task)
-
-        #df = self.create_data()
-        #self.csvTask = self.create_csv_task(df)
-        #tableSchema = self.client.tableSchemaService.get(self.csvTask.schemaId)
-
-        # query = CubeQuery()
-        # query.relation = utl.as_relation(tableSchema)
-        
-        # cols = []
-        # col = Factor()
-        # col.name = ''
-        # col.type = 'string'
-        # cols.append(col)
-        # query.colColumns = cols
-
-        # rows = []
-        # row = Factor()
-        # row.name = ''
-        # row.type = 'string'
-        # tableSchema.columns[0].name
-
-        # axisQueries = []
-        # axisQuery = CubeAxisQuery()
-        # axisQuery.yAxis.name = ''
-        # axisQuery.yAxis.type = 'double'
-        # axisQueries.append(axisQuery)
-        # query.axisQueries = axisQueries
-
-        # TODO Create schema
-
-        assert(True)
-
-    def tercen_context(self, cubeQuery):
-        
-        print('a')
-    def test_select(self):
-        assert(False)
-
-    def test_select_column(self):
-        assert(False)
-
-    def test_select_row(self):
-        assert(False)
-
 
 
 if __name__ == '__main__':
