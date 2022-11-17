@@ -36,19 +36,6 @@ class TercenContext:
 
         self.isPairwise = len(set(self.cnames).intersection( set(self.rnames) )) > 0
 
-    def __select_schema_pairwise(self):
-        print('a')
-    #           cnames = as.list(names)
-    #   names(cnames) = NULL
-      
-    #   if (length(cnames) == 0){
-    #     where = sapply(schema$columns, function(c) (c$type != 'uint64' && c$type != 'int64') )
-    #     cnames = lapply(schema$columns[where], function(c) c$name)
-    #   }
-      
-    #   return(as_tibble(self$client$tableSchemaService$selectPairwise(schema$id, cnames, offset, nr)))
-
-
     def select(self, names=[], offset=0, nr=None) -> pd.DataFrame:
         if not nr is None and nr < 0:
             nr = None
@@ -70,8 +57,39 @@ class TercenContext:
         
         return df
 
-    def rselect(self, names) -> pd.DataFrame:
-        return None
+    def cselect(self, names=[], offset=0, nr=None) -> pd.DataFrame:
+        if not nr is None and nr < 0:
+            nr = None
 
-    def cselect(self, names) -> pd.DataFrame:
-        return None
+        if( names is None or len(names) == 0 or (len(names) == 1 and names[0] == '' )):
+            where = utl.logical_index([ c.type != 'uint64' and c.type != 'int64' for c in self.cschema.columns ])
+            names = [ c.name for c in utl.get_from_idx_list( self.cschema.columns, where) ]
+
+        res = self.client.tableSchemaService.select(  self.cschema.id, names, offset, nr)
+
+        df = pd.DataFrame()
+
+        for c in res.columns:
+            df[c.name] = c.values
+
+        
+        return df
+
+    def rselect(self, names=[], offset=0, nr=None) -> pd.DataFrame:
+        if not nr is None and nr < 0:
+            nr = None
+
+        if( names is None or len(names) == 0 or (len(names) == 1 and names[0] == '' )):
+            where = utl.logical_index([ c.type != 'uint64' and c.type != 'int64' for c in self.rschema.columns ])
+            names = [ c.name for c in utl.get_from_idx_list( self.rschema.columns, where) ]
+
+        res = self.client.tableSchemaService.select(  self.rschema.id, names, offset, nr)
+
+        df = pd.DataFrame()
+
+        for c in res.columns:
+            df[c.name] = c.values
+
+        
+        return df
+
