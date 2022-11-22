@@ -11,22 +11,13 @@ from tercen.client import context as ctx
 
 class TestTercen(unittest.TestCase):
     def setUp(self):
-        # self.client = TercenClient("http://127.0.0.1:5402/")
-        # self.session = self.client.userService.connect('test', 'test')
         self.context = ctx.TercenContext(
                         stepId="2ca54ff5-5b7f-44e9-870b-48facabc41ae",
                         workflowId="9b611b90f412969d6f617f559f005bc6")
 
-        
-
-        
-
     def test_select_one(self) -> None:
         # http://127.0.0.1:5402/test/w/9b611b90f412969d6f617f559f005bc6/ds/2ca54ff5-5b7f-44e9-870b-48facabc41ae
         targetDf = pd.read_csv('tests/data/Test_Full_Projection_Table_1.csv')
-
-        # tercenCtx = ctx.TercenContext( self.client, self.session, "9b611b90f412969d6f617f559f005bc6",
-        #             "2ca54ff5-5b7f-44e9-870b-48facabc41ae")
 
         selNames = ['.y']
 

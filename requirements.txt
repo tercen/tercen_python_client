@@ -1,1 +1,5 @@
--e git+https://github.com/tercen/pytson@1.1#egg=pytson
+pandas == 1.5.1
+-e git+https://github.com/tercen/pytson@1.5#egg=pytson
+
+# Required for tests
+numpy==1.23.4
