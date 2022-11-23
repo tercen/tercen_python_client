@@ -6,4 +6,10 @@ setup(
     packages=(
         find_packages(exclude="tests**") 
     ),
+    install_requires=[
+        'pandas >= 1.5, <1.6',
+        'pytson @ git+https://github.com/tercen/pytson@1.5#egg=pytson'
+    ],
+
+
 )
