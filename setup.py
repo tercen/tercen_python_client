@@ -4,7 +4,6 @@ setup(
     name='tercen',
     version='0.0.1',
     packages=(
-        find_packages() + 
-        find_packages(where="./tercen") 
+        find_packages(exclude="tests**") 
     ),
 )
