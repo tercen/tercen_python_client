@@ -8,8 +8,8 @@ name: CI
 on:
   push:
     branches: [ master, stage, prod ]
-    #tags:
-    #  - '*' # Push events to matching v*, i.e. v1.0, v20.15.10
+    tags-ignore:
+      - '**'
   pull_request:
     branches: [ master, stage, prod ]
 
