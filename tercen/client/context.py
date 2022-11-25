@@ -1,7 +1,8 @@
 import pandas as pd
 import multiprocessing, sys
 
-from tercen.model.base import OperatorResult, FileDocument, ComputationTask, InitState, RunComputationTask, FailedState
+from tercen.model.base import OperatorResult, FileDocument, ComputationTask, InitState 
+from tercen.model.base import RunComputationTask, FailedState, Pair, TaskLogEvent, TaskProgressEvent
 from tercen.client.factory import TercenClient
 from tercen.util import helper_functions as utl
 from tercen.http.HttpClientService import encodeTSON
@@ -170,6 +171,58 @@ class TercenContext:
 
         if issubclass(task.state.__class__, FailedState):
             raise task.state.reason
+
+    def request_resources(self, nCpus = None, ram=None, ramPerCpu=None) -> list:
+        newEnv = []
+
+        if not nCpus is None:
+            newPair = Pair()
+            newPair.key = 'cpu'
+            newPair.value = str(nCpus)
+
+            newEnv.append( newPair)
+
+        if not ram is None:
+            newPair = Pair()
+            newPair.key = 'ram'
+            newPair.value = str(ram)
+
+            newEnv.append( newPair)
+
+        if not ramPerCpu is None:
+            newPair = Pair()
+            newPair.key = 'ram_per_cpu'
+            newPair.value = str(ramPerCpu)
+
+            newEnv.append( newPair)
+
+        if not self.context.taskId is None:
+            newEnv = self.context.client.workerService.updateTaskEnv( self.context.taskId, newEnv )
+
+        return newEnv
+
+    def log(self, message) -> None:
+        task = self.context.task
+
+        if not task is None:
+            evt = TaskLogEvent()
+            evt.message = message
+            evt.taskId = task.id
+
+            self.context.client.eventService.sendChannel( task.channelId, evt )
+
+    def progress( self, message, actual, total):
+        task = self.context.task
+
+        if not task is None:
+            evt = TaskProgressEvent()
+            evt.message = message
+            evt.taskId = task.id
+            evt.actual = actual
+            evt.total = total
+
+            self.context.client.eventService.sendChannel( task.channelId, evt )
+
 
 class OperatorContext(TercenContext):
     def __init__(self, authToken, username, password, serviceUri, taskId):
