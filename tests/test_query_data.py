@@ -29,18 +29,6 @@ class TestTercen(unittest.TestCase):
         obj.acl.owner = 'test'
         self.project = self.client.projectService.create(obj)
 
-        # obj = Workflow()
-        # obj.name = "test_workflow"
-        # obj.acl.owner = 'test'
-        # obj.projectId = self.project.id
-        # self.workflow = self.client.workflowService.create(obj)
-        
-        # dataStep = DataStep()
-        # dataStep.name = "CSV_Step"
-        # dataStep.state = InitState()
-        
-        # self.workflow.steps.append(dataStep)
-        
 
         self.addCleanup(self.clear_project_files)
         
