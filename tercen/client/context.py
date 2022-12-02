@@ -241,7 +241,6 @@ class OperatorContext(TercenContext):
         else:
             self.client.userService.tercenClient.token = authToken
 
-        self.client.userService.client.token = self.session.token.token
 
         self.task = self.client.taskService.get( taskId )
 
@@ -326,6 +325,7 @@ class OperatorContextDev(TercenContext):
         if authToken is None:
             self.session = self.client.userService.connect(username, password)
             self.client.userService.tercenClient.token = self.session.token.token
+            
         else:
             self.client.userService.tercenClient.token = authToken
 
