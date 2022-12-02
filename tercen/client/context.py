@@ -24,6 +24,8 @@ class TercenContext:
         if not args["serviceUri"] is None:
             serviceUri = args["serviceUri"]
 
+
+        
         if taskId == None:
             self.context = OperatorContextDev(workflowId=workflowId,
                     stepId=stepId, authToken=authToken, username=username, password=password,
@@ -243,6 +245,7 @@ class OperatorContext(TercenContext):
             self.client.userService.tercenClient.token = self.session.token.token
         else:
             self.client.userService.tercenClient.token = authToken
+            self.client.httpClient.authorization = authToken
 
 
         self.task = self.client.taskService.get( taskId )
@@ -331,6 +334,7 @@ class OperatorContextDev(TercenContext):
             
         else:
             self.client.userService.tercenClient.token = authToken
+            self.client.httpClient.authorization = authToken
 
         self.workflowId = workflowId
 

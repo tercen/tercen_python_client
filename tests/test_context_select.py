@@ -5,7 +5,6 @@ import pandas as pd
 
 import os
 
-from tercen.client.factory import TercenClient
 from tercen.client import context as ctx
 
 
