@@ -25,10 +25,13 @@ class TercenContext:
             serviceUri = args["serviceUri"]
 
         if taskId == None:
-            self.context = OperatorContextDev(workflowId, stepId, 
-                        authToken, username, password, serviceUri)
+            self.context = OperatorContextDev(workflowId=workflowId,
+                    stepId=stepId, authToken=authToken, username=username, password=password,
+                    serviceUri=serviceUri)
         else:
-            self.context = OperatorContext( authToken, username, password, taskId , serviceUri  )
+            self.context = OperatorContext( authToken=authToken,
+                    username=username, password=password, taskId=taskId, serviceUri=serviceUri )
+
         
 
     def parse_args(self) -> dict:
