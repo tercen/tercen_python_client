@@ -11,8 +11,10 @@ from tercen.http.HttpClientService import encodeTSON
 class TercenContext:
     def __init__(self, workflowId = None, stepId = None, username = 'test', password = 'test',
      authToken = None, taskId = None, serviceUri = "http://127.0.0.1:5402/"):
+        
         args = self.parse_args()
 
+        
         if not args["taskId"] is None:
             taskId = args["taskId"]
 
@@ -34,19 +36,24 @@ class TercenContext:
         serviceUri = None
         token = None
 
-        for arg in sys.argv:
-            if str.startswith(arg, '--') and str.find(arg, '=') > 0:
-                argParts = str.split(arg, '=')
-                argName = str.removeprefix(argParts[0], '--')
+        args = sys.argv
+        nArgs = len(args)
+        
+        for i in range(1, nArgs):
+            arg = args[i]
+            
+            if str.startswith(arg, '--'):
+                #argParts = str.split(arg, ' ')
+                argName = str.removeprefix(arg, '--')
 
                 if argName == 'taskId':
-                    taskId = argParts[1]
+                    taskId = args[i+1]
                 
                 if argName == 'serviceUri':
-                    serviceUri = argParts[1]
+                    serviceUri = args[i+1]
                 
                 if argName == 'token':
-                    token = argParts[1]
+                    token = args[i+1]
 
         return {'taskId':taskId, 
                 'serviceUri':serviceUri, 
