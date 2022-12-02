@@ -34,7 +34,8 @@ class TercenContext:
             self.context = OperatorContext( authToken=authToken,
                     username=username, password=password, taskId=taskId, serviceUri=serviceUri )
 
-        
+    
+    
 
     def parse_args(self) -> dict:
         taskId = None
@@ -63,6 +64,9 @@ class TercenContext:
         return {'taskId':taskId, 
                 'serviceUri':serviceUri, 
                 'token':token}
+    
+    def save( self, df ) -> None:
+        self.context.save(df)
 
     def select(self, names=[], offset=0, nr=None) -> pd.DataFrame:
         if not nr is None and nr < 0:
