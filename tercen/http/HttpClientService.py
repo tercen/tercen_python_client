@@ -6,6 +6,9 @@ import io
 
 from tercen.base.BaseObject import BaseObject
 
+from tercen.model.base import *
+
+
 class TercenError(Exception):
     pass
 
@@ -40,6 +43,14 @@ class HttpClientService:
     def fromJson(self, m, useFactory=True):
         pass
 
+    def specificClassFromJson( self, m, useFactory=True):
+        className = m['kind']
+                
+        klass = globals()[className]
+        newObj = klass(m)
+
+        return newObj
+
     def get(self, str_id, useFactory=True):
         try:
             params = {"id": str_id, "useFactory": str(useFactory).lower()}
@@ -48,7 +59,8 @@ class HttpClientService:
             if response.code() != 200:
                 self.onResponseError(response)
             else:
-                return self.fromJson(decodeTSON(response.body().bytes()))
+                # return self.fromJson(decodeTSON(response.body().bytes()))
+                return self.specificClassFromJson(decodeTSON(response.body().bytes()))
         except BaseException as e:
             self.onError(e)
 
@@ -94,7 +106,7 @@ class HttpClientService:
             if response.code() != 200:
                 self.onResponseError(response)
             else:
-                return list(map(lambda x: self.fromJson(x, useFactory=useFactory), decodeTSON(response.body().bytes())))
+                return list(map(lambda x: self.specificClassFromJson(x, useFactory=useFactory), decodeTSON(response.body().bytes())))
         except BaseException as e:
             self.onError(e)
 
@@ -112,7 +124,7 @@ class HttpClientService:
             if response.code() != 200:
                 self.onResponseError(response)
             else:
-                return list(map(lambda x: self.fromJson(x, useFactory=useFactory), decodeTSON(response.body().bytes())))
+                return list(map(lambda x: self.specificClassFromJson(x, useFactory=useFactory), decodeTSON(response.body().bytes())))
         except BaseException as e:
             self.onError(e)
 
@@ -279,5 +291,5 @@ def decodeTSON(bytes):
     iobytes = io.BytesIO()
     iobytes.write(bytes)
     iobytes.seek(0)
-    decodedTson =ptson.decodeTSON(iobytes)
+    decodedTson = ptson.decodeTSON(iobytes)
     return decodedTson

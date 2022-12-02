@@ -9,7 +9,6 @@ from tercen.client import context as ctx
 
 
 
-
 class TestTercen(unittest.TestCase):
     def setUp(self):
         envs = os.environ
@@ -52,9 +51,16 @@ class TestTercen(unittest.TestCase):
 
         assert(not newCtx is None)
         assert(isinstance( newCtx, ctx.TercenContext ) )
+
+    def test_task(self) -> None:
+        #TaskRunnerInstance :cpu-shares 128 --name=tercen_task_3bbd8506d00bd741ae76c4a19d00d6c7 --env TERCEN_SERVICE_URI=http://172.42.0.42:5400 tercen/simple_docker_operator:0.14.4 --taskId 3bbd8506d00bd741ae76c4a19d00d6c7 --serviceUri http://172.42.0.42:5400 --token eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwczovL3RlcmNlbi5jb20iLCJleHAiOjE2NzAwODc1MjcsImRhdGEiOnsiZCI6IiIsInUiOiJ0ZXN0IiwiZSI6MTY3MDA4NzUyNzUwM319.R5zI1QK6_V1dBJhnY7CC6vuVRo7AnDoUR5f26lh_lPQ
+        token = self.context.context.session.token.token
+
+        #3bbd8506d00bd741ae76c4a19d00d6c7
+        newCtx = ctx.TercenContext(
+                            authToken= token, 
+                            taskId='3bbd8506d00bd741ae76c4a19d014cfb')
+        
     
-
-
-
 if __name__ == '__main__':
     unittest.main()
