@@ -256,8 +256,6 @@ class OperatorContext(TercenContext):
         
         resultBytes = encodeTSON( result.toJson() ) 
 
-
-
         if( len(self.task.fileResultId) == 0 ):
             #Webapp scenario
             fileDoc = FileDocument()
@@ -278,7 +276,7 @@ class OperatorContext(TercenContext):
 
         else:
             fileDoc = self.client.fileService.get(self.task.fileResultId)
-            self.client.fileService.upload(fileDoc, bytes)
+            self.client.fileService.upload(fileDoc, resultBytes)
 
         
 
@@ -294,6 +292,7 @@ class OperatorContextDev(TercenContext):
             self.client.userService.tercenClient.token = authToken
             self.client.httpClient.authorization = authToken
 
+        self.workflowId = workflowId
         self.cubeQuery = self.client.workflowService.getCubeQuery(workflowId, stepId)
 
         self.schema = self.client.tableSchemaService.findByQueryHash( keys=[self.cubeQuery.qtHash] )[0]
@@ -342,17 +341,17 @@ class OperatorContextDev(TercenContext):
 
         fileDoc = FileDocument()
         fileDoc.name = 'result'
-        workflow = self.context.client.workflowService.get( self.context.workflowId )
+        workflow = self.client.workflowService.get( self.workflowId )
         fileDoc.projectId = workflow.projectId
         fileDoc.acl.owner = workflow.acl.owner
         fileDoc.metadata.contentType = 'application/octet-stream'
 
-        fileDoc = self.context.client.fileService.upload( fileDoc, resultBytes )
+        fileDoc = self.client.fileService.upload( fileDoc, resultBytes )
 
         task = None 
         if task is None:
             print("task is null, create a task")
-            if self.context.session.serverVersion is None:
+            if self.session.serverVersion is None:
                 task = ComputationTask()
             else:
                 task = RunComputationTask()
@@ -360,16 +359,16 @@ class OperatorContextDev(TercenContext):
             task.state = InitState()
             task.owner = workflow.acl.owner
             task.projectId = workflow.projectId
-            task.query = self.context.cubeQuery
+            task.query = self.cubeQuery
             task.fileResultId = fileDoc.id
-            task = self.context.client.taskService.create(task)
+            task = self.client.taskService.create(task)
         else:
             task.fileResultId = fileDoc.id
-            rev = self.context.client.taskService.update(task)
+            rev = self.client.taskService.update(task)
             task.rev = rev
 
-        self.context.client.taskService.runTask( task.id )
-        task = self.context.client.taskService.waitDone( task.id )
+        self.client.taskService.runTask( task.id )
+        task = self.client.taskService.waitDone( task.id )
 
         if issubclass(task.state.__class__, FailedState):
             raise task.state.reason
