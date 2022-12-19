@@ -43,7 +43,7 @@ class HttpClientService:
     def fromJson(self, m, useFactory=True):
         pass
 
-    def specificClassFromJson( self, m, useFactory=True):
+    def specificClassFromJson( self, m):
         className = m['kind']
                 
         klass = globals()[className]
@@ -106,7 +106,7 @@ class HttpClientService:
             if response.code() != 200:
                 self.onResponseError(response)
             else:
-                return list(map(lambda x: self.specificClassFromJson(x, useFactory=useFactory), decodeTSON(response.body().bytes())))
+                return list(map(lambda x: self.specificClassFromJson(x), decodeTSON(response.body().bytes())))
         except BaseException as e:
             self.onError(e)
 
@@ -124,7 +124,7 @@ class HttpClientService:
             if response.code() != 200:
                 self.onResponseError(response)
             else:
-                return list(map(lambda x: self.specificClassFromJson(x, useFactory=useFactory), decodeTSON(response.body().bytes())))
+                return list(map(lambda x: self.specificClassFromJson(x), decodeTSON(response.body().bytes())))
         except BaseException as e:
             self.onError(e)
 
