@@ -31,7 +31,7 @@ class TestTercen(unittest.TestCase):
 
         self.wkfBuilder = bld.WorkflowBuilder()
         self.wkfBuilder.create_workflow( 'python_auto_project', 'python_workflow')
-        self.wkfBuilder.add_table_step( '/home/thiago/Tercen/repos/tercen_python_client/tests/data/hospitals.csv' )
+        self.wkfBuilder.add_table_step( './tests/data/hospitals.csv' )
 
         self.wkfBuilder.add_data_step(yAxis={"name":"Procedure.Hip Knee.Cost", "type":"double"}, 
                                 columns=[{"name":"Rating.Imaging", "type":"string"}],
