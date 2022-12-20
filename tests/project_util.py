@@ -18,9 +18,23 @@ import tercen.util.builder as bld
 wkfBuilder = bld.WorkflowBuilder()
 wkfBuilder.create_workflow( 'python_auto_project', 'python_workflow')
 wkfBuilder.add_table_step( '/home/thiago/Tercen/repos/tercen_python_client/tests/data/hospitals.csv' )
+# wkfBuilder.add_data_step(yAxis={"name":"Procedure.Hip Knee.Cost", "type":"double"}, 
+#                         columns=[{"name":"Rating.Timeliness", "type":"string"},
+#                         {"name":"Facility.State", "type":"string"}])
+
 wkfBuilder.add_data_step(yAxis={"name":"Procedure.Hip Knee.Cost", "type":"double"}, 
+                        xAxis={"name":"Procedure.Hip Knee.Cost", "type":"double"}, 
                         columns=[{"name":"Rating.Timeliness", "type":"string"},
-                        {"name":"Facility.State", "type":"string"}])
+                        {"name":"Facility.State", "type":"string"}],
+                        rows=[{"name":"Rating.Timeliness", "type":"string"},
+                        {"name":"Facility.State", "type":"string"}],
+                        labels=[{"name":"Facility.State", "type":"string"}],
+                        colors=[{"name":"Rating.Mortality", "type":"string"}])
+
+
+#prevStep:int, columns:list=None, rows:list=None,
+#                labels:list=None, errors:list=None, colors:list=None,
+#                yAxis:dict=None, xAxis:dict=None
 
 # wkfBuilder.add_data_step(yAxis={"name":"Procedure.Hip Knee.Cost", "type":"double"}, 
                         # columns=[{"name":"Rating.Timeliness", "type":"string"}])

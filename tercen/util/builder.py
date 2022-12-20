@@ -243,27 +243,6 @@ class WorkflowBuilder():
         return port
 
 
-    def __get_row_number(self, names, yAxisName, schema) -> int:
-        colIdx = []
-        df = pd.DataFrame()
-        for i, c in enumerate(schema.columns):
-            if c.name in names:
-                res = self.context.client.tableSchemaService.select(  schema.id, c.name, 0, schema.columns[i].nRows)
-                df2 = pd.DataFrame()
-
-                for c in res.columns:
-                    df2[c.name] = c.values
-
-
-
-        if len(colIdx) == 0:
-            raise "Columns not found"
-
-
-        
-
-        
-        return 0
 
     def __create_empty_graph_fac(self, x=80, y=30) -> GraphicalFactor:
         gFac = GraphicalFactor()
@@ -311,8 +290,6 @@ class WorkflowBuilder():
             ctTbl.graphicalFactors = gFacVec
 
 
-        # TODO Does it need to be set?
-        # ctTbl.nRows = 4 # FIXME Needs to be programmaticaly obtained
         return ctTbl
 
     def __run_cube_query_task(self, crosstabModel, prevStep:int):
@@ -458,7 +435,7 @@ class WorkflowBuilder():
                 eFacs.append(e)
             err.factors = eFacs
 
-        xyAxis.errors = err
+            xyAxis.errors = err
             
 
         # TODO Add support to filters

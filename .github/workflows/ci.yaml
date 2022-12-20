@@ -26,16 +26,8 @@ jobs:
       - uses: actions/checkout@v2
       - name: Docker network
         run: docker network create tercen
-      - name: Docker compose run tercen
-        run: docker-compose run tercen
-      - name: Install client dependencies
-        run: |
-          python3 -m pip install --upgrade pip
-          pip3 install -r requirements.txt
-      - name: Run Context Select UT
-        run: python3 -m unittest tests/test_context_select.py
-        env:
-          TERCEN_USERNAME: ${{ secrets.TERCEN_TEST_OPERATOR_USERNAME }}
-          TERCEN_PASSWORD: ${{ secrets.TERCEN_TEST_OPERATOR_PASSWORD }}
-          TERCEN_URI: ${{ secrets.TERCEN_TEST_OPERATOR_URI }}
+      - name: Start tercen
+        run: docker-compose -f "docker-compose.yml" up -d
+
+
 
