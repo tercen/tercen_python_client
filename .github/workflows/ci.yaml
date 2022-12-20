@@ -26,9 +26,7 @@ jobs:
       - uses: actions/checkout@v2
       - name: Docker network
         run: docker network create tercen
-      - uses: tercen/tercen_action@60eea6fe40932a5dab7450ba4bca697797e4f06e
-#      - name: Start tercen
-#        run: docker-compose -f "docker-compose.yml" up -d
+      - uses: tercen/tercen_action@0.1.0
       - name: Install client dependencies
         run: |
           python3 -m pip install --upgrade pip
