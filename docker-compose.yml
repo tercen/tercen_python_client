@@ -33,10 +33,12 @@ services:
       - 5402:5400
     volumes:
       - /var/lib/tercen/external:/var/lib/tercen/external
-      - tercen-data:/var/lib/tercen/data
-      - ./config/tercen:/etc/tercen
+      - ./tercen_config/tercen:/etc/tercen
       - var-run:/var/run
-    restart: always
+    environment:
+      - TERCEN_CLIENT_URI=http://127.0.0.1:5400
+    command: ["/wait-for-it.sh", "127.0.0.1:5400", "--", "echo", "OK"]
+    restart: no
 
   runtime-docker:
     privileged: true
@@ -52,16 +54,6 @@ services:
       - /var/lib/tercen/external:/var/lib/tercen/external
       - tmp:/tmp
     restart: always
-
-  tercentest:
-    depends_on:
-      - tercen
-    cap_add:
-      - SYS_ADMIN
-    environment:
-      - TERCEN_CLIENT_URI=http://127.0.0.1:5400
-    command: ["/wait-for-it.sh", "127.0.0.1:5400", "--", "echo", "OK"]
-    restart: "no"
 
 volumes:
   couchdb3-data:
