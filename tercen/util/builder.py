@@ -292,13 +292,18 @@ class WorkflowBuilder():
 
         return ctTbl
 
+    def __factors_from_graphical(self, graphicalFactors:list) -> list:
+        facs = []
+        for gFac in graphicalFactors:
+            facs.append(gFac.factor)
+        return facs
+    
     def __run_cube_query_task(self, crosstabModel, prevStep:int):
         # FIXME Change to cubequery task, possibly
-        cbTask = RunComputationTask()
+        cbTask = CubeQueryTask() #RunComputationTask()
         xyAxis = crosstabModel.axis.xyAxis[0]
 
         cbQuery = CubeQuery()
-        # FIXME This should be obtained from previous step
 
         schema = self.schemas[prevStep]
         cbQuery.relation = utl.as_relation(schema)
@@ -313,20 +318,28 @@ class WorkflowBuilder():
         
         cbQuery.colColumns = colFacs
 
-        # TODO create and run cubequery task. This ID will be added to the model!!
-        # xyAxis.yAxis = yAx
-        # xyAxis.xAxis = xAx
-        # xyAxis.colors = clrs
         yAx = xyAxis.yAxis.graphicalFactor.factor
         xAx = xyAxis.xAxis.graphicalFactor.factor
 
         if yAx.name != '':
             axisQuery.yAxis.name = yAx.name
             axisQuery.yAxis.type = yAx.type
+
+        if xAx.name != '':
+            axisQuery.xAxis.name = xAx.name
+            axisQuery.xAxis.type = xAx.type
+        
+        axisQuery.labels = xyAxis.labels.factors
+        axisQuery.colors = xyAxis.colors.factors
+        axisQuery.errors = xyAxis.errors.factors
         
         cbQuery.axisQueries = [axisQuery]
+        # Factor list
+      
+        cbQuery.colColumns = self.__factors_from_graphical(crosstabModel.columnTable.graphicalFactors)
+        cbQuery.rowColumns = self.__factors_from_graphical(crosstabModel.rowTable.graphicalFactors)
 
-        cbTask.query = CubeQuery() #cbQuery
+        cbTask.query = cbQuery
         cbTask.schemaIds = [schema.id]
         cbTask.projectId = self.proj.id
         cbTask.owner = self.proj.acl.owner
@@ -335,6 +348,9 @@ class WorkflowBuilder():
         cbTask = self.client.taskService.create( cbTask )
         self.client.taskService.runTask(cbTask.id)
         self.cbTask = self.client.taskService.waitDone(cbTask.id)
+        
+        
+        return self.cbTask.id
         
 
     def __add_crosstab_model(self, prevStep:int, columns:list=None, rows:list=None,
@@ -378,10 +394,6 @@ class WorkflowBuilder():
         xyAxis.yAxis = yAx
         xyAxis.xAxis = xAx
         
-
-        #TODO Add names and types
-        # olumns:list=None, rows:list=None,
-        #         labels:list=None, errors:list=None, colors:
         model.columnTable = self.__add_row_col_projection(columns, schema=self.schemas[prevStep])
         model.rowTable = self.__add_row_col_projection(rows, schema=self.schemas[prevStep])
         axisList.xyAxis = [xyAxis]
@@ -441,13 +453,15 @@ class WorkflowBuilder():
         # TODO Add support to filters
         fltrs = Filters()
         fltrs.removeNaN = True
-
+        
+        
         model.axis = axisList
         model.filters = fltrs
 
         cbTaskId = self.__run_cube_query_task(model, prevStep)
 
-        model.taskId = cbTaskId
+
+        model.taskId = cbTaskId 
         model.axis.xyAxis[0].taskId = cbTaskId
 
         return model
@@ -489,8 +503,6 @@ class WorkflowBuilder():
                             columns=columns, rows=rows, labels=labels, errors=errors,
                              colors=colors, prevStep=linkTo)
 
-
-        self.__run_cube_query_task(dataStep.model, prevStep=linkTo)
 
         dataStep.model.operatorSettings.namespace = ''.join(['ds', str(self.namespaceCount)]) 
         self.namespaceCount = self.namespaceCount + 1

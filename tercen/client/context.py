@@ -293,15 +293,51 @@ class OperatorContextDev(TercenContext):
             self.client.httpClient.authorization = authToken
 
         self.workflowId = workflowId
-        self.cubeQuery = self.client.workflowService.getCubeQuery(workflowId, stepId)
+        #TODO FIXME Check why the cubequery here and the one retrieved from the task are different
+        # self.cubeQuery = self.client.workflowService.getCubeQuery(workflowId, stepId)
+        wkf = self.client.workflowService.get(workflowId)
+        
+        stp = None
+        for s in wkf.steps:
+            if s.id == stepId:
+                stp = s
+                break
 
-        self.schema = self.client.tableSchemaService.findByQueryHash( keys=[self.cubeQuery.qtHash] )[0]
-        self.cschema = self.client.tableSchemaService.findByQueryHash( keys=[self.cubeQuery.columnHash] )[0]
-        self.rschema = self.client.tableSchemaService.findByQueryHash( keys=[self.cubeQuery.rowHash] )[0]
+        if stp is None:
+            raise "Step not found"
+        task = self.client.taskService.get(stp.model.taskId)
+        self.cubeQuery  = task.query
+
+        self.schema = self.client.tableSchemaService.findByQueryHash( keys=[self.cubeQuery.qtHash] )
+        self.cschema = self.client.tableSchemaService.findByQueryHash( keys=[self.cubeQuery.columnHash] )
+        self.rschema = self.client.tableSchemaService.findByQueryHash( keys=[self.cubeQuery.rowHash] )
+
+        hasCSchema = False
+        hasRSchema = False
+
+        if len(self.schema) > 0:
+            self.schema = self.schema[0]
+        if len(self.cschema) > 0:
+            self.cschema = self.cschema[0]
+            hasCSchema = True
+        if len(self.rschema) > 0:
+            self.rschema = self.rschema[0]
+            hasRSchema = True
+
+        # self.schema = self.client.tableSchemaService.findByQueryHash( keys=[self.cubeQuery.qtHash] )[0]
+        # self.cschema = self.client.tableSchemaService.findByQueryHash( keys=[self.cubeQuery.columnHash] )[0]
+        # self.rschema = self.client.tableSchemaService.findByQueryHash( keys=[self.cubeQuery.rowHash] )[0]
 
         self.names = [col.name for col in self.schema.columns] 
-        self.cnames = [col.name for col in self.cschema.columns] 
-        self.rnames = [col.name for col in self.rschema.columns] 
+        if hasCSchema:
+            self.cnames = [col.name for col in self.cschema.columns] 
+        else:
+            self.cnames = []
+
+        if hasRSchema:
+            self.rnames = [col.name for col in self.rschema.columns] 
+        else:
+            self.rnames = []
 
         axisQueries = self.cubeQuery.axisQueries
 

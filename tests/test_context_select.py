@@ -6,7 +6,7 @@ import pandas as pd
 import os
 
 from tercen.client import context as ctx
-
+import tercen.util.builder as bld
 
 
 
@@ -28,17 +28,34 @@ class TestTercen(unittest.TestCase):
         else:
             serviceUri = None
 
+
+        self.wkfBuilder = bld.WorkflowBuilder()
+        self.wkfBuilder.create_workflow( 'python_auto_project', 'python_workflow')
+        self.wkfBuilder.add_table_step( '/home/thiago/Tercen/repos/tercen_python_client/tests/data/hospitals.csv' )
+
+        self.wkfBuilder.add_data_step(yAxis={"name":"Procedure.Hip Knee.Cost", "type":"double"}, 
+                                columns=[{"name":"Rating.Imaging", "type":"string"}],
+                                rows=[{"name":"Rating.Effectiveness", "type":"string"}],
+                                labels=[{"name":"Facility.Name", "type":"string"}],
+                                colors=[{"name":"Facility.Type", "type":"string"}])
+        
+        
         if username is None: # Running locally
             self.context = ctx.TercenContext(
-                            stepId="2ca54ff5-5b7f-44e9-870b-48facabc41ae",
-                            workflowId="9b611b90f412969d6f617f559f005bc6")
+                            stepId=self.wkfBuilder.workflow.steps[1].id,
+                            workflowId=self.wkfBuilder.workflow.id)
         else: # Running from Github Actions
             self.context = ctx.TercenContext(
                             username=username,
                             password=passw,
                             serviceUri=serviceUri,
-                            stepId="2ca54ff5-5b7f-44e9-870b-48facabc41ae",
-                            workflowId="9b611b90f412969d6f617f559f005bc6")
+                            stepId=self.wkfBuilder.workflow.steps[1].id,
+                            workflowId=self.wkfBuilder.workflow.id)
+
+        self.addCleanup(self.clear_workflow)
+        
+    def clear_workflow(self):
+        self.wkfBuilder.clean_up_workflow()
 
     def test_select_one(self) -> None:
         # http://127.0.0.1:5402/test/w/9b611b90f412969d6f617f559f005bc6/ds/2ca54ff5-5b7f-44e9-870b-48facabc41ae
