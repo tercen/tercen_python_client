@@ -9,7 +9,7 @@ name: CI
 # events but only for the master branch
 on:
   push:
-    branches: [ master, stage, prod ]
+    branches: [ main, master, stage, prod ]
   pull_request:
     branches: [ master, stage, prod ]
 
