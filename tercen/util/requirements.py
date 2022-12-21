@@ -3,6 +3,7 @@ import subprocess
 import csv
 import glob
 import os
+import json
 
 
 def get_base_prefix_compat():
@@ -46,13 +47,19 @@ for vp in venvPkgs:
         pkg = str.split(pkg, '/')[-1]
         pkgParts = str.split(pkg, '-')
         
-
+        pkgGit = None
+        if os.path.exists( ''.join([vp, '/direct_url.json']) ):
+            with open(''.join([vp, '/direct_url.json'])) as f:
+                jsonData = json.load(f)
+            
+            pkgGit = ''.join([ 'git+', jsonData["url"], "@", jsonData["vcs_info"]["requested_revision"]  ])
         
         reqPkgs = []
         with open(''.join([vp, '/METADATA'])) as f:
             lines = f.readlines()
 
         for l in lines:
+               
             if str.startswith(l, 'Requires-Dist'):
                 reqPkg = str.split(l, ": ")[1]
                 reqPkg = str.split(reqPkg, " ")[0]
@@ -66,10 +73,16 @@ for vp in venvPkgs:
                 reqPkgs.append(reqPkg)
 
             if str.startswith(l, 'Name: '):
+                
                 pkgName = str.split(l, ": ")[1]
                 pkgName = str.split(pkgName, "\n")[0]
+                version = pkgParts[1]
 
-        pkgDict = {'name':pkgName, 'version':pkgParts[1], 'requires':[]}
+                if not pkgGit is None:
+                    version = pkgGit
+                
+
+        pkgDict = {'name':pkgName, 'version':version, 'requires':[]}
         pkgDict["requires"] = reqPkgs
         distPkgs.append(pkgDict)
         
@@ -130,13 +143,20 @@ for modul in reqModules:
                 for r in reqs:
                     if not r in addedMods:
                         addedMods.append(r)
-                break
+                
+
 
 # Turn the modules into a module string
+# Some are options, so they might no actually be installed
 for m in addedMods:
     for p in distPkgs:
         if m == p["name"]:
-            print(''.join([p["name"], '==', p["version"] ]))
+            if str.startswith(p["version"], 'git+' ):
+                print(p["version"])
+            else:
+                print(''.join([p["name"], '==', p["version"] ]))
+
+
 
 for r in fullReqs:
     print(r)
