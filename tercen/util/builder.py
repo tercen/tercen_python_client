@@ -15,6 +15,8 @@ import tercen.util.helper_functions as utl
 
 
 # TODO Add support for multiple links between steps
+# TODO Only supports TableStep -> DataStep Workflows (no multiple steps)
+# TODO Does not support installing and running operators
 class WorkflowBuilder():
     def __init__(self, username='test', password='test', serviceUri="http://127.0.0.1:5402/"):
         self.client = TercenClient(serviceUri)

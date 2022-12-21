@@ -282,14 +282,15 @@ class MultiPartMixTransformer:
 
 
 def encodeTSON(obj):
-    tson_bytes = ptson.encodeTSON(obj)
-    tson_bytes.seek(0)
-    return tson_bytes.read()
+    # tson_bytes = ptson.encodeTSON(obj)
+    # tson_bytes.seek(0)
+    # encObj = tson_bytes.read()
+    return ptson.encodeTSON(obj).getbuffer().tobytes()
 
 
 def decodeTSON(bytes):
     iobytes = io.BytesIO()
     iobytes.write(bytes)
     iobytes.seek(0)
-    decodedTson = ptson.decodeTSON(iobytes)
-    return decodedTson
+    # decodedTson = ptson.decodeTSON(iobytes)
+    return ptson.decodeTSON(iobytes)

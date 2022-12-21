@@ -1,8 +1,9 @@
 import pandas as pd
 import multiprocessing, sys
 
+import random, string
 from tercen.model.base import OperatorResult, FileDocument, ComputationTask, InitState 
-from tercen.model.base import RunComputationTask, FailedState, Pair, TaskLogEvent, TaskProgressEvent
+from tercen.model.base import RunComputationTask, FailedState, Pair, TaskLogEvent, TaskProgressEvent, Schema, Relation
 from tercen.client.factory import TercenClient
 from tercen.util import helper_functions as utl
 from tercen.http.HttpClientService import encodeTSON
@@ -67,6 +68,9 @@ class TercenContext:
     
     def save( self, df ) -> None:
         self.context.save(df)
+
+    def save_dev( self, df ) -> pd.DataFrame:
+        return self.context.save(df)
 
     def select(self, names=[], offset=0, nr=None) -> pd.DataFrame:
         if not nr is None and nr < 0:
@@ -242,7 +246,7 @@ class OperatorContext(TercenContext):
 
         self.namespace = self.cubeQuery.operatorSettings.namespace
 
-    def save(self, df ) -> None:
+    def save(self, df ) -> Relation:
         if issubclass(df.__class__, OperatorResult):
             result = df
         else:
@@ -277,6 +281,8 @@ class OperatorContext(TercenContext):
         else:
             fileDoc = self.client.fileService.get(self.task.fileResultId)
             self.client.fileService.upload(fileDoc, resultBytes)
+
+        return None
 
         
 
@@ -361,7 +367,35 @@ class OperatorContextDev(TercenContext):
 
         self.namespace = self.cubeQuery.operatorSettings.namespace
 
-    def save( self, df ) -> None:
+        if self.namespace == '':
+            letters = string.ascii_uppercase
+            self.namespace = 'ds_' + ''.join(random.choice(letters) for i in range(2)) 
+            
+
+
+
+    def __select(self, schema, names=[], offset=0, nr=None) -> pd.DataFrame:
+        if not nr is None and nr < 0:
+            nr = None
+
+        if( names is None or len(names) == 0 or (len(names) == 1 and names[0] == '' )):
+            where = utl.logical_index([ c.type != 'uint64' and c.type != 'int64' for c in schema.columns ])
+            names = [ c.name for c in utl.get_from_idx_list( schema.columns, where) ]
+
+        if( self.isPairwise ):
+            res = self.client.tableSchemaService.selectPairwise(  schema.id, names, offset, nr)
+        else:
+            res = self.client.tableSchemaService.select(  schema.id, names, offset, nr)
+
+        df = pd.DataFrame()
+
+        for c in res.columns:
+            df[c.name] = c.values
+
+        return df
+
+    # For development testing, returns the resulting table
+    def save( self, df ) -> pd.DataFrame:
         if issubclass(df.__class__, OperatorResult):
             result = df
         else:
@@ -408,3 +442,7 @@ class OperatorContextDev(TercenContext):
 
         if issubclass(task.state.__class__, FailedState):
             raise task.state.reason
+
+        ts = self.client.tableSchemaService.get(task.computedRelation.joinOperators[0].rightRelation.relation.mainRelation.id)
+
+        return self.__select(ts, '')
