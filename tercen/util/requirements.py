@@ -121,7 +121,7 @@ for modul in reqModules:
         for p in eggPkgs:
             if modul == p["name"]:
                 fullReqs.append(''.join([eggInstall, "@", p["version"], 
-                    "#egg==", modul]))
+                    "#egg=", modul]))
     else:
         for p in distPkgs:
             if modul == p["name"]:
