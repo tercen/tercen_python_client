@@ -16,7 +16,15 @@ if get_base_prefix_compat() == sys.prefix:
 venvPath = sys.prefix
 venvName = str.split(venvPath, '/')[-1]
 
-srcFolder = "/home/thiago/Tercen/repos/tercen_python_client/tercen/"
+if len(sys.argv) <= 1:
+    raise "Base folder is required to detect requirements"
+
+
+
+srcFolder = ''.join([os.path.abspath(sys.argv[1]), '/'])
+
+if not os.path.exists:
+    raise "Given source path does not exist"
 
 subprocess.call(["pipreqs", "--force", srcFolder], 
             stdout=subprocess.DEVNULL,
