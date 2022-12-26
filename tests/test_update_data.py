@@ -41,8 +41,7 @@ class TestTercen(unittest.TestCase):
         if username is None: # Running locally
             self.context = ctx.TercenContext(
                             stepId=self.wkfBuilder.workflow.steps[1].id,
-                            workflowId=self.wkfBuilder.workflow.id,
-                            serviceUri = "http://127.0.0.1:5400/")
+                            workflowId=self.wkfBuilder.workflow.id)
         else: # Running from Github Actions
             self.context = ctx.TercenContext(
                             username=username,
