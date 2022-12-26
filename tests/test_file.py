@@ -6,7 +6,7 @@ from tercen.model.base import FileDocument, Project
 class TestFileService(unittest.TestCase):
 
     def setUp(self):
-        self.client = TercenClient("http://127.0.0.1:5402/")
+        self.client = TercenClient("http://127.0.0.1:5400/")
         self.client.userService.connect('test', 'test')
 
     def test_upload_download_file(self):

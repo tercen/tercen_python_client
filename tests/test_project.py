@@ -6,7 +6,7 @@ from tercen.model.base import Project
 class TestUserService(unittest.TestCase):
 
     def setUp(self):
-        self.client = TercenClient("http://127.0.0.1:5402/")
+        self.client = TercenClient("http://127.0.0.1:5400/")
         self.client.userService.connect('test', 'test')
 
     def test_create_project(self):
