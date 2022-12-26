@@ -11,7 +11,7 @@ from tercen.http.HttpClientService import encodeTSON
 
 class TercenContext:
     def __init__(self, workflowId = None, stepId = None, username = 'test', password = 'test',
-     authToken = None, taskId = None, serviceUri = "http://127.0.0.1:5402/"):
+     authToken = None, taskId = None, serviceUri = "http://127.0.0.1:5400/"):
         
         args = self.parse_args()
 
@@ -361,7 +361,7 @@ class OperatorContextDev(TercenContext):
         self.hasXAxis = any([ col.name == ".x" for col in self.schema.columns ])
         self.hasNumericXAxis = any([ col.name == ".x" and col.type == "double" for col in self.schema.columns ])
 
-        self.isPairwise = len(set(self.cnames).intersection( set(self.rnames) )) > 0
+        self.isPairwise = self.cnames != [''] and self.rnames != [''] and len(set(self.cnames).intersection( set(self.rnames) )) > 0
 
         self.task = None
 

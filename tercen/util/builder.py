@@ -274,8 +274,8 @@ class WorkflowBuilder():
             fac.name = ''
             fac.type = 'string'
             gFac = self.__create_empty_graph_fac()
-            gFac.factor = fac
-            ctTbl.graphicalFactors = [gFac]
+            # gFac.factor = fac
+            # ctTbl.graphicalFactors = [gFac]
         else:
             gFacVec = []
 
@@ -327,7 +327,7 @@ class WorkflowBuilder():
             axisQuery.yAxis.name = yAx.name
             axisQuery.yAxis.type = yAx.type
 
-        if xAx.name != '':
+        if not xAx is None and xAx.name != '':
             axisQuery.xAxis.name = xAx.name
             axisQuery.xAxis.type = xAx.type
         
