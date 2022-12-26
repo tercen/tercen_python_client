@@ -24,9 +24,7 @@ jobs:
         run: |
           echo "REPO_NAME=${{ github.event.repository.name }}" >> $GITHUB_ENV
           echo "TAG=${GITHUB_REF##*/}" >> $GITHUB_ENV
-      - name: Docker network
-        run: docker network create tercen
-      - uses: tercen/tercen_action@0.1.0
+      - uses: tercen/tercen_action@0.1.1
       - name: Install client dependencies
         run: |
           python3 -m pip install --upgrade pip
