@@ -24,8 +24,8 @@ jobs:
     steps:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v2
-#      - name: Docker network
-#        run: docker network create tercen
+      - name: Docker network
+        run: docker network create tercen
       - uses: tercen/tercen_action@0.1.1
       - name: Install client dependencies
         run: |
