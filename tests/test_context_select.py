@@ -33,17 +33,28 @@ class TestTercen(unittest.TestCase):
         self.wkfBuilder.create_workflow( 'python_auto_project', 'python_workflow')
         self.wkfBuilder.add_table_step( './tests/data/hospitals.csv' )
 
-        self.wkfBuilder.add_data_step(yAxis={"name":"Procedure.Hip Knee.Cost", "type":"double"}, 
-                                columns=[{"name":"Rating.Imaging", "type":"string"}],
-                                rows=[{"name":"Rating.Effectiveness", "type":"string"}],
-                                labels=[{"name":"Facility.Name", "type":"string"}],
-                                colors=[{"name":"Facility.Type", "type":"string"}])
+        name = self.shortDescription()
+        if name == "simple":
+            self.wkfBuilder.add_data_step(yAxis={"name":"Procedure.Hip Knee.Cost", "type":"double"})
+        elif name == "one_col":
+            self.wkfBuilder.add_data_step(yAxis={"name":"Procedure.Hip Knee.Cost", "type":"double"},
+                        columns=[{"name":"Rating.Imaging", "type":"string"}])
+        elif name == "x_axis":
+            self.wkfBuilder.add_data_step(yAxis={"name":"Procedure.Hip Knee.Cost", "type":"double"},
+                        xAxis={"name":"Procedure.Hip Knee.Cost", "type":"double"})
+        else:
+            self.wkfBuilder.add_data_step(yAxis={"name":"Procedure.Hip Knee.Cost", "type":"double"}, 
+                                    columns=[{"name":"Rating.Imaging", "type":"string"}],
+                                    rows=[{"name":"Rating.Effectiveness", "type":"string"}],
+                                    labels=[{"name":"Facility.Name", "type":"string"}],
+                                    colors=[{"name":"Facility.Type", "type":"string"}])
         
         
         if username is None: # Running locally
             self.context = ctx.TercenContext(
                             stepId=self.wkfBuilder.workflow.steps[1].id,
-                            workflowId=self.wkfBuilder.workflow.id)
+                            workflowId=self.wkfBuilder.workflow.id,
+                            serviceUri = "http://127.0.0.1:5402/")
         else: # Running from Github Actions
             self.context = ctx.TercenContext(
                             username=username,
@@ -56,6 +67,77 @@ class TestTercen(unittest.TestCase):
         
     def clear_workflow(self):
         self.wkfBuilder.clean_up_workflow()
+
+ 
+    def test_select_x(self) -> None:
+        '''x_axis'''
+        targetYDf = pd.read_csv('tests/data/Test_Full_Projection_Table_1.csv')
+       
+ 
+        selNames = ['.y', '.x']
+     
+        resDf = self.context.select( selNames )
+        
+        y = np.sort(resDf[selNames[0]])
+        x = np.sort(resDf[selNames[1]])
+        yt = np.sort(targetYDf[selNames[0]])
+
+        assert( not resDf is None )
+        np.testing.assert_array_equal(y, yt)
+        np.testing.assert_array_equal(x, yt)
+
+    def test_select_empty_row(self) -> None:
+        '''one_col'''
+        targetYDf = pd.read_csv('tests/data/Test_Full_Projection_Table_1.csv')
+       
+
+        selNames = ['.y', '.ci', '.ri']
+     
+        resDf = self.context.select( selNames )
+        
+        y = np.sort(resDf[selNames[0]])
+        yt = np.sort(targetYDf[selNames[0]])
+
+        assert( not resDf is None )
+        np.testing.assert_array_equal(y, yt)
+
+
+    def test_select_empty_col_row(self) -> None:
+        '''simple'''
+        targetYDf = pd.read_csv('tests/data/Test_Full_Projection_Table_1.csv')
+       
+
+        selNames = ['.y', '.ci', '.ri']
+     
+        resDf = self.context.select( selNames )
+        
+        y = np.sort(resDf[selNames[0]])
+        yt = np.sort(targetYDf[selNames[0]])
+
+        assert( not resDf is None )
+        np.testing.assert_array_equal(y, yt)
+
+
+    def test_select_col_row(self) -> None:
+        targetYDf = pd.read_csv('tests/data/Test_Full_Projection_Table_1.csv')
+        targetColDf = pd.read_csv('tests/data/Test_Full_Projection_Table_2.csv')
+        targetRowDf = pd.read_csv('tests/data/Test_Full_Projection_Table_3.csv')
+
+        
+
+        selNames = ['.y', '.ci', '.ri']
+
+
+        
+        resDf = self.context.select( selNames )
+        
+        y = np.sort(resDf[selNames[0]])
+        yt = np.sort(targetYDf[selNames[0]])
+
+        assert( not resDf is None )
+        assert(len(np.unique(targetColDf))  == len(np.unique(resDf[".ci"])))
+        assert(len(np.unique(targetRowDf))  == len(np.unique(resDf[".ri"])))
+        np.testing.assert_array_equal(y, yt)
 
     def test_select_one(self) -> None:
         # http://127.0.0.1:5402/test/w/9b611b90f412969d6f617f559f005bc6/ds/2ca54ff5-5b7f-44e9-870b-48facabc41ae
