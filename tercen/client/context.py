@@ -3,7 +3,7 @@ import multiprocessing, sys
 
 import random, string
 from tercen.model.base import OperatorResult, FileDocument, ComputationTask, InitState 
-from tercen.model.base import RunComputationTask, FailedState, Pair, TaskLogEvent, TaskProgressEvent, Schema, Relation
+from tercen.model.base import RunComputationTask, FailedState, Pair, TaskLogEvent, TaskProgressEvent, SimpleRelation, Relation
 from tercen.client.factory import TercenClient
 from tercen.util import helper_functions as utl
 from tercen.http.HttpClientService import encodeTSON
@@ -387,6 +387,8 @@ class OperatorContextDev(TercenContext):
         else:
             res = self.client.tableSchemaService.select(  schema.id, names, offset, nr)
 
+        res.columns[1].values
+
         df = pd.DataFrame()
 
         for c in res.columns:
@@ -443,6 +445,20 @@ class OperatorContextDev(TercenContext):
         if issubclass(task.state.__class__, FailedState):
             raise task.state.reason
 
-        ts = self.client.tableSchemaService.get(task.computedRelation.joinOperators[0].rightRelation.relation.mainRelation.id)
+        #ts = self.client.tableSchemaService.get(task.computedRelation.joinOperators[0].rightRelation.relation.mainRelation.id)
+        cr = task.computedRelation
+        if cr.joinOperators[0].rightRelation.__class__ == SimpleRelation:
+            ts = self.client.tableSchemaService.get(cr.joinOperators[0].rightRelation.id)
 
-        return self.__select(ts, '')
+        else:
+            ts = self.client.tableSchemaService.get(task.computedRelation.joinOperators[0].rightRelation.relation.mainRelation.id)
+
+        
+        dff = self.__select(ts, '')
+        cols = dff.columns
+        if not ".ci" in cols:
+            dff.insert(0, '.ci', 0)
+        if not ".ri" in cols:
+            dff.insert(1, '.ri', 0)
+
+        return dff
