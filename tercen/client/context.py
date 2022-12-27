@@ -387,8 +387,6 @@ class OperatorContextDev(TercenContext):
         else:
             res = self.client.tableSchemaService.select(  schema.id, names, offset, nr)
 
-        res.columns[1].values
-
         df = pd.DataFrame()
 
         for c in res.columns:
