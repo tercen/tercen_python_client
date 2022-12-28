@@ -1,8 +1,6 @@
 import os
 import sys
-# sys.path.insert(0, os.path.abspath('../'))
-sys.path.insert(0, os.path.abspath('/home/thiago/Tercen/repos/tercen_python_client'))
-
+sys.path.insert(0, os.path.abspath('../'))
 
 import pandas as pd
 
