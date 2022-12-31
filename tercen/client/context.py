@@ -4,6 +4,7 @@ import multiprocessing, sys
 import random, string
 from tercen.model.base import OperatorResult, FileDocument, ComputationTask, InitState 
 from tercen.model.base import RunComputationTask, FailedState, Pair, TaskLogEvent, TaskProgressEvent, SimpleRelation, Relation
+from tercen.model.base import JoinOperator, InMemoryRelation, CompositeRelation, WhereRelation, RenameRelation
 from tercen.client.factory import TercenClient
 from tercen.util import helper_functions as utl
 from tercen.http.HttpClientService import encodeTSON
@@ -71,6 +72,98 @@ class TercenContext:
 
     def save_dev( self, df ) -> pd.DataFrame:
         return self.context.save(df)
+
+
+    def __add_table(self, table) -> None:
+        self.tables.append(table)
+
+    def save_relation( self, object ):
+        self.tables = []
+        if issubclass(object.__class__, JoinOperator):
+            joins = [object]
+        elif issubclass(object.__class__, list):
+            check = [issubclass(o.__class__, JoinOperator) for o in object ]
+            if not all( check):
+                raise 'ctx.save_relation -- a list of JoinOperator is required'
+            joins = object
+        # if (inherits(object, 'JoinOperator')){
+        #     joins = list(object)
+        # } else if (inherits(object, 'list')){
+        #     check = lapply(object, function(x) inherits(x, 'JoinOperator'))
+        #     if (!all(check)){
+        #     stop('ctx.save_relation -- a list of JoinOperator is required')
+        #     }
+        #     joins = object
+        # }
+        
+        # tables = new.env()
+        # add.table = function(table){
+        #     tables[[toString(length(tables)+1)]] = table
+        # }
+        
+        # lapply(joins, function(jop){
+        #     jop$rightRelation = convert.inmemory.relation(add.table, jop$rightRelation)
+        # })
+        
+        # result = OperatorResult$new()
+        # result$tables = unname(as.list(tables))
+        # result$joinOperators = joins
+        
+        # ctx$save(result)
+        
+        # invisible(result)
+
+    def __inmemory_to_simple_relation(self, inmemory) -> SimpleRelation:
+        relation = SimpleRelation()
+        relation.id = inmemory.inMemoryTable.properties.name
+        self.tables.append(inmemory.inMemoryTable)
+        return relation
+
+
+    def __convert_inmemory_relation(self, relation):
+        if issubclass(relation.__class__, SimpleRelation):
+            return relation
+        elif issubclass(relation.__class__, InMemoryRelation):
+            # implement inmemory to simple
+            return(self.__inmemory_to_simple_relation(relation))
+        elif issubclass(relation.__class__, CompositeRelation):
+            rel = relation.mainRelation
+            if issubclass(rel.__class__, InMemoryRelation):
+                relation.mainRelation = self.__inmemory_to_simple_relation(rel)
+            else:
+                self.__convert_inmemory_relation(rel)
+
+            for jop in relation.joinOperators:
+                rel = jop.rightRelation
+
+                if issubclass(rel.__class__, InMemoryRelation):
+                    jop.rightRelation = self.__inmemory_to_simple_relation(rel)
+                else:
+                    self.__convert_inmemory_relation(rel)
+
+
+#   } else if (inherits(relation,"WhereRelation") 
+#              || inherits(relation,"RenameRelation")) {
+#     rel = relation$relation
+#     if (inherits(rel, 'InMemoryRelation')){
+#       relation$relation = inmemory.to.simple(add.table, rel)
+#     } else {
+#       convert.inmemory.relation(add.table, rel)
+#     }
+#   } else if (inherits(relation,"UnionRelation")) {
+#     relation$relations = lapply(relation$relations, function(rel){
+#       if (inherits(rel, 'InMemoryRelation')){
+#         return(inmemory.to.simple(add.table, rel))
+#       } else {
+#         convert.inmemory.relation(add.table, rel)
+#         return(rel)
+#       }
+#     })
+#   } else {
+#     stop('convert.inmemory.relation -- not impl')
+#   }
+#   return(relation)
+# }
 
     def select(self, names=[], offset=0, nr=None) -> pd.DataFrame:
         if not nr is None and nr < 0:
