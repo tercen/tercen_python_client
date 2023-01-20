@@ -4,7 +4,7 @@ import multiprocessing, sys
 import random, string
 from tercen.model.base import OperatorResult, FileDocument, ComputationTask, InitState 
 from tercen.model.base import RunComputationTask, FailedState, Pair, TaskLogEvent, TaskProgressEvent, SimpleRelation, Relation
-from tercen.model.base import JoinOperator, InMemoryRelation, CompositeRelation, WhereRelation, RenameRelation
+from tercen.model.base import JoinOperator, InMemoryRelation, CompositeRelation, WhereRelation, RenameRelation, UnionRelation
 from tercen.client.factory import TercenClient
 from tercen.util import helper_functions as utl
 from tercen.http.HttpClientService import encodeTSON
@@ -74,10 +74,16 @@ class TercenContext:
         return self.context.save(df)
 
 
-    def __add_table(self, table) -> None:
-        self.tables.append(table)
+    def save_relation_dev(self, object) -> None:
+        result = self.__save_relation(object)
+        return self.save_dev(result)
 
-    def save_relation( self, object ):
+    def save_relation( self, object ) -> None:
+        result = self.__save_relation(object)
+        self.save(result)
+        
+
+    def __save_relation( self, object ) -> Relation:
         self.tables = []
         if issubclass(object.__class__, JoinOperator):
             joins = [object]
@@ -86,32 +92,20 @@ class TercenContext:
             if not all( check):
                 raise 'ctx.save_relation -- a list of JoinOperator is required'
             joins = object
-        # if (inherits(object, 'JoinOperator')){
-        #     joins = list(object)
-        # } else if (inherits(object, 'list')){
-        #     check = lapply(object, function(x) inherits(x, 'JoinOperator'))
-        #     if (!all(check)){
-        #     stop('ctx.save_relation -- a list of JoinOperator is required')
-        #     }
-        #     joins = object
-        # }
+        else:
+            raise 'ctx.save_relation -- a single or list of JoinOperator is required'
+
+        self.tables = []
         
-        # tables = new.env()
-        # add.table = function(table){
-        #     tables[[toString(length(tables)+1)]] = table
-        # }
-        
-        # lapply(joins, function(jop){
-        #     jop$rightRelation = convert.inmemory.relation(add.table, jop$rightRelation)
-        # })
-        
-        # result = OperatorResult$new()
-        # result$tables = unname(as.list(tables))
-        # result$joinOperators = joins
-        
-        # ctx$save(result)
-        
-        # invisible(result)
+        for i in range(0,len(joins)):
+            joins[i].rightRelation = self.__convert_inmemory_relation(joins[i].rightRelation)
+            
+        result = OperatorResult()
+        result.tables = self.tables
+        result.joinOperators = joins
+
+        return(result)
+
 
     def __inmemory_to_simple_relation(self, inmemory) -> SimpleRelation:
         relation = SimpleRelation()
@@ -140,30 +134,27 @@ class TercenContext:
                     jop.rightRelation = self.__inmemory_to_simple_relation(rel)
                 else:
                     self.__convert_inmemory_relation(rel)
+        elif issubclass(relation.__class__, WhereRelation) or issubclass(relation.__class__, RenameRelation):
+            rel = relation.relation
+            if issubclass(relation.__class__, InMemoryRelation):
+                relation.relation = self.__inmemory_to_simple_relation(rel)
+            else:
+                self.__convert_inmemory_relation(rel)
+        elif  issubclass(relation.__class__, UnionRelation):
+            relation.relations = []
+            for r in relation.relations:
+                if issubclass(relation.__class__, InMemoryRelation):
+                    relation.relations.append( self.__inmemory_to_simple_relation(r) )
+                else:
+                    self.__convert_inmemory_relation(r)
+                    relation.relations.append(r)
+        else:
+            raise 'convert.inmemory.relation -- not impl'
 
+        return relation
 
-#   } else if (inherits(relation,"WhereRelation") 
-#              || inherits(relation,"RenameRelation")) {
-#     rel = relation$relation
-#     if (inherits(rel, 'InMemoryRelation')){
-#       relation$relation = inmemory.to.simple(add.table, rel)
-#     } else {
-#       convert.inmemory.relation(add.table, rel)
-#     }
-#   } else if (inherits(relation,"UnionRelation")) {
-#     relation$relations = lapply(relation$relations, function(rel){
-#       if (inherits(rel, 'InMemoryRelation')){
-#         return(inmemory.to.simple(add.table, rel))
-#       } else {
-#         convert.inmemory.relation(add.table, rel)
-#         return(rel)
-#       }
-#     })
-#   } else {
-#     stop('convert.inmemory.relation -- not impl')
-#   }
-#   return(relation)
-# }
+ 
+
 
     def select(self, names=[], offset=0, nr=None) -> pd.DataFrame:
         if not nr is None and nr < 0:

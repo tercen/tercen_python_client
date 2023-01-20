@@ -3,9 +3,11 @@ import os
 
 from tercen.client import context as ctx
 import tercen.util.builder as bld
+import tercen.util.helper_functions as utl
 
 import numpy.testing as npt
 
+# TODO Add more test cases for saving relations
 class TestTercen(unittest.TestCase):
     def setUp(self):
         envs = os.environ
@@ -66,18 +68,24 @@ class TestTercen(unittest.TestCase):
         df['y'] = df['.y']
         df = df.drop('.y', axis=1)
 
-        # df = self.context.add_namespace(df) 
-        # resDf = self.context.save_dev(df)
+       
+        df = self.context.add_namespace(df) 
 
-        # assert(len(df) == len(resDf))
-        # assert(len(df.columns) == len(resDf.columns))
+        dfRel = utl.as_relation(df)
+
+        dfJoin = utl.as_join_operator(dfRel, self.context.context.cnames, self.context.context.cnames)
+        resDf = self.context.save_relation_dev(dfJoin)
         
-        # for i in range(0, len(resDf.columns)):
-        #     c0 = str.split(df.columns[i] , sep='.')[-1]
-        #     c1 = str.split(resDf.columns[i] , sep='.')[-1]
+        assert(len(df) == len(resDf))
+        assert(len(df.columns) == len(resDf.columns))
+        
+        for i in range(0, len(resDf.columns)):
+            c0 = str.split(df.columns[i] , sep='.')[-1]
+            c1 = str.split(resDf.columns[i] , sep='.')[-1]
             
-        #     assert(c0 == c1)
-        #     npt.assert_array_almost_equal(df[".ci"].values, resDf[".ci"].values)
+            assert(c0 == c1)
+            npt.assert_array_almost_equal(df[".ci"].values, resDf[".ci"].values)
+
 
 
 

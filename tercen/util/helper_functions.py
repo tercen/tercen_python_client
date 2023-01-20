@@ -7,6 +7,9 @@ import tempfile, string, random
 import pytson as ptson
 import uuid
 from tercen.model.base import Table, Column, InMemoryRelation, Relation, SchemaBase, SimpleRelation
+from tercen.model.base import CompositeRelation, JoinOperator, ColumnPair
+
+
 
 def pandas_to_table(df) -> Table:
     tbl = Table()
@@ -94,11 +97,47 @@ def as_relation(obj) -> Relation:
 
     rel = InMemoryRelation()
 
-    rel.id = uuid.uuid4()
+    rel.id = str(uuid.uuid4())
     tbl.properties.name = rel.id
     rel.inMemoryTable = tbl
 
     return rel
+
+
+def left_join_relation( left, right, lby, rby) -> Relation:
+    compositeRelation = as_composite_relation(left)
+    compositeRelation.joinOperators  = [ compositeRelation.joinOperator, as_join_operator(right, lby, rby)]
+
+    return compositeRelation
+
+def as_composite_relation( object) -> Relation:
+    relation = as_relation(object)
+    if issubclass(relation.__class__, CompositeRelation):
+        composite = relation
+    elif issubclass(relation.__class__, Relation):
+        composite = CompositeRelation()
+        composite.id = str(uuid.uuid4())
+        composite.mainRelation = relation
+    else:
+        raise "as_composite_relation -- a Relation is required"
+    
+    return composite
+
+
+def as_join_operator( object, lby, rby ) -> JoinOperator:
+    relation = as_relation(object)
+    join = JoinOperator()
+    join.rightRelation = relation
+    join.leftPair = mk_pair(lby, rby)
+    return join
+
+def mk_pair(lColumns, rColumns) -> ColumnPair:
+    pair = ColumnPair()
+    pair.lColumns = list( lColumns )
+    pair.rColumns = list( rColumns )
+    return pair
+
+
 
 def logical_index( logicalList ) -> list:
     return [ i for i, x in enumerate(logicalList) if x ]
