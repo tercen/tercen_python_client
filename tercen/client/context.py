@@ -164,15 +164,47 @@ class TercenContext:
             where = utl.logical_index([ c.type != 'uint64' and c.type != 'int64' for c in self.context.schema.columns ])
             names = [ c.name for c in utl.get_from_idx_list( self.context.schema.columns, where) ]
 
-        if( self.context.isPairwise ):
-            res = self.context.client.tableSchemaService.selectPairwise(  self.context.schema.id, names, offset, nr)
-        else:
-            res = self.context.client.tableSchemaService.select(  self.context.schema.id, names, offset, nr)
-
         df = pd.DataFrame()
 
-        for c in res.columns:
-            df[c.name] = c.values
+        if self.context.schema.nRows <= 1600000:
+            if( self.context.isPairwise ):
+                res = self.context.client.tableSchemaService.selectPairwise(  self.context.schema.id, names, offset, nr)
+            else:
+                res = self.context.client.tableSchemaService.select(  self.context.schema.id, names, offset, nr)
+            
+
+            for c in res.columns:
+                df[c.name] = c.values
+        else:
+            offset = 0
+            nr = 1500000
+            chunkSize = nr
+            hasMoreChunks = True
+
+            while hasMoreChunks:
+                if (offset + nr) > self.context.schema.nRows:
+                    hasMoreChunks = False
+
+                    nr = self.context.schema.nRows - offset 
+
+                if( self.context.isPairwise ):
+                    res = self.context.client.tableSchemaService.selectPairwise(  self.context.schema.id, names, offset, nr)
+                else:
+                    res = self.context.client.tableSchemaService.select(  self.context.schema.id, names, offset, nr)
+
+                chunkDf = pd.DataFrame()
+                for c in res.columns:
+                    chunkDf[c.name] = c.values
+
+                if offset == 0:
+                    df = chunkDf
+                else:
+                    df = pd.concat([df, chunkDf], ignore_index=True)
+                
+                offset = offset + chunkSize 
+
+
+
 
         return df
 
@@ -184,12 +216,37 @@ class TercenContext:
             where = utl.logical_index([ c.type != 'uint64' and c.type != 'int64' for c in self.context.cschema.columns ])
             names = [ c.name for c in utl.get_from_idx_list( self.context.cschema.columns, where) ]
 
-        res = self.context.client.tableSchemaService.select(  self.context.cschema.id, names, offset, nr)
-
         df = pd.DataFrame()
 
-        for c in res.columns:
-            df[c.name] = c.values
+        if self.context.cschema.nRows <= 1600000:
+            res = self.context.client.tableSchemaService.select(  self.context.cschema.id, names, offset, nr)
+
+            for c in res.columns:
+                df[c.name] = c.values
+        else:
+            offset = 0
+            nr = 1500000
+            chunkSize = nr
+            hasMoreChunks = True
+
+            while hasMoreChunks:
+                if (offset + nr) > self.context.cschema.nRows:
+                    hasMoreChunks = False
+
+                    nr = self.context.cschema.nRows - offset 
+
+                res = self.context.client.tableSchemaService.select(  self.context.cschema.id, names, offset, nr)
+
+                chunkDf = pd.DataFrame()
+                for c in res.columns:
+                    chunkDf[c.name] = c.values
+
+                if offset == 0:
+                    df = chunkDf
+                else:
+                    df = pd.concat([df, chunkDf], ignore_index=True)
+                
+                offset = offset + chunkSize 
 
         
         return df
@@ -202,12 +259,35 @@ class TercenContext:
             where = utl.logical_index([ c.type != 'uint64' and c.type != 'int64' for c in self.context.rschema.columns ])
             names = [ c.name for c in utl.get_from_idx_list( self.context.rschema.columns, where) ]
 
-        res = self.context.client.tableSchemaService.select(  self.context.rschema.id, names, offset, nr)
+        if self.context.rschema.nRows <= 1600000:
+            res = self.context.client.tableSchemaService.select(  self.context.rschema.id, names, offset, nr)
 
-        df = pd.DataFrame()
+            for c in res.columns:
+                df[c.name] = c.values
+        else:
+            offset = 0
+            nr = 1500000
+            chunkSize = nr
+            hasMoreChunks = True
 
-        for c in res.columns:
-            df[c.name] = c.values
+            while hasMoreChunks:
+                if (offset + nr) > self.context.rschema.nRows:
+                    hasMoreChunks = False
+
+                    nr = self.context.rschema.nRows - offset 
+
+                res = self.context.client.tableSchemaService.select(  self.context.rschema.id, names, offset, nr)
+
+                chunkDf = pd.DataFrame()
+                for c in res.columns:
+                    chunkDf[c.name] = c.values
+
+                if offset == 0:
+                    df = chunkDf
+                else:
+                    df = pd.concat([df, chunkDf], ignore_index=True)
+                
+                offset = offset + chunkSize
 
         
         return df
