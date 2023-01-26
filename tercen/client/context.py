@@ -259,6 +259,8 @@ class TercenContext:
             where = utl.logical_index([ c.type != 'uint64' and c.type != 'int64' for c in self.context.rschema.columns ])
             names = [ c.name for c in utl.get_from_idx_list( self.context.rschema.columns, where) ]
 
+        df = pd.DataFrame()
+
         if self.context.rschema.nRows <= 1600000:
             res = self.context.client.tableSchemaService.select(  self.context.rschema.id, names, offset, nr)
 
