@@ -8,7 +8,7 @@ from tercen.model.base import JoinOperator, InMemoryRelation, CompositeRelation,
 from tercen.client.factory import TercenClient
 from tercen.util import helper_functions as utl
 from tercen.http.HttpClientService import encodeTSON
-
+import scipy.sparse as ssp
 
 class TercenContext:
     def __init__(self, workflowId = None, stepId = None, username = 'test', password = 'test',
@@ -154,7 +154,20 @@ class TercenContext:
         return relation
 
  
+    def select_sparse(self, wide=False):
+        sdf = ssp.csr_matrix(self.select([".y", ".ci", ".ri"]))
+        
+        if wide == True:
+            lines = sdf[:,0].nonzero()[0]
+            y   = sdf[:,0].toarray()[list(lines)].flatten()
+            cols = sdf[:,1].toarray()[list(lines)].flatten()
+            rows = sdf[:,2].toarray()[list(lines)].flatten()
 
+
+            sdf = ssp.csr_matrix((y, (rows, cols)), shape=(int(self.context.rschema.nRows), int(self.context.cschema.nRows)))
+        
+
+        return sdf
 
     def select(self, names=[], offset=0, nr=None) -> pd.DataFrame:
         if not nr is None and nr < 0:
