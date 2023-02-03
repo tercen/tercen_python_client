@@ -98,6 +98,7 @@ for vp in venvPkgs:
 for vp_ in venvSrcPkgs:
     vp = glob.glob(''.join([vp_, '/*egg-info']))[0]
     if str.endswith(vp, '.egg-info'):
+        
         pkg = str.split(vp, '.egg')[0]
         pkg = str.split(pkg, '/')[-1]
         
@@ -111,6 +112,9 @@ for vp_ in venvSrcPkgs:
 
         pkgDict = {'name':pkg, 'version':version}
 
+        for i in range(0, len(reqModules)):
+            if reqModules[i] == pkg:
+                reqModules[i] = reqModules[i] + '.egg'
         
         eggPkgs.append(pkgDict)
         
@@ -120,7 +124,9 @@ fullReqs = []
 addedMods = []
 
 for modul in reqModules:
+
     if str.endswith(modul, '.egg'):
+        
         modul = str.split(modul, '.egg')[0]
 
         modulInfo = subprocess.check_output(['python3', '-m', 'pip', 'show', modul])
