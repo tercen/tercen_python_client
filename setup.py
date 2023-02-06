@@ -2,10 +2,10 @@ from setuptools import setup, find_packages
 
 setup(
     name='tercen',
-    version='0.1.12',
+    version='0.1.13',
     packages=find_packages(exclude=['tests']),
     install_requires=[
-        'numpy==1.19.5',
+        'numpy==1.23.5',
         'pandas==1.1.5',
         'python-dateutil==2.8.2',
         'pytz==2022.6',
