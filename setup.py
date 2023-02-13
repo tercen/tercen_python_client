@@ -10,7 +10,7 @@ setup(
         'python-dateutil==2.8.2',
         'pytz==2022.6',
         'scipy==1.10.0',
-        'pytson @ git+https://github.com/tercen/pytson@1.5#egg=pytson'
+        'pytson @ git+https://github.com/tercen/pytson@1.6.1#egg=pytson'
     ],
 
 
