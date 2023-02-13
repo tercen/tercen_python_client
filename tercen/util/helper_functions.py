@@ -10,24 +10,23 @@ from tercen.model.base import Table, Column, InMemoryRelation, Relation, SchemaB
 from tercen.model.base import CompositeRelation, JoinOperator, ColumnPair
 
 
-
 def pandas_to_table(df) -> Table:
     tbl = Table()
     tbl.nRows = int(  df.shape[0] )
     tbl.columns = []
 
-    colnames = df.columns.values.tolist()
+    colnames = list(df)
     dtypes = df.dtypes
     for i in range(0, len(colnames)):
         column = Column()
         column.name = colnames[i]
-        values = df.loc[:,colnames[i]].values.tolist()
+        values = df.loc[:,colnames[i]].values
         
 
         # FIXME Not handling categorical (factor) and  boolean yet (dtype == bool)
         if( dtypes[i] == "object" and isinstance(values[0], str) ):
             column.type = 'string'
-        elif( dtypes[i] == "float64"):
+        elif( dtypes[i] == "float64" or dtypes[i] == "float32"):
             column.type = 'double'
         elif( dtypes[i] == "int64" or dtypes[i] == "int32"):
             column.type = 'int32'
@@ -35,6 +34,7 @@ def pandas_to_table(df) -> Table:
             raise "Bad column type"
         
         column.values = values
+        column.nRows = tbl.nRows
 
         tbl.columns.append( column )
 
@@ -56,6 +56,7 @@ def pandas_to_bytes(df):
     tbl = pandas_to_table( df )
     
     # zlib.compress( str.encode( json.dumps(tbl.toJson())) )
+    # tsonObj = ptson.encodeTSON( tbl.toJson() ) 
     tsonObj = ptson.encodeTSON( tbl.toJson() ) 
     tblBytes = zlib.compress(tsonObj.getvalue())
 
@@ -97,7 +98,7 @@ def as_relation(obj) -> Relation:
 
     rel = InMemoryRelation()
 
-    rel.id = str(uuid.uuid4())
+    rel.id = uuid.uuid4().__str__()
     tbl.properties.name = rel.id
     rel.inMemoryTable = tbl
 
@@ -116,7 +117,7 @@ def as_composite_relation( object) -> Relation:
         composite = relation
     elif issubclass(relation.__class__, Relation):
         composite = CompositeRelation()
-        composite.id = str(uuid.uuid4())
+        composite.id = uuid.uuid4().__str__()
         composite.mainRelation = relation
     else:
         raise "as_composite_relation -- a Relation is required"

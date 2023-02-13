@@ -64,7 +64,7 @@ class TestTercen(unittest.TestCase):
     def test_select(self) -> None:
         resDf = self.context.select_sparse( )
         
-
+ 
         assert( not resDf is None )
 
         assert( resDf.shape == (6,3) )

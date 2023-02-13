@@ -7,6 +7,7 @@ import pandas as pd
 from tercen.client.factory import TercenClient
 from tercen.model.base import *
 
+import numpy as np
 
 import uuid, random, string
 import tercen.util.helper_functions as utl
@@ -92,7 +93,7 @@ class WorkflowBuilder():
 
         for n in colNames:
             if isinstance( df[n].values.tolist()[0], int):
-                df = df.astype({n: float})
+                df = df.astype({n: np.double})
 
         dfBytes = utl.pandas_to_bytes(df)
 
@@ -106,7 +107,8 @@ class WorkflowBuilder():
 
         task = CSVTask()
         task.state = InitState()
-        task.fileDocumentId = self.fileDoc.id
+        
+        task.fileDocumentId =  self.fileDoc.id
         task.projectId = self.proj.id
         task.owner = self.proj.acl.owner
 
@@ -171,6 +173,7 @@ class WorkflowBuilder():
 
         self.client.workflowService.update(self.workflow)
 
+
         tableTask = CubeQueryTask()
         tableTask.query = CubeQuery()
         tableTask.schemaIds = [csvSchema.id]
@@ -179,9 +182,10 @@ class WorkflowBuilder():
 
         tableTask.state = InitState()
         tableTask = self.client.taskService.create( tableTask )
-        self.client.taskService.runTask(tableTask.id)
-
-        self.tableStepTask = self.client.taskService.waitDone(tableTask.id)
+        
+        # self.client.taskService.runTask(tableTask.id)
+        self.tableStepTask = tableTask
+        # self.tableStepTask = self.client.taskService.waitDone(tableTask.id)
 
         # Return the index of the step
         return len(self.workflow.steps)-1

@@ -176,9 +176,9 @@ class TestTercen(unittest.TestCase):
         selNames = ['']
 
         targetDf = targetDf.drop(".cri", axis=1) # int64
+        targetDf = targetDf.drop(".tlbIdx", axis=1) # int64
         resDf = self.context.select( selNames )
         
-      
         assert( not resDf is None )
         assert(resDf.shape == targetDf.shape)
 
