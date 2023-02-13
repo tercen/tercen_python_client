@@ -1,5 +1,7 @@
 import pandas as pd
+import numpy as np
 import multiprocessing, sys
+
 
 import random, string
 from tercen.model.base import OperatorResult, FileDocument, ComputationTask, InitState 
@@ -7,7 +9,7 @@ from tercen.model.base import RunComputationTask, FailedState, Pair, TaskLogEven
 from tercen.model.base import JoinOperator, InMemoryRelation, CompositeRelation, WhereRelation, RenameRelation, UnionRelation
 from tercen.client.factory import TercenClient
 from tercen.util import helper_functions as utl
-from tercen.http.HttpClientService import encodeTSON
+from tercen.http.HttpClientService import encodeTSON, decodeTSON
 import scipy.sparse as ssp
 
 class TercenContext:
@@ -179,44 +181,14 @@ class TercenContext:
 
         df = pd.DataFrame()
 
-        if self.context.schema.nRows <= 1600000:
-            if( self.context.isPairwise ):
-                res = self.context.client.tableSchemaService.selectPairwise(  self.context.schema.id, names, offset, nr)
-            else:
-                res = self.context.client.tableSchemaService.select(  self.context.schema.id, names, offset, nr)
-            
-
-            for c in res.columns:
-                df[c.name] = c.values
+        if( self.context.isPairwise ):
+            res = self.context.client.tableSchemaService.selectPairwise(  self.context.schema.id, names, offset, nr)
         else:
-            offset = 0
-            nr = 1500000
-            chunkSize = nr
-            hasMoreChunks = True
+            res = self.context.client.tableSchemaService.select(  self.context.schema.id, names, offset, nr)
+        
 
-            while hasMoreChunks:
-                if (offset + nr) > self.context.schema.nRows:
-                    hasMoreChunks = False
-
-                    nr = self.context.schema.nRows - offset 
-
-                if( self.context.isPairwise ):
-                    res = self.context.client.tableSchemaService.selectPairwise(  self.context.schema.id, names, offset, nr)
-                else:
-                    res = self.context.client.tableSchemaService.select(  self.context.schema.id, names, offset, nr)
-
-                chunkDf = pd.DataFrame()
-                for c in res.columns:
-                    chunkDf[c.name] = c.values
-
-                if offset == 0:
-                    df = chunkDf
-                else:
-                    df = pd.concat([df, chunkDf], ignore_index=True)
-                
-                offset = offset + chunkSize 
-
-
+        for c in res.columns:
+            df[c.name] = c.values
 
 
         return df
@@ -583,10 +555,9 @@ class OperatorContextDev(TercenContext):
             if isinstance(df, list):
                 result.tables = [ utl.pandas_to_table(t) for t in df ]
             else:
-                result.tables = [utl.pandas_to_table(df)]
+                result.tables = [ utl.pandas_to_table(df)]
         
-        
-        resultBytes = encodeTSON( result.toJson() ) 
+        resultBytes = encodeTSON( result.toJson() )
 
         fileDoc = FileDocument()
         fileDoc.name = 'result'
@@ -595,6 +566,7 @@ class OperatorContextDev(TercenContext):
         fileDoc.acl.owner = workflow.acl.owner
         fileDoc.metadata.contentType = 'application/octet-stream'
 
+        
         fileDoc = self.client.fileService.upload( fileDoc, resultBytes )
 
         task = None 
