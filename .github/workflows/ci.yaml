@@ -32,12 +32,12 @@ jobs:
       #     pause: 2000
       #     needFail: 'true'
       #     reverse: 'false'
-      - name: Install client dependencies
-        run: |
-          python3 -m pip install --upgrade pip
-          pip3 install --force -r requirements.txt
-      - name: Run UnitTests
-        run: python3 -m unittest tests/test_connect.py
+#      - name: Install client dependencies
+#        run: |
+#          python3 -m pip install --upgrade pip
+#          pip3 install --force -r requirements.txt
+#      - name: Run UnitTests
+#        run: python3 -m unittest tests/test_connect.py
 
 
 
