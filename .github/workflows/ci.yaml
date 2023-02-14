@@ -27,7 +27,7 @@ jobs:
       - uses: tercen/actions/start-tercen@0.2.3
       - uses: nrukavkov/open-ports-check-action@v1
         with:
-          port: 5402
+          port: 5400
           host: '127.0.0.1'
           pause: 20000
           needFail: 'true'
