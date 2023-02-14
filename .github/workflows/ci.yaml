@@ -27,9 +27,9 @@ jobs:
       - uses: tercen/actions/start-tercen@0.2.3
       - uses: nrukavkov/open-ports-check-action@v1
         with:
-          port: 5400, 5402
+          port: 5402
           host: '127.0.0.1'
-          pause: 1000
+          pause: 20000
           needFail: 'true'
           reverse: 'false'
       - name: Install client dependencies
