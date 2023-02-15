@@ -227,7 +227,7 @@ class TercenContext:
 
         df = pd.DataFrame()
 
-        if self.context.schema.nRows <= 1600000:
+        if self.context.schema.nRows <= 50000:
             if( self.context.isPairwise ):
                 res = self.context.client.tableSchemaService.selectPairwise(  self.context.schema.id, names, offset, nr)
             else:
@@ -239,7 +239,7 @@ class TercenContext:
         else:
             # res = self.client.tableSchemaService.select(  schema.id, names, offset, nr)
             offset = 0
-            nr = 1500000
+            nr = 150000
             chunkSize = nr
             hasMoreChunks = True
 
