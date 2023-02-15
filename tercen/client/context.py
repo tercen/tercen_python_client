@@ -160,6 +160,22 @@ class TercenContext:
         return relation
 
  
+    def select_sparse_deprecated(self, wide=False):
+        sdf = ssp.csr_matrix(self.select_deprecated([".y", ".ci", ".ri"]))
+        
+        if wide == True:
+            lines = sdf[:,0].nonzero()[0]
+            y   = sdf[:,0].toarray()[list(lines)].flatten()
+            cols = sdf[:,1].toarray()[list(lines)].flatten()
+            rows = sdf[:,2].toarray()[list(lines)].flatten()
+
+
+            sdf = ssp.csr_matrix((y, (rows, cols)), shape=(int(self.context.rschema.nRows), int(self.context.cschema.nRows)))
+        
+
+        return sdf
+
+
     def select_sparse(self, wide=False):
         sdf = ssp.csr_matrix(self.select([".y", ".ci", ".ri"]))
         
@@ -201,7 +217,7 @@ class TercenContext:
         return self.select_stream(names, offset=0, nr=None)
 
 
-    def select_old(self, names=[], offset=0, nr=None) -> pd.DataFrame:
+    def select_deprecated(self, names=[], offset=0, nr=None) -> pd.DataFrame:
         if not nr is None and nr < 0:
             nr = None
 
