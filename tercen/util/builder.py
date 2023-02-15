@@ -17,7 +17,7 @@ import tercen.util.helper_functions as utl
 # TODO Only supports TableStep -> DataStep Workflows (no multiple steps)
 # TODO Does not support installing and running operators
 class WorkflowBuilder():
-    def __init__(self, username='test', password='test', serviceUri="http://127.0.0.1:5400/"):
+    def __init__(self, username='test', password='test', serviceUri="http://127.0.0.1:5402/"):
         self.client = TercenClient(serviceUri)
         self.session = self.client.userService.connect(     username, password)
 

@@ -57,14 +57,14 @@ class TableSchemaService(tercen.client.base.TableSchemaServiceBase):
     def __init__(self):
         super().__init__()
 
-    def select(self, tableId, cnames, offset, limit):
-        answer = None
-        try:
-            tbl_bytes = super().selectStream(tableId, cnames, offset, limit)
-            answer = tercen.model.base.TableBase.createFromJson(decodeTSON(tbl_bytes))
-        except BaseException as e:
-            self.onError(e)
-        return answer
+    # def select(self, tableId, cnames, offset, limit):
+    #     answer = None
+    #     try:
+    #         tbl_bytes = super().selectStream(tableId, cnames, offset, limit)
+    #         answer = tercen.model.base.TableBase.createFromJson(decodeTSON(tbl_bytes))
+    #     except BaseException as e:
+    #         self.onError(e)
+    #     return answer
 
 
 class TaskService(tercen.client.base.TaskServiceBase):

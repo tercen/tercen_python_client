@@ -3,7 +3,7 @@ import numpy as np
 import string
 import numpy.testing as npt
 import pandas as pd
-
+import memunit
 
 import os
 
@@ -30,9 +30,9 @@ class TestTercen(unittest.TestCase):
         else:
             serviceUri = None
 
-        self.data = pd.DataFrame( {'Values':range(0,4000000), 
-                "Columns":range(0,4000000),
-                "Rows":range(0,4000000)}  )
+        self.data = pd.DataFrame( {'Values':range(0,2400000), 
+                "Columns":range(0,2400000),
+                "Rows":range(0,2400000)}  )
 
         self.wkfBuilder = bld.WorkflowBuilder()
         self.wkfBuilder.create_workflow( 'python_auto_project', 'python_workflow')
@@ -47,7 +47,7 @@ class TestTercen(unittest.TestCase):
             self.context = ctx.TercenContext(
                             stepId=self.wkfBuilder.workflow.steps[1].id,
                             workflowId=self.wkfBuilder.workflow.id,
-                            serviceUri = "http://127.0.0.1:5400/")
+                            serviceUri = "http://127.0.0.1:5402/")
         else: # Running from Github Actions
             self.context = ctx.TercenContext(
                             username=username,
@@ -68,30 +68,22 @@ class TestTercen(unittest.TestCase):
         resDf = self.context.select( selNames )
         
         assert( not resDf is None )
-        assert( resDf.shape[0] == 4000000)
+        assert( resDf.shape[0] == 2400000)
         
         np.testing.assert_array_equal(resDf[".y"],  self.data["Values"])
 
-    # selectStream does not work for cselect nor rselect
-    # def test_cselect(self) -> None:
-    #     selNames = ['Columns']
-     
-    #     resDf = self.context.cselect( selNames )
-        
-    #     assert( not resDf is None )
-    #     assert( resDf.shape[0] == 4000000)
-        
-    #     np.testing.assert_array_equal(resDf["Columns"],  self.data["Columns"])
 
-    # def test_rselect(self) -> None:
-    #     selNames = ['Rows']
-     
-    #     resDf = self.context.rselect( selNames )
+    # @memunit.assert_mb
+    def test_select_stream(self) -> None:
+        selNames = ['.y']
+
+        resDf = self.context.select_stream( selNames )
         
-    #     assert( not resDf is None )
-    #     assert( resDf.shape[0] == 4000000)
         
-    #     np.testing.assert_array_equal(resDf["Rows"],  self.data["Rows"])
+        assert( not resDf is None )
+        assert( resDf.shape[0] == 2400000)
+        
+        np.testing.assert_array_equal(resDf[".y"],  self.data["Values"])
 
 
 

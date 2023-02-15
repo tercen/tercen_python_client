@@ -2,19 +2,22 @@ import pandas as pd
 import numpy as np
 import multiprocessing, sys
 
-
+import weakref
 import random, string
 from tercen.model.base import OperatorResult, FileDocument, ComputationTask, InitState 
 from tercen.model.base import RunComputationTask, FailedState, Pair, TaskLogEvent, TaskProgressEvent, SimpleRelation, Relation
-from tercen.model.base import JoinOperator, InMemoryRelation, CompositeRelation, WhereRelation, RenameRelation, UnionRelation
+from tercen.model.base import JoinOperator, InMemoryRelation, CompositeRelation, WhereRelation, RenameRelation, UnionRelation, TableBase
 from tercen.client.factory import TercenClient
 from tercen.util import helper_functions as utl
 from tercen.http.HttpClientService import encodeTSON, decodeTSON
 import scipy.sparse as ssp
 
+
+# TODO 
+# Organize save and select for dev and non-dev
 class TercenContext:
     def __init__(self, workflowId = None, stepId = None, username = 'test', password = 'test',
-     authToken = None, taskId = None, serviceUri = "http://127.0.0.1:5400/"):
+     authToken = None, taskId = None, serviceUri = "http://127.0.0.1:5402/"):
         
         args = self.parse_args()
 
@@ -37,6 +40,7 @@ class TercenContext:
         else:
             self.context = OperatorContext( authToken=authToken,
                     username=username, password=password, taskId=taskId, serviceUri=serviceUri )
+            
 
     
     
@@ -171,7 +175,33 @@ class TercenContext:
 
         return sdf
 
+
+    def select_stream(self, names=[], offset=0, nr=None) -> pd.DataFrame:
+        if not nr is None and nr < 0:
+            nr = None
+
+        if( names is None or len(names) == 0 or (len(names) == 1 and names[0] == '' )):
+            where = utl.logical_index([ c.type != 'uint64' and c.type != 'int64' for c in self.context.schema.columns ])
+            names = ( c.name for c in utl.get_from_idx_list( self.context.schema.columns, where) )
+
+        # tbl_bytes = super().selectStream(tableId, cnames, offset, limit)
+        # answer = tercen.model.base.TableBase.createFromJson(decodeTSON(tbl_bytes))
+
+        # res = self.context.client.tableSchemaService.selectStream(self.context.schema.id, names, offset, nr)
+        # answer = TableBase.createFromJson(decodeTSON(res))
+        # df = utl.table_to_pandas(answer)
+
+        return utl.table_to_pandas(
+            TableBase.createFromJson(decodeTSON(
+                self.context.client.tableSchemaService.selectStream(self.context.schema.id, names, offset, nr)
+            ))
+        )
+
     def select(self, names=[], offset=0, nr=None) -> pd.DataFrame:
+        return self.select_stream(names, offset=0, nr=None)
+
+
+    def select_old(self, names=[], offset=0, nr=None) -> pd.DataFrame:
         if not nr is None and nr < 0:
             nr = None
 
@@ -181,15 +211,43 @@ class TercenContext:
 
         df = pd.DataFrame()
 
-        if( self.context.isPairwise ):
-            res = self.context.client.tableSchemaService.selectPairwise(  self.context.schema.id, names, offset, nr)
+        if self.context.schema.nRows <= 1600000:
+            if( self.context.isPairwise ):
+                res = self.context.client.tableSchemaService.selectPairwise(  self.context.schema.id, names, offset, nr)
+            else:
+                res = self.context.client.tableSchemaService.select(  self.context.schema.id, names, offset, nr)
+
+
+            for c in res.columns:
+                df[c.name] = c.values
         else:
-            res = self.context.client.tableSchemaService.select(  self.context.schema.id, names, offset, nr)
-        
+            # res = self.client.tableSchemaService.select(  schema.id, names, offset, nr)
+            offset = 0
+            nr = 1500000
+            chunkSize = nr
+            hasMoreChunks = True
 
-        for c in res.columns:
-            df[c.name] = c.values
+            while hasMoreChunks:
+                if (offset + nr) > self.context.schema.nRows:
+                    hasMoreChunks = False
 
+                    nr = self.context.schema.nRows - offset 
+
+                if( self.context.isPairwise ):
+                    res = self.context.client.tableSchemaService.selectPairwise(  self.context.schema.id, names, offset, nr)
+                else:
+                    res = self.context.client.tableSchemaService.select(  self.context.schema.id, names, offset, nr)
+
+                chunkDf = pd.DataFrame()
+                for c in res.columns:
+                    chunkDf[c.name] = c.values
+
+                if offset == 0:
+                    df = chunkDf
+                else:
+                    df = pd.concat([df, chunkDf], ignore_index=True)
+
+                offset = offset + chunkSize 
 
         return df
 
@@ -397,7 +455,7 @@ class OperatorContext(TercenContext):
 
         self.namespace = self.cubeQuery.operatorSettings.namespace
 
-    def save(self, df ) -> Relation:
+    def save(self, df) -> Relation:
         if issubclass(df.__class__, OperatorResult):
             result = df
         else:
@@ -525,26 +583,6 @@ class OperatorContextDev(TercenContext):
 
 
 
-    def __select(self, schema, names=[], offset=0, nr=None) -> pd.DataFrame:
-        if not nr is None and nr < 0:
-            nr = None
-
-        if( names is None or len(names) == 0 or (len(names) == 1 and names[0] == '' )):
-            where = utl.logical_index([ c.type != 'uint64' and c.type != 'int64' for c in schema.columns ])
-            names = [ c.name for c in utl.get_from_idx_list( schema.columns, where) ]
-
-        if( self.isPairwise ):
-            res = self.client.tableSchemaService.selectPairwise(  schema.id, names, offset, nr)
-        else:
-            res = self.client.tableSchemaService.select(  schema.id, names, offset, nr)
-
-        df = pd.DataFrame()
-
-        for c in res.columns:
-            df[c.name] = c.values
-
-        return df
-
     # For development testing, returns the resulting table
     def save( self, df ) -> pd.DataFrame:
         if issubclass(df.__class__, OperatorResult):
@@ -602,8 +640,7 @@ class OperatorContextDev(TercenContext):
         else:
             ts = self.client.tableSchemaService.get(task.computedRelation.joinOperators[0].rightRelation.relation.mainRelation.id)
 
-        
-        dff = self.__select(ts, '')
+        dff = self.__select_from_schema(ts, '') 
         cols = dff.columns
         if not ".ci" in cols:
             dff.insert(0, '.ci', 0)
@@ -611,3 +648,61 @@ class OperatorContextDev(TercenContext):
             dff.insert(1, '.ri', 0)
 
         return dff
+
+
+    def __select_from_schema(self, schema, names=[], offset=0, nr=None) -> pd.DataFrame:
+        if not nr is None and nr < 0:
+            nr = None
+
+        if( names is None or len(names) == 0 or (len(names) == 1 and names[0] == '' )):
+            where = utl.logical_index([ c.type != 'uint64' and c.type != 'int64' for c in schema.columns ])
+            names = [ c.name for c in utl.get_from_idx_list( schema.columns, where) ]
+
+        df = pd.DataFrame()
+
+
+            # res = self.client.tableSchemaService.selectPairwise(  schema.id, names, offset, nr)
+        if schema.nRows <= 1600000:
+            if( self.isPairwise ):
+                res = self.client.tableSchemaService.selectPairwise(  schema.id, names, offset, nr)
+            else:
+                res = self.client.tableSchemaService.select(  schema.id, names, offset, nr)
+
+
+            for c in res.columns:
+                df[c.name] = c.values
+        else:
+            # res = self.client.tableSchemaService.select(  schema.id, names, offset, nr)
+            offset = 0
+            nr = 1500000
+            chunkSize = nr
+            hasMoreChunks = True
+
+            while hasMoreChunks:
+                if (offset + nr) > schema.nRows:
+                    hasMoreChunks = False
+
+                    nr = schema.nRows - offset 
+
+                if( self.isPairwise ):
+                    res = self.client.tableSchemaService.selectPairwise( schema.id, names, offset, nr)
+                else:
+                    res = self.client.tableSchemaService.select(  schema.id, names, offset, nr)
+
+                chunkDf = pd.DataFrame()
+                for c in res.columns:
+                    chunkDf[c.name] = c.values
+
+                if offset == 0:
+                    df = chunkDf
+                else:
+                    df = pd.concat([df, chunkDf], ignore_index=True)
+
+                offset = offset + chunkSize 
+
+        # df = pd.DataFrame()
+
+        # for c in res.columns:
+        #     df[c.name] = c.values
+
+        return df

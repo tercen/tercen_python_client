@@ -17,7 +17,7 @@ from tercen.model.base import Project, FileDocument, CSVTask, InitState, DoneSta
 
 class TestTercen(unittest.TestCase):
     def setUp(self):
-        self.client = TercenClient("http://127.0.0.1:5400/")
+        self.client = TercenClient("http://127.0.0.1:5402/")
         self.client.userService.connect('test', 'test')
 
         self.data = self.create_data()
