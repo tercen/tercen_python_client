@@ -198,20 +198,16 @@ class TercenContext:
 
         if( names is None or len(names) == 0 or (len(names) == 1 and names[0] == '' )):
             where = utl.logical_index([ c.type != 'uint64' and c.type != 'int64' for c in self.context.schema.columns ])
-            names = ( c.name for c in utl.get_from_idx_list( self.context.schema.columns, where) )
+            names = [ c.name for c in utl.get_from_idx_list( self.context.schema.columns, where) ]
 
         # tbl_bytes = super().selectStream(tableId, cnames, offset, limit)
         # answer = tercen.model.base.TableBase.createFromJson(decodeTSON(tbl_bytes))
 
-        # res = self.context.client.tableSchemaService.selectStream(self.context.schema.id, names, offset, nr)
-        # answer = TableBase.createFromJson(decodeTSON(res))
-        # df = utl.table_to_pandas(answer)
+        res = self.context.client.tableSchemaService.selectStream(self.context.schema.id, names, offset, nr)
+        answer = TableBase.createFromJson(decodeTSON(res))
+        df = utl.table_to_pandas(answer)
 
-        return utl.table_to_pandas(
-            TableBase.createFromJson(decodeTSON(
-                self.context.client.tableSchemaService.selectStream(self.context.schema.id, names, offset, nr)
-            ))
-        )
+        return df
 
     def select(self, names=[], offset=0, nr=None) -> pd.DataFrame:
         return self.select_stream(names, offset=0, nr=None)
@@ -422,6 +418,15 @@ class TercenContext:
 
             self.context.client.eventService.sendChannel( task.channelId, evt )
 
+
+# op.value = function(name, type=as.character, default=NULL){
+#       property = Find(function(propertyValue) propertyValue$name == name ,
+#                       self$query$operatorSettings$operatorRef$propertyValues)
+#       if (is.null(property)) return(default)
+#       return(type(property$value))
+#     },
+    def operator_property(self, type="character", default=None):
+        pass
 
 class OperatorContext(TercenContext):
     def __init__(self, authToken, username, password, serviceUri, taskId):

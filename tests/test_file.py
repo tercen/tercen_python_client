@@ -21,7 +21,7 @@ class TestFileService(unittest.TestCase):
         bytes_data = "hello\n\nhello\n\n42".encode("utf_8")
         file = self.client.fileService.upload(file, bytes_data)
         data = self.client.fileService.download(file.id)
-        assert data == bytes_data
+        assert data.read() == bytes_data
         self.client.teamService.delete(project.id, project.rev)
 
 

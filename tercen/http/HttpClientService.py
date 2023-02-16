@@ -9,6 +9,8 @@ from tercen.base.BaseObject import BaseObject
 from tercen.model.base import *
 
 
+# import tercen.util.pytmp as ptmp
+
 class TercenError(Exception):
     pass
 
@@ -227,8 +229,23 @@ class Response:
             self.status = httpResponseOrError.code
             self.data = httpResponseOrError.read()
         else:
+            chunkSize = 16 * 1024
+            iobytes = io.BytesIO()
+            #  iobytes.write(httpResponseOrError.read())
+            
+            while True:
+                chunk = httpResponseOrError.read(chunkSize)
+                if not chunk:
+                    break
+                iobytes.write(chunk)
+
+            iobytes.seek(0)
+
+
+        
+        
             self.status = httpResponseOrError.status
-            self.data = httpResponseOrError.read()
+            self.data = iobytes #. httpResponseOrError.read()
 
     def code(self):
         return self.status
@@ -288,9 +305,9 @@ def encodeTSON(obj):
     return ptson.encodeTSON(obj).getbuffer().tobytes()
 
 
-def decodeTSON(bytes):
-    iobytes = io.BytesIO()
-    iobytes.write(bytes)
-    iobytes.seek(0)
+def decodeTSON(bts):
+    # iobytes = io.BytesIO()
+    # iobytes.write(bts)
+    # iobytes.seek(0)
     # decodedTson = ptson.decodeTSON(iobytes)
-    return ptson.decodeTSON(iobytes)
+    return ptson.decodeTSON(bts)

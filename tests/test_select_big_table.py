@@ -30,9 +30,11 @@ class TestTercen(unittest.TestCase):
         else:
             serviceUri = None
 
-        self.data = pd.DataFrame( {'Values':range(0,2400000), 
-                "Columns":range(0,2400000),
-                "Rows":range(0,2400000)}  )
+        self.nRows = 10000000
+
+        self.data = pd.DataFrame( {'Values':range(0,self.nRows), 
+                "Columns":range(0,self.nRows),
+                "Rows":range(0,self.nRows)}  )
 
         self.wkfBuilder = bld.WorkflowBuilder()
         self.wkfBuilder.create_workflow( 'python_auto_project', 'python_workflow')
@@ -68,7 +70,7 @@ class TestTercen(unittest.TestCase):
         resDf = self.context.select( selNames )
         
         assert( not resDf is None )
-        assert( resDf.shape[0] == 2400000)
+        assert( resDf.shape[0] == self.nRows)
         
         np.testing.assert_array_equal(resDf[".y"],  self.data["Values"])
 
@@ -81,7 +83,7 @@ class TestTercen(unittest.TestCase):
         
         
         assert( not resDf is None )
-        assert( resDf.shape[0] == 2400000)
+        assert( resDf.shape[0] == self.nRows)
         
         np.testing.assert_array_equal(resDf[".y"],  self.data["Values"])
 

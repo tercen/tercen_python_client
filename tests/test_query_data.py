@@ -100,7 +100,7 @@ class TestTercen(unittest.TestCase):
         
 
         fileDownloaded = self.client.fileService.download( self.fileDoc.id )
-        dwnDf = utl.bytes_to_pandas(fileDownloaded)
+        dwnDf = utl.bytes_to_pandas(fileDownloaded.read())
 
         assert(  dwnFileDoc.id == self.fileDoc.id )
         npt.assert_array_equal( df.iloc[:,0], dwnDf.iloc[:,0] )
