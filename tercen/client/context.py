@@ -419,15 +419,20 @@ class TercenContext:
             self.context.client.eventService.sendChannel( task.channelId, evt )
 
 
-# op.value = function(name, type=as.character, default=NULL){
-#       property = Find(function(propertyValue) propertyValue$name == name ,
-#                       self$query$operatorSettings$operatorRef$propertyValues)
-#       if (is.null(property)) return(default)
-#       return(type(property$value))
-#     },
-    def operator_property(self, type="character", default=None):
-        self.context.cubeQuery.operatorSettings.operatorRef.propertyValues
-        pass
+    def opertor_property(self, name, typeFn=str, default=None):
+        # pv = PropertyValue()
+        # pv.name = 'Test'
+        # pv.value = 1
+        # props = [pv] #tercenCtx.context.cubeQuery.operatorSettings.operatorRef.propertyValues
+        props = self.context.cubeQuery.operatorSettings.operatorRef.propertyValues
+        for p in props:
+            if p.name == name:
+                if p.value is None:
+                    return default
+                else:
+                    return typeFn( p.value )
+        
+        return default
 
 class OperatorContext(TercenContext):
     def __init__(self, authToken, username, password, serviceUri, taskId):
