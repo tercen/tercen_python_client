@@ -416,7 +416,7 @@ class TercenContext:
             self.context.client.eventService.sendChannel( task.channelId, evt )
 
 
-    def opertor_property(self, name, typeFn=str, default=None):
+    def operator_property(self, name, typeFn=str, default=None):
         props = self.context.cubeQuery.operatorSettings.operatorRef.propertyValues
         for p in props:
             if p.name == name:
