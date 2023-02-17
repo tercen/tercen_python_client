@@ -12,9 +12,6 @@ from tercen.util import helper_functions as utl
 from tercen.http.HttpClientService import encodeTSON, decodeTSON
 import scipy.sparse as ssp
 
-
-# TODO 
-# Organize save and select for dev and non-dev
 class TercenContext:
     def __init__(self, workflowId = None, stepId = None, username = 'test', password = 'test',
      authToken = None, taskId = None, serviceUri = "http://127.0.0.1:5402/"):
@@ -420,10 +417,6 @@ class TercenContext:
 
 
     def opertor_property(self, name, typeFn=str, default=None):
-        # pv = PropertyValue()
-        # pv.name = 'Test'
-        # pv.value = 1
-        # props = [pv] #tercenCtx.context.cubeQuery.operatorSettings.operatorRef.propertyValues
         props = self.context.cubeQuery.operatorSettings.operatorRef.propertyValues
         for p in props:
             if p.name == name:
