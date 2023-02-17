@@ -426,6 +426,7 @@ class TercenContext:
 #       return(type(property$value))
 #     },
     def operator_property(self, type="character", default=None):
+        self.context.cubeQuery.operatorSettings.operatorRef.propertyValues
         pass
 
 class OperatorContext(TercenContext):
@@ -532,17 +533,24 @@ class OperatorContextDev(TercenContext):
         #TODO FIXME Check why the cubequery here and the one retrieved from the task are different
         # self.cubeQuery = self.client.workflowService.getCubeQuery(workflowId, stepId)
         wkf = self.client.workflowService.get(workflowId)
-        
-        stp = None
-        for s in wkf.steps:
-            if s.id == stepId:
-                stp = s
-                break
 
-        if stp is None:
-            raise "Step not found"
-        task = self.client.taskService.get(stp.model.taskId)
-        self.cubeQuery  = task.query
+        # FIXME Model within the step not always has the taskId, leading to error during dev,
+        #         
+        # stp = None
+        # for s in wkf.steps:
+        #     if s.id == stepId:
+        #         stp = s
+        #         break
+
+        
+        # if stp is None:
+        #     raise "Step not found"
+
+        
+        # task = self.client.taskService.get(stp.model.taskId)
+        # self.cubeQuery  = task.query
+
+        self.cubeQuery = self.client.workflowService.getCubeQuery(workflowId, stepId)
 
         self.schema = self.client.tableSchemaService.findByQueryHash( keys=[self.cubeQuery.qtHash] )
         self.cschema = self.client.tableSchemaService.findByQueryHash( keys=[self.cubeQuery.columnHash] )
