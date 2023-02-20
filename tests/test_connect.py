@@ -4,7 +4,7 @@ from tercen.client.factory import TercenClient
 
 class TestTercen(unittest.TestCase):
     def test_connect(self):
-        client = TercenClient("http://172.42.0.42:5402/")
+        client = TercenClient("http://172.42.0.42:5400/")
         session = client.userService.connect('test', 'test')
         self.assertIsNotNone(session)
 
