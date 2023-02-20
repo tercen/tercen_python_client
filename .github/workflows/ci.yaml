@@ -24,7 +24,7 @@ jobs:
     steps:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v2
-      - uses: tercen/actions/start-tercen
+      - uses: tercen/actions/start-tercen@latest
       #- name: Check open port
       #  run: bash wait_conn.sh 127.0.0.1 5402
       - uses: nrukavkov/open-ports-check-action@v1
