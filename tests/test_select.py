@@ -30,7 +30,7 @@ class TestTercen(unittest.TestCase):
             username = 'test'
             passw = 'test'
             conf = {}
-            with open("./tests/test_env.conf") as f:
+            with open("./tests/env.conf") as f:
                 for line in f:
                     if len(line.strip()) > 0:
                         (key, val) = line.split(sep="=")
@@ -190,7 +190,7 @@ class TestTercen(unittest.TestCase):
         selNames = ['']
 
         targetDf = targetDf.drop(".cri", axis=1) # int64
-        targetDf = targetDf.drop(".tlbIdx", axis=1) # int64
+        # targetDf = targetDf.drop(".tlbIdx", axis=1) # int64
         resDf = self.context.select( selNames )
         
         assert( not resDf is None )

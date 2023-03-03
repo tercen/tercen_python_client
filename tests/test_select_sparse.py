@@ -31,7 +31,7 @@ class TestTercen(unittest.TestCase):
             username = 'test'
             passw = 'test'
             conf = {}
-            with open("./tests/test_env.conf") as f:
+            with open("./tests/env.conf") as f:
                 for line in f:
                     if len(line.strip()) > 0:
                         (key, val) = line.split(sep="=")
