@@ -17,7 +17,7 @@ import tercen.util.helper_functions as utl
 # TODO Only supports TableStep -> DataStep Workflows (no multiple steps)
 # TODO Does not support installing and running operators
 class WorkflowBuilder():
-    def __init__(self, username='test', password='test', serviceUri="http://127.0.0.1:5402/"):
+    def __init__(self, username='test', password='test', serviceUri="http://127.0.0.1:5400/"):
         self.client = TercenClient(serviceUri)
         self.session = self.client.userService.connect(     username, password)
 
@@ -95,15 +95,15 @@ class WorkflowBuilder():
             if isinstance( df[n].values.tolist()[0], int):
                 df = df.astype({n: np.double})
 
-        dfBytes = utl.pandas_to_bytes(df)
+        # dfBytes = utl.pandas_to_bytes(df)
 
         fileDoc = FileDocument()
         fileDoc.name = "data.csv"
         fileDoc.projectId = self.proj.id
         fileDoc.acl.owner = self.proj.acl.owner
-        fileDoc.metadata.contentEncoding = "gzip"
+        fileDoc.metadata.contentEncoding = "application/octet-stream"
 
-        self.fileDoc = self.client.fileService.upload(fileDoc, dfBytes)
+        self.fileDoc = self.client.fileService.uploadTable(fileDoc, utl.pandas_to_table(df).toJson() )
 
         task = CSVTask()
         task.state = InitState()

@@ -13,11 +13,7 @@ import tercen.util.builder as bld
 class TestTercen(unittest.TestCase):
     def setUp(self):
         envs = os.environ
-        if 'TERCEN_USERNAME' in envs:
-            username = envs['TERCEN_USERNAME']
-        else:
-            username = None
-
+        isLocal = False
         if 'TERCEN_PASSWORD' in envs:
             passw = envs['TERCEN_PASSWORD']
         else:
@@ -27,9 +23,26 @@ class TestTercen(unittest.TestCase):
             serviceUri = envs['TERCEN_URI']
         else:
             serviceUri = None
+        if 'TERCEN_USERNAME' in envs:
+            username = envs['TERCEN_USERNAME']
+        else:
+            isLocal = True
+            username = 'test'
+            passw = 'test'
+            conf = {}
+            with open("./tests/test_env.conf") as f:
+                for line in f:
+                    if len(line.strip()) > 0:
+                        (key, val) = line.split(sep="=")
+                        conf[str(key)] = str(val).strip()
+
+            serviceUri = ''.join([conf["SERVICE_URL"], ":", conf["SERVICE_PORT"]])
+            
 
 
-        self.wkfBuilder = bld.WorkflowBuilder()
+
+
+        self.wkfBuilder = bld.WorkflowBuilder(username=username, password=passw, serviceUri=serviceUri)
         self.wkfBuilder.create_workflow( 'python_auto_project', 'python_workflow')
         self.wkfBuilder.add_table_step( './tests/data/hospitals.csv' )
 
@@ -50,18 +63,19 @@ class TestTercen(unittest.TestCase):
                                     colors=[{"name":"Facility.Type", "type":"string"}])
         
         
-        if username is None: # Running locally
-            self.context = ctx.TercenContext(
-                            stepId=self.wkfBuilder.workflow.steps[1].id,
-                            workflowId=self.wkfBuilder.workflow.id,
-                            serviceUri = "http://127.0.0.1:5402/")
-        else: # Running from Github Actions
-            self.context = ctx.TercenContext(
-                            username=username,
-                            password=passw,
-                            serviceUri=serviceUri,
-                            stepId=self.wkfBuilder.workflow.steps[1].id,
-                            workflowId=self.wkfBuilder.workflow.id)
+        # if isLocal == True: # Running locally
+
+        #     self.context = ctx.TercenContext(
+        #                     stepId=self.wkfBuilder.workflow.steps[1].id,
+        #                     workflowId=self.wkfBuilder.workflow.id,
+        #                     serviceUri = serviceUri)
+        # else: # Running from Github Actions
+        self.context = ctx.TercenContext(
+                        username=username,
+                        password=passw,
+                        serviceUri=serviceUri,
+                        stepId=self.wkfBuilder.workflow.steps[1].id,
+                        workflowId=self.wkfBuilder.workflow.id)
 
         self.addCleanup(self.clear_workflow)
         
@@ -147,7 +161,7 @@ class TestTercen(unittest.TestCase):
 
 
         targetDf = targetDf[selNames]
-        resDf = self.context.select( selNames )
+        resDf = self.context.select( selNames ) 
         
       
         assert( not resDf is None )

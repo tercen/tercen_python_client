@@ -1,19 +1,18 @@
+import cProfile, pstats, io
+from pstats import SortKey
+
 import unittest
 import os 
 
 from tercen.client import context as ctx
 import tercen.util.builder as bld
-
+import memunit
 import numpy.testing as npt
 
 class TestTercen(unittest.TestCase):
     def setUp(self):
         envs = os.environ
-        if 'TERCEN_USERNAME' in envs:
-            username = envs['TERCEN_USERNAME']
-        else:
-            username = None
-
+        isLocal = False
         if 'TERCEN_PASSWORD' in envs:
             passw = envs['TERCEN_PASSWORD']
         else:
@@ -23,9 +22,24 @@ class TestTercen(unittest.TestCase):
             serviceUri = envs['TERCEN_URI']
         else:
             serviceUri = None
+        if 'TERCEN_USERNAME' in envs:
+            username = envs['TERCEN_USERNAME']
+        else:
+            isLocal = True
+            username = 'test'
+            passw = 'test'
+            conf = {}
+            with open("./tests/test_env.conf") as f:
+                for line in f:
+                    if len(line.strip()) > 0:
+                        (key, val) = line.split(sep="=")
+                        conf[str(key)] = str(val).strip()
+
+            serviceUri = ''.join([conf["SERVICE_URL"], ":", conf["SERVICE_PORT"]])
 
 
-        self.wkfBuilder = bld.WorkflowBuilder()
+
+        self.wkfBuilder = bld.WorkflowBuilder(username=username, password=passw, serviceUri=serviceUri)
         self.wkfBuilder.create_workflow( 'python_auto_project', 'python_workflow')
         self.wkfBuilder.add_table_step( './tests/data/hospitals.csv' )
 
@@ -43,31 +57,41 @@ class TestTercen(unittest.TestCase):
                                     colors=[{"name":"Facility.Type", "type":"string"}])
         
         
-        if username is None: # Running locally
-            self.context = ctx.TercenContext(
-                            stepId=self.wkfBuilder.workflow.steps[1].id,
-                            workflowId=self.wkfBuilder.workflow.id)
-        else: # Running from Github Actions
-            self.context = ctx.TercenContext(
-                            username=username,
-                            password=passw,
-                            serviceUri=serviceUri,
-                            stepId=self.wkfBuilder.workflow.steps[1].id,
-                            workflowId=self.wkfBuilder.workflow.id)
+        self.context = ctx.TercenContext(
+                        username=username,
+                        password=passw,
+                        serviceUri=serviceUri,
+                        stepId=self.wkfBuilder.workflow.steps[1].id,
+                        workflowId=self.wkfBuilder.workflow.id)
         self.addCleanup(self.clear_workflow)
         
     def clear_workflow(self):
         self.wkfBuilder.clean_up_workflow()
-        
 
+    # 112.5    
+    # @memunit.assert_mb
+    # TODO running forever, check the multipart iterator to see what is going on
     def test_save(self) -> None:
         df = self.context.select(['.y', '.ci', '.ri'])
+
         df['y2'] = df['.y'] * 2
         df['y'] = df['.y']
         df = df.drop('.y', axis=1)
 
         df = self.context.add_namespace(df) 
+
+
+        # pr = cProfile.Profile()
+        # pr.enable()
         resDf = self.context.save_dev(df)
+        # pr.disable()
+        # s = io.StringIO()
+        # sortby = SortKey.CUMULATIVE
+        # ps = pstats.Stats(pr, stream=s).sort_stats(sortby)
+        # ps.print_stats()
+        # print(s.getvalue())
+
+
 
         assert(len(df) == len(resDf))
         assert(len(df.columns) == len(resDf.columns))
@@ -108,7 +132,7 @@ class TestTercen(unittest.TestCase):
         df = df.drop(['.y'], axis=1)
 
         df = self.context.add_namespace(df) 
-        resDf = self.context.save_dev(df)
+        resDf = self.context.save_dev(df) 
         
 
         assert(len(df) == len(resDf))

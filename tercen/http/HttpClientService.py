@@ -3,6 +3,8 @@ from urllib.error import HTTPError
 import pytson as ptson
 import urllib.request
 import io
+import types
+import collections
 
 from tercen.base.BaseObject import BaseObject
 
@@ -10,6 +12,7 @@ from tercen.model.base import *
 
 
 # import tercen.util.pytmp as ptmp
+
 
 class TercenError(Exception):
     pass
@@ -30,9 +33,10 @@ class HttpClientService:
         return self.tercenClient.tercenURI.resolve(uri)
 
     def onResponseError(self, response):
-        data = response.body().bytes()
+        # data = response.body().bytes()
+        # data = response.stream.read()
         try:
-            obj = decodeTSON(data)
+            obj = decodeTSON(response)
             raise TercenError(str(obj))
         except BaseException:
             raise TercenError('unknown : failed to decode')
@@ -61,8 +65,8 @@ class HttpClientService:
             if response.code() != 200:
                 self.onResponseError(response)
             else:
-                # return self.fromJson(decodeTSON(response.body().bytes()))
-                return self.specificClassFromJson(decodeTSON(response.body().bytes()))
+                # return self.fromJson(decodeTSON(response))
+                return self.specificClassFromJson(decodeTSON(response))
         except BaseException as e:
             self.onError(e)
 
@@ -73,7 +77,7 @@ class HttpClientService:
             if response.code() != 200:
                 self.onResponseError(response)
             else:
-                return self.fromJson(decodeTSON(response.body().bytes()))
+                return self.fromJson(decodeTSON(response))
         except BaseException as e:
             self.onError(e)
 
@@ -84,7 +88,7 @@ class HttpClientService:
             if response.code() != 200:
                 self.onResponseError(response)
             else:
-                obj.rev = decodeTSON(response.body().bytes())[0]
+                obj.rev = decodeTSON(response)[0]
         except BaseException as e:
             self.onError(e)
 
@@ -108,7 +112,7 @@ class HttpClientService:
             if response.code() != 200:
                 self.onResponseError(response)
             else:
-                return list(map(lambda x: self.specificClassFromJson(x), decodeTSON(response.body().bytes())))
+                return list(map(lambda x: self.specificClassFromJson(x), decodeTSON(response)))
         except BaseException as e:
             self.onError(e)
 
@@ -126,7 +130,7 @@ class HttpClientService:
             if response.code() != 200:
                 self.onResponseError(response)
             else:
-                return list(map(lambda x: self.specificClassFromJson(x), decodeTSON(response.body().bytes())))
+                return list(map(lambda x: self.specificClassFromJson(x), decodeTSON(response)))
         except BaseException as e:
             self.onError(e)
 
@@ -215,37 +219,27 @@ class HttpClient:
             headers = {}
         try:
             frontier = "ab63a1363ab349aa8627be56b0479de2"
-            data = MultiPartMixTransformer(frontier, parts).encode_parts()
+            # data = MultiPartMixTransformer(frontier, parts).encode_parts()
+            data = MultiPartMixTransformer(frontier, parts) # TODO Add json serializer iterator to this
             headers["Content-Type"] = "multipart/mixed; boundary=" + frontier
+
             req = urllib.request.Request(uri, headers=self.buildHeaders(headers), data=data, method='POST')
+
             return Response(urllib.request.urlopen(req))
+
         except HTTPError as e:
             return Response(e)
 
 
 class Response:
     def __init__(self, httpResponseOrError):
-        if httpResponseOrError is HTTPError:
-            self.status = httpResponseOrError.code
-            self.data = httpResponseOrError.read()
-        else:
-            chunkSize = 16 * 1024
-            iobytes = io.BytesIO()
-            #  iobytes.write(httpResponseOrError.read())
-            
-            while True:
-                chunk = httpResponseOrError.read(chunkSize)
-                if not chunk:
-                    break
-                iobytes.write(chunk)
+        # if httpResponseOrError is HTTPError:
+        #     self.status = httpResponseOrError.code
+        #     self.data = httpResponseOrError.read()
+        # else:
+        self.status = httpResponseOrError.status
+        self.stream = httpResponseOrError
 
-            iobytes.seek(0)
-
-
-        
-        
-            self.status = httpResponseOrError.status
-            self.data = iobytes #. httpResponseOrError.read()
 
     def code(self):
         return self.status
@@ -272,42 +266,106 @@ class MultiPartMixTransformer:
     def __init__(self, frontier, parts):
         self.frontier = frontier
         self.parts = parts
-
-    def encode_parts(self):
+        # self.data = self.encode_parts(parts)
+        self.jsonIter = None
+        self.doneIter = False
+        self.currentPart = 0
+    
+    def init_encode(self, part):
         data = bytearray()
-        for part in self.parts:
-            data.extend("--".encode("utf-8"))
-            data.extend(self.frontier.encode("utf-8"))
-            data.extend([13, 10])
-
-            for key, value in part.headers.items():
-                data.extend(key.encode("utf-8"))
-                data.extend(": ".encode("utf-8"))
-                data.extend(value.encode("utf-8"))
-                data.extend([13, 10])
-
-            data.extend([13, 10])
-            data.extend(part.bytes_data)
-            data.extend([13, 10])
-
         data.extend("--".encode("utf-8"))
         data.extend(self.frontier.encode("utf-8"))
-        data.extend("--".encode("utf-8"))
+        data.extend([13, 10])
+
+        for key, value in part.headers.items():
+            data.extend(key.encode("utf-8"))
+            data.extend(": ".encode("utf-8"))
+
+            data.extend(value.encode("utf-8"))
+            data.extend([13, 10])
+
         data.extend([13, 10])
 
         return data
 
+    def finish_encode(self):
+        data = bytearray()
+        
+        data.extend([13, 10])
 
-def encodeTSON(obj):
+        return data
+
+    def finish_all_encode(self):
+        data = bytearray()
+        data.extend("--".encode("utf-8"))
+        data.extend(self.frontier.encode("utf-8"))
+        data.extend("--".encode("utf-8"))
+        
+        data.extend([13, 10])
+        return data
+
+
+    def encode_part(self,part):
+        data = bytearray()
+        
+
+        data.extend("--".encode("utf-8"))
+        data.extend(self.frontier.encode("utf-8"))
+        data.extend([13, 10])
+
+        for key, value in part.headers.items():
+            data.extend(key.encode("utf-8"))
+            data.extend(": ".encode("utf-8"))
+
+            data.extend(value.encode("utf-8"))
+            data.extend([13, 10])
+
+        data.extend([13, 10])
+        data.extend(part.bytes_data)
+        data.extend([13, 10])
+
+       
+        return data
+
+
+    def __iter__(self):
+        return self
+
+    def __next__(self):
+        if self.currentPart >= len(self.parts) or self.doneIter:
+            if not self.doneIter:
+                self.doneIter = True
+                return self.finish_all_encode()
+            else:
+                raise StopIteration
+        elif isinstance(self.parts[self.currentPart].bytes_data, bytes):
+            self.currentPart = self.currentPart + 1
+            return self.encode_part(self.parts[self.currentPart-1])
+        elif isinstance(self.parts[self.currentPart].bytes_data, dict):
+            if self.jsonIter is None:
+                self.jsonIter = ptson.SerializerJsonIterator(self.parts[self.currentPart].bytes_data)
+                return self.init_encode(self.parts[self.currentPart])
+
+            try:
+                return self.jsonIter.__next__()
+            except StopIteration:
+                self.currentPart = self.currentPart  + 1
+                return self.finish_encode()
+        
+ 
+
+
+#FIXME Has to be a request object!
+def encodeTSON(obj ):
     # tson_bytes = ptson.encodeTSON(obj)
     # tson_bytes.seek(0)
     # encObj = tson_bytes.read()
     return ptson.encodeTSON(obj).getbuffer().tobytes()
 
 
-def decodeTSON(bts):
+def decodeTSON(bts : Response):
     # iobytes = io.BytesIO()
     # iobytes.write(bts)
     # iobytes.seek(0)
     # decodedTson = ptson.decodeTSON(iobytes)
-    return ptson.decodeTSON(bts)
+    return ptson.decodeTSON(bts.stream)

@@ -9,6 +9,11 @@ import uuid
 from tercen.model.base import Table, Column, InMemoryRelation, Relation, SchemaBase, SimpleRelation
 from tercen.model.base import CompositeRelation, JoinOperator, ColumnPair
 
+import collections
+
+# import tercen.util.pytmp as ptmp
+
+
 
 def pandas_to_table(df) -> Table:
     tbl = Table()
@@ -48,27 +53,62 @@ def table_to_pandas(tbl) -> pd.DataFrame:
 
     return df
 
+
+class TercenBytes(collections.Generator):
+    def __init__(self, data):
+        self.chunkSize = 16 * 1024
+        self.c0 = -1 #self.data[0:self.chunkSize]
+        self.cf = -1
+        self.data = data
+
+
+    def __next__(self):
+        if self.c0 == -1:
+            self.c0 = 0 
+            self.cf = self.chunkSize
+        else:
+            self.c0 = self.c0 + self.chunkSize 
+            self.cf = self.cf + self.chunkSize 
+
+        if self.cf > len(self.data):
+            self.cf = len(self.data)
+
+        if self.c0 < self.cf and self.c0 < len(self.data):
+            return  self.data[self.c0:self.cf]
+
+        else:
+            raise StopIteration
+
+    def throw(self, type=None, value=None, traceback=None):
+        raise StopIteration
+
+
 def pandas_to_bytes(df):
     nDigits = 10
     fName = tempfile.gettempdir().join('/')
     fName.join(random.choices(string.ascii_uppercase + string.digits, k=nDigits))
 
     tbl = pandas_to_table( df )
-    
-    # zlib.compress( str.encode( json.dumps(tbl.toJson())) )
-    # tsonObj = ptson.encodeTSON( tbl.toJson() ) 
-    tsonObj = ptson.encodeTSON( tbl.toJson() ) 
-    tblBytes = zlib.compress(tsonObj.getvalue())
 
-    return tblBytes
+    tsonObj = ptson.encodeTSON( tbl.toJson() ) 
+    #tblBytes = zlib.compress(tsonObj.getvalue())
+
+    return tsonObj.getvalue()
 
 
 def bytes_to_pandas( tableBytes ) -> pd.DataFrame:
     dwnTbl = Table()
     
 
-    s = BytesIO(zlib.decompress(tableBytes))
-    dwnTson = ptson.decodeTSON(s)
+    # s = BytesIO(zlib.decompress(tableBytes))
+    # FIXME
+    # Check if this is still necessary
+    # If not, remove
+    # If yes, avoid creating the buffer here.
+    buf = BytesIO()
+    buf.write(tableBytes)
+    buf.seek(0)
+    dwnTson = ptson.decodeTSON(buf)
 
     dwnTbl.fromJson(dwnTson)
 

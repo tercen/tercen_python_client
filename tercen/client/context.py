@@ -2,7 +2,7 @@ import pandas as pd
 import numpy as np
 import multiprocessing, sys
 
-import weakref
+
 import random, string
 from tercen.model.base import OperatorResult, FileDocument, ComputationTask, InitState 
 from tercen.model.base import RunComputationTask, FailedState, Pair, TaskLogEvent, TaskProgressEvent, SimpleRelation, Relation
@@ -12,9 +12,11 @@ from tercen.util import helper_functions as utl
 from tercen.http.HttpClientService import encodeTSON, decodeTSON
 import scipy.sparse as ssp
 
+
+
 class TercenContext:
     def __init__(self, workflowId = None, stepId = None, username = 'test', password = 'test',
-     authToken = None, taskId = None, serviceUri = "http://127.0.0.1:5402/"):
+     authToken = None, taskId = None, serviceUri = "http://127.0.0.1:5400/"):
         
         args = self.parse_args()
 
@@ -157,21 +159,6 @@ class TercenContext:
         return relation
 
  
-    def select_sparse_deprecated(self, wide=False):
-        sdf = ssp.csr_matrix(self.select_deprecated([".y", ".ci", ".ri"]))
-        
-        if wide == True:
-            lines = sdf[:,0].nonzero()[0]
-            y   = sdf[:,0].toarray()[list(lines)].flatten()
-            cols = sdf[:,1].toarray()[list(lines)].flatten()
-            rows = sdf[:,2].toarray()[list(lines)].flatten()
-
-
-            sdf = ssp.csr_matrix((y, (rows, cols)), shape=(int(self.context.rschema.nRows), int(self.context.cschema.nRows)))
-        
-
-        return sdf
-
 
     def select_sparse(self, wide=False):
         sdf = ssp.csr_matrix(self.select([".y", ".ci", ".ri"]))
@@ -199,66 +186,18 @@ class TercenContext:
 
         # tbl_bytes = super().selectStream(tableId, cnames, offset, limit)
         # answer = tercen.model.base.TableBase.createFromJson(decodeTSON(tbl_bytes))
-
+        import time
+        t1 = time.time()
         res = self.context.client.tableSchemaService.selectStream(self.context.schema.id, names, offset, nr)
+        t2 = time.time()
         answer = TableBase.createFromJson(decodeTSON(res))
+        t3 = time.time()
         df = utl.table_to_pandas(answer)
 
         return df
 
     def select(self, names=[], offset=0, nr=None) -> pd.DataFrame:
         return self.select_stream(names, offset=0, nr=None)
-
-
-    def select_deprecated(self, names=[], offset=0, nr=None) -> pd.DataFrame:
-        if not nr is None and nr < 0:
-            nr = None
-
-        if( names is None or len(names) == 0 or (len(names) == 1 and names[0] == '' )):
-            where = utl.logical_index([ c.type != 'uint64' and c.type != 'int64' for c in self.context.schema.columns ])
-            names = [ c.name for c in utl.get_from_idx_list( self.context.schema.columns, where) ]
-
-        df = pd.DataFrame()
-
-        if self.context.schema.nRows <= 50000:
-            if( self.context.isPairwise ):
-                res = self.context.client.tableSchemaService.selectPairwise(  self.context.schema.id, names, offset, nr)
-            else:
-                res = self.context.client.tableSchemaService.select(  self.context.schema.id, names, offset, nr)
-
-
-            for c in res.columns:
-                df[c.name] = c.values
-        else:
-            # res = self.client.tableSchemaService.select(  schema.id, names, offset, nr)
-            offset = 0
-            nr = 150000
-            chunkSize = nr
-            hasMoreChunks = True
-
-            while hasMoreChunks:
-                if (offset + nr) > self.context.schema.nRows:
-                    hasMoreChunks = False
-
-                    nr = self.context.schema.nRows - offset 
-
-                if( self.context.isPairwise ):
-                    res = self.context.client.tableSchemaService.selectPairwise(  self.context.schema.id, names, offset, nr)
-                else:
-                    res = self.context.client.tableSchemaService.select(  self.context.schema.id, names, offset, nr)
-
-                chunkDf = pd.DataFrame()
-                for c in res.columns:
-                    chunkDf[c.name] = c.values
-
-                if offset == 0:
-                    df = chunkDf
-                else:
-                    df = pd.concat([df, chunkDf], ignore_index=True)
-
-                offset = offset + chunkSize 
-
-        return df
 
     def cselect(self, names=[], offset=0, nr=None) -> pd.DataFrame:
         if not nr is None and nr < 0:
@@ -534,21 +473,24 @@ class OperatorContextDev(TercenContext):
 
         # FIXME Model within the step not always has the taskId, leading to error during dev,
         #         
-        # stp = None
-        # for s in wkf.steps:
-        #     if s.id == stepId:
-        #         stp = s
-        #         break
+        stp = None
+        for s in wkf.steps:
+            if s.id == stepId:
+                stp = s
+                break
 
         
-        # if stp is None:
-        #     raise "Step not found"
+        if stp is None:
+            raise "Step not found"
 
         
-        # task = self.client.taskService.get(stp.model.taskId)
-        # self.cubeQuery  = task.query
+        if stp.model.taskId == '':
+            self.cubeQuery = self.client.workflowService.getCubeQuery(workflowId, stepId)
+        else:
+            task = self.client.taskService.get(stp.model.taskId)
+            self.cubeQuery  = task.query
 
-        self.cubeQuery = self.client.workflowService.getCubeQuery(workflowId, stepId)
+        
 
         self.schema = self.client.tableSchemaService.findByQueryHash( keys=[self.cubeQuery.qtHash] )
         self.cschema = self.client.tableSchemaService.findByQueryHash( keys=[self.cubeQuery.columnHash] )
@@ -622,7 +564,7 @@ class OperatorContextDev(TercenContext):
             else:
                 result.tables = [ utl.pandas_to_table(df)]
         
-        resultBytes = encodeTSON( result.toJson() )
+        #resultBytes = encodeTSON( result.toJson() )
 
         fileDoc = FileDocument()
         fileDoc.name = 'result'
@@ -632,7 +574,7 @@ class OperatorContextDev(TercenContext):
         fileDoc.metadata.contentType = 'application/octet-stream'
 
         
-        fileDoc = self.client.fileService.upload( fileDoc, resultBytes )
+        fileDoc = self.client.fileService.uploadTable( fileDoc, result.toJson() )
 
         task = None 
         if task is None:

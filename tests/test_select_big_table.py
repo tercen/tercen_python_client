@@ -15,11 +15,7 @@ import tercen.util.builder as bld
 class TestTercen(unittest.TestCase):
     def setUp(self):
         envs = os.environ
-        if 'TERCEN_USERNAME' in envs:
-            username = envs['TERCEN_USERNAME']
-        else:
-            username = None
-
+        isLocal = False
         if 'TERCEN_PASSWORD' in envs:
             passw = envs['TERCEN_PASSWORD']
         else:
@@ -29,14 +25,28 @@ class TestTercen(unittest.TestCase):
             serviceUri = envs['TERCEN_URI']
         else:
             serviceUri = None
+        if 'TERCEN_USERNAME' in envs:
+            username = envs['TERCEN_USERNAME']
+        else:
+            isLocal = True
+            username = 'test'
+            passw = 'test'
+            conf = {}
+            with open("./tests/test_env.conf") as f:
+                for line in f:
+                    if len(line.strip()) > 0:
+                        (key, val) = line.split(sep="=")
+                        conf[str(key)] = str(val).strip()
+            
+            serviceUri = ''.join([conf["SERVICE_URL"], ":", conf["SERVICE_PORT"]])
 
-        self.nRows = 10000000
+        self.nRows = 100000
 
         self.data = pd.DataFrame( {'Values':range(0,self.nRows), 
                 "Columns":range(0,self.nRows),
                 "Rows":range(0,self.nRows)}  )
 
-        self.wkfBuilder = bld.WorkflowBuilder()
+        self.wkfBuilder = bld.WorkflowBuilder(username=username, password=passw, serviceUri=serviceUri)
         self.wkfBuilder.create_workflow( 'python_auto_project', 'python_workflow')
         self.wkfBuilder.add_table_step( self.data )
         self.wkfBuilder.add_data_step(yAxis={"name":"Values", "type":"double"}, 
@@ -45,18 +55,12 @@ class TestTercen(unittest.TestCase):
 
 
         
-        if username is None: # Running locally
-            self.context = ctx.TercenContext(
-                            stepId=self.wkfBuilder.workflow.steps[1].id,
-                            workflowId=self.wkfBuilder.workflow.id,
-                            serviceUri = "http://127.0.0.1:5402/")
-        else: # Running from Github Actions
-            self.context = ctx.TercenContext(
-                            username=username,
-                            password=passw,
-                            serviceUri=serviceUri,
-                            stepId=self.wkfBuilder.workflow.steps[1].id,
-                            workflowId=self.wkfBuilder.workflow.id)
+        self.context = ctx.TercenContext(
+                        username=username,
+                        password=passw,
+                        serviceUri=serviceUri,
+                        stepId=self.wkfBuilder.workflow.steps[1].id,
+                        workflowId=self.wkfBuilder.workflow.id)
 
         self.addCleanup(self.clear_workflow)
         
@@ -83,7 +87,7 @@ class TestTercen(unittest.TestCase):
         
         
         assert( not resDf is None )
-        assert( resDf.shape[0] == self.nRows)
+        assert( resDf.shape[0] == self.nRows) 
         
         np.testing.assert_array_equal(resDf[".y"],  self.data["Values"])
 

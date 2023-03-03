@@ -17,8 +17,18 @@ from tercen.model.base import Project, FileDocument, CSVTask, InitState, DoneSta
 
 class TestTercen(unittest.TestCase):
     def setUp(self):
-        self.client = TercenClient("http://127.0.0.1:5402/")
-        self.client.userService.connect('test', 'test')
+        username = 'test'
+        passw = 'test'
+        conf = {}
+        with open("./tests/test_env.conf") as f:
+            for line in f:
+                if len(line.strip()) > 0:
+                    (key, val) = line.split(sep="=")
+                    conf[str(key)] = str(val).strip()
+
+        serviceUri = ''.join([conf["SERVICE_URL"], ":", conf["SERVICE_PORT"]])
+        self.client = TercenClient(serviceUri)
+        self.client.userService.connect(username, passw)
 
         self.data = self.create_data()
 
@@ -67,7 +77,7 @@ class TestTercen(unittest.TestCase):
         fileDoc.name = "input_datatable"
         fileDoc.projectId = self.project.id
         fileDoc.acl.owner = self.project.acl.owner
-        fileDoc.metadata.contentEncoding = "gzip"
+        fileDoc.metadata.contentEncoding = "application/octet-stream"
 
         fileDoc = self.client.fileService.upload(fileDoc, dfBytes)
 
