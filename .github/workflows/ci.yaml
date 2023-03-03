@@ -26,15 +26,15 @@ jobs:
       - uses: actions/checkout@v2
       - uses: tercen/actions/start-tercen@0.2.6 #main
       # - uses: tercen/actions@0.1.1 
-      #- name: Check open port
-      #  run: bash wait_conn.sh 127.0.0.1 5402
-      - uses: nrukavkov/open-ports-check-action@v1
-        with:
-          port: 5400
-          host: '127.0.0.1'
-          pause: 2000
-          needFail: 'true'
-          reverse: 'false'
+      - name: Check open port
+        run: bash wait_conn.sh 127.0.0.1 5400
+      # - uses: nrukavkov/open-ports-check-action@v1
+      #   with:
+      #     port: 5400
+      #     host: '127.0.0.1'
+      #     pause: 2000
+      #     needFail: 'true'
+      #     reverse: 'false'
       - name: Install client dependencies
         run: |
           python3 -m pip install --upgrade pip
