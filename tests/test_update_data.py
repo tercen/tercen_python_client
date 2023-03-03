@@ -1,12 +1,9 @@
-import cProfile, pstats, io
-from pstats import SortKey
-
 import unittest
 import os 
 
 from tercen.client import context as ctx
 import tercen.util.builder as bld
-import memunit
+
 import numpy.testing as npt
 
 class TestTercen(unittest.TestCase):
@@ -70,7 +67,6 @@ class TestTercen(unittest.TestCase):
 
     # 112.5    
     # @memunit.assert_mb
-    # TODO running forever, check the multipart iterator to see what is going on
     def test_save(self) -> None:
         df = self.context.select(['.y', '.ci', '.ri'])
 

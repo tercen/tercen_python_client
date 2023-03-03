@@ -5,12 +5,12 @@ setup(
     version='0.3.3',
     packages=find_packages(exclude=['tests']),
     install_requires=[
-        'numpy==1.23.5',
-        'pandas==1.1.5',
-        'python-dateutil==2.8.2',
+        'numpy==1.23.*',
+        'pandas==1.1.*',
+        'python-dateutil==2.8.*',
         'pytz==2022.6',
-        'scipy==1.10.0',
-        'pytson @ git+https://github.com/tercen/pytson@1.6.3#egg=pytson'
+        'scipy==1.10.*',
+        'pytson @ git+https://github.com/tercen/pytson@1.7.6#egg=pytson'
     ],
 
 

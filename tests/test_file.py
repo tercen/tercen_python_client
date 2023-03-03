@@ -2,7 +2,6 @@ import unittest
 from tercen.client.factory import TercenClient
 from tercen.model.base import FileDocument, Project
 
-import memunit
 import pandas as pd
 import tercen.util.helper_functions as utl
 
