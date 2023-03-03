@@ -9,8 +9,6 @@ import uuid
 from tercen.model.base import Table, Column, InMemoryRelation, Relation, SchemaBase, SimpleRelation
 from tercen.model.base import CompositeRelation, JoinOperator, ColumnPair
 
-import collections
-
 # import tercen.util.pytmp as ptmp
 
 
@@ -54,7 +52,7 @@ def table_to_pandas(tbl) -> pd.DataFrame:
     return df
 
 
-class TercenBytes(collections.Generator):
+class TercenBytes():
     def __init__(self, data):
         self.chunkSize = 16 * 1024
         self.c0 = -1 #self.data[0:self.chunkSize]
