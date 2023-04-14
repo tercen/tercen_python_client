@@ -87,6 +87,11 @@ class TercenContext:
         result = self.__save_relation(object)
         self.save(result)
         
+    def get_crelation( self ) -> Relation:
+        return utl.as_relation( self.context.cschema )
+
+    def get_rrelation( self ) -> Relation:
+        return utl.as_relation( self.context.rschema )
 
     def __save_relation( self, object ) -> Relation:
         self.tables = []
@@ -186,12 +191,11 @@ class TercenContext:
 
         # tbl_bytes = super().selectStream(tableId, cnames, offset, limit)
         # answer = tercen.model.base.TableBase.createFromJson(decodeTSON(tbl_bytes))
-        import time
-        t1 = time.time()
+
         res = self.context.client.tableSchemaService.selectStream(self.context.schema.id, names, offset, nr)
-        t2 = time.time()
+
         answer = TableBase.createFromJson(decodeTSON(res))
-        t3 = time.time()
+
         df = utl.table_to_pandas(answer)
 
         return df
@@ -471,8 +475,6 @@ class OperatorContextDev(TercenContext):
         # self.cubeQuery = self.client.workflowService.getCubeQuery(workflowId, stepId)
         wkf = self.client.workflowService.get(workflowId)
 
-        # FIXME Model within the step not always has the taskId, leading to error during dev,
-        #         
         stp = None
         for s in wkf.steps:
             if s.id == stepId:
