@@ -39,7 +39,11 @@ class WorkflowBuilder():
         if workflowName is None:
             workflowName = ''.joint(['python_workflow_', self.__randomString(4)])
 
-        projects = self.client.projectService.findByIsPublicAndLastModifiedDate('2000', None)
+        start_key = ["test", False, "2035"]
+        end_key = ["test", False, ""]
+        projects = self.client.projectService.findByTeamAndIsPublicAndLastModifiedDate(start_key, end_key)
+
+        # projects = self.client.projectService.findByIsPublicAndLastModifiedDate([True, '2000'], None)
 
         self.proj = None
         for p in projects:

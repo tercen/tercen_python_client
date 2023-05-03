@@ -392,9 +392,9 @@ class OperatorContext(TercenContext):
         self.cubeQuery = self.task.query
         
 
-        self.schema = self.client.tableSchemaService.findByQueryHash( keys=[self.cubeQuery.qtHash] )[0]
-        self.cschema = self.client.tableSchemaService.findByQueryHash( keys=[self.cubeQuery.columnHash] )[0]
-        self.rschema = self.client.tableSchemaService.findByQueryHash( keys=[self.cubeQuery.rowHash] )[0]
+        self.schema = self.client.tableSchemaService.get( self.cubeQuery.qtHash )
+        self.cschema = self.client.tableSchemaService.get( self.cubeQuery.columnHash)
+        self.rschema = self.client.tableSchemaService.get( self.cubeQuery.rowHash )
 
         self.names = [col.name for col in self.schema.columns] 
         self.cnames = [col.name for col in self.cschema.columns] 
@@ -496,23 +496,21 @@ class OperatorContextDev(TercenContext):
             task = self.client.taskService.get(stp.model.taskId)
             self.cubeQuery  = task.query
 
-        
+        self.schema = self.client.tableSchemaService.get( self.cubeQuery.qtHash)
+        self.cschema = self.client.tableSchemaService.get(self.cubeQuery.columnHash )
+        self.rschema = self.client.tableSchemaService.get( self.cubeQuery.rowHash )
 
-        self.schema = self.client.tableSchemaService.findByQueryHash( keys=[self.cubeQuery.qtHash] )
-        self.cschema = self.client.tableSchemaService.findByQueryHash( keys=[self.cubeQuery.columnHash] )
-        self.rschema = self.client.tableSchemaService.findByQueryHash( keys=[self.cubeQuery.rowHash] )
+        hasCSchema = True
+        hasRSchema = True
 
-        hasCSchema = False
-        hasRSchema = False
-
-        if len(self.schema) > 0:
-            self.schema = self.schema[0]
-        if len(self.cschema) > 0:
-            self.cschema = self.cschema[0]
-            hasCSchema = True
-        if len(self.rschema) > 0:
-            self.rschema = self.rschema[0]
-            hasRSchema = True
+        # if len(self.schema) > 0:
+        #     self.schema = self.schema[0]
+        # if len(self.cschema) > 0:
+        #     self.cschema = self.cschema[0]
+        #     hasCSchema = True
+        # if len(self.rschema) > 0:
+        #     self.rschema = self.rschema[0]
+        #     hasRSchema = True
 
         # self.schema = self.client.tableSchemaService.findByQueryHash( keys=[self.cubeQuery.qtHash] )[0]
         # self.cschema = self.client.tableSchemaService.findByQueryHash( keys=[self.cubeQuery.columnHash] )[0]

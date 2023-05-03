@@ -33,6 +33,8 @@ class SciObjectBase(BaseObject):
             return StringProperty(m)
         if kind == Vocabulary.BooleanProperty_CLASS:
             return BooleanProperty(m)
+        if kind == Vocabulary.AnnotationOperatorModel_CLASS:
+            return AnnotationOperatorModel(m)
         if kind == Vocabulary.NamedFilter_CLASS:
             return NamedFilter(m)
         if kind == Vocabulary.Filter_CLASS:
@@ -63,6 +65,8 @@ class SciObjectBase(BaseObject):
             return TableProfile(m)
         if kind == Vocabulary.ApiCallProfile_CLASS:
             return ApiCallProfile(m)
+        if kind == Vocabulary.TableRelation_CLASS:
+            return TableRelation(m)
         if kind == Vocabulary.ReferenceRelation_CLASS:
             return ReferenceRelation(m)
         if kind == Vocabulary.WhereRelation_CLASS:
@@ -117,6 +121,8 @@ class SciObjectBase(BaseObject):
             return OutputPort(m)
         if kind == Vocabulary.GarbageTasks_CLASS:
             return GarbageTasks(m)
+        if kind == Vocabulary.GarbageTasks2_CLASS:
+            return GarbageTasks2(m)
         if kind == Vocabulary.Team_CLASS:
             return Team(m)
         if kind == Vocabulary.RSourceLibrary_CLASS:
@@ -185,6 +191,8 @@ class SciObjectBase(BaseObject):
             return ImportWorkflowTask(m)
         if kind == Vocabulary.TestOperatorTask_CLASS:
             return TestOperatorTask(m)
+        if kind == Vocabulary.ImportGitDatasetTask_CLASS:
+            return ImportGitDatasetTask(m)
         if kind == Vocabulary.RunWorkflowTask_CLASS:
             return RunWorkflowTask(m)
         if kind == Vocabulary.RunWebAppTask_CLASS:
@@ -305,6 +313,8 @@ class SciObjectBase(BaseObject):
             return Token(m)
         if kind == Vocabulary.JoinOperator_CLASS:
             return JoinOperator(m)
+        if kind == Vocabulary.OperatorModel_CLASS:
+            return OperatorModel(m)
         if kind == Vocabulary.CrosstabTable_CLASS:
             return CrosstabTable(m)
         if kind == Vocabulary.XYAxisList_CLASS:
@@ -373,6 +383,10 @@ class SciObjectBase(BaseObject):
             return ColorList(m)
         if kind == Vocabulary.SearchResult_CLASS:
             return SearchResult(m)
+        if kind == Vocabulary.PreProcessor_CLASS:
+            return PreProcessor(m)
+        if kind == Vocabulary.AnnotationModel_CLASS:
+            return AnnotationModel(m)
         if kind == Vocabulary.ColorElement_CLASS:
             return ColorElement(m)
         if kind == Vocabulary.Properties_CLASS:
@@ -447,6 +461,8 @@ class IdObjectBase(SciObject):
         kind = m.get(Vocabulary.KIND)
         if kind == Vocabulary.IdObject_CLASS:
             return IdObject(m)
+        if kind == Vocabulary.TableRelation_CLASS:
+            return TableRelation(m)
         if kind == Vocabulary.ReferenceRelation_CLASS:
             return ReferenceRelation(m)
         if kind == Vocabulary.WhereRelation_CLASS:
@@ -501,6 +517,8 @@ class IdObjectBase(SciObject):
             return OutputPort(m)
         if kind == Vocabulary.GarbageTasks_CLASS:
             return GarbageTasks(m)
+        if kind == Vocabulary.GarbageTasks2_CLASS:
+            return GarbageTasks2(m)
         if kind == Vocabulary.Team_CLASS:
             return Team(m)
         if kind == Vocabulary.RSourceLibrary_CLASS:
@@ -569,6 +587,8 @@ class IdObjectBase(SciObject):
             return ImportWorkflowTask(m)
         if kind == Vocabulary.TestOperatorTask_CLASS:
             return TestOperatorTask(m)
+        if kind == Vocabulary.ImportGitDatasetTask_CLASS:
+            return ImportGitDatasetTask(m)
         if kind == Vocabulary.RunWorkflowTask_CLASS:
             return RunWorkflowTask(m)
         if kind == Vocabulary.RunWebAppTask_CLASS:
@@ -668,6 +688,8 @@ class PersistentObjectBase(IdObject):
             return PersistentObject(m)
         if kind == Vocabulary.GarbageTasks_CLASS:
             return GarbageTasks(m)
+        if kind == Vocabulary.GarbageTasks2_CLASS:
+            return GarbageTasks2(m)
         if kind == Vocabulary.Team_CLASS:
             return Team(m)
         if kind == Vocabulary.RSourceLibrary_CLASS:
@@ -736,6 +758,8 @@ class PersistentObjectBase(IdObject):
             return ImportWorkflowTask(m)
         if kind == Vocabulary.TestOperatorTask_CLASS:
             return TestOperatorTask(m)
+        if kind == Vocabulary.ImportGitDatasetTask_CLASS:
+            return ImportGitDatasetTask(m)
         if kind == Vocabulary.RunWorkflowTask_CLASS:
             return RunWorkflowTask(m)
         if kind == Vocabulary.RunWebAppTask_CLASS:
@@ -1309,8 +1333,8 @@ class RelationBase(IdObject):
         else:
             super().__init__(m)
 
-    def get_rids(self):
-        return ''.join((self.id, "._rids"))
+    # def get_rids(self):
+    #     return ''.join((self.id, "._rids"))
 
     def fromJson(self, m):
         super().fromJson(m)
@@ -1323,6 +1347,8 @@ class RelationBase(IdObject):
         kind = m.get(Vocabulary.KIND)
         if kind == Vocabulary.Relation_CLASS:
             return Relation(m)
+        if kind == Vocabulary.TableRelation_CLASS:
+            return TableRelation(m)
         if kind == Vocabulary.ReferenceRelation_CLASS:
             return ReferenceRelation(m)
         if kind == Vocabulary.WhereRelation_CLASS:
@@ -1744,6 +1770,8 @@ class GarbageObjectBase(PersistentObject):
             return GarbageObject(m)
         if kind == Vocabulary.GarbageTasks_CLASS:
             return GarbageTasks(m)
+        if kind == Vocabulary.GarbageTasks2_CLASS:
+            return GarbageTasks2(m)
         raise ValueError("bad kind : " + kind +
                          " for class GarbageObject in createFromJson")
 
@@ -2930,6 +2958,7 @@ class CubeAxisQueryBase(BaseObject):
             self.errors = list()
             self.labels = list()
             self.colors = list()
+            self.preprocessors = list()
         else:
             self.fromJson(m)
 
@@ -2976,6 +3005,12 @@ class CubeAxisQueryBase(BaseObject):
             self.colors = list()
             for o in m.get(Vocabulary.colors_OP):
                 self.colors.append(FactorBase.createFromJson(o))
+        if m.get(Vocabulary.preprocessors_OP) is None:
+            self.preprocessors = list()
+        else:
+            self.preprocessors = list()
+            for o in m.get(Vocabulary.preprocessors_OP):
+                self.preprocessors.append(PreProcessorBase.createFromJson(o))
 
     @classmethod
     def createFromJson(cls, m):
@@ -3001,6 +3036,8 @@ class CubeAxisQueryBase(BaseObject):
         m[Vocabulary.errors_OP] = list(map(lambda x: x.toJson(), self.errors))
         m[Vocabulary.labels_OP] = list(map(lambda x: x.toJson(), self.labels))
         m[Vocabulary.colors_OP] = list(map(lambda x: x.toJson(), self.colors))
+        m[Vocabulary.preprocessors_OP] = list(
+            map(lambda x: x.toJson(), self.preprocessors))
         return m
 
 
@@ -3335,6 +3372,8 @@ class TaskBase(PersistentObject):
             return ImportWorkflowTask(m)
         if kind == Vocabulary.TestOperatorTask_CLASS:
             return TestOperatorTask(m)
+        if kind == Vocabulary.ImportGitDatasetTask_CLASS:
+            return ImportGitDatasetTask(m)
         if kind == Vocabulary.RunWorkflowTask_CLASS:
             return RunWorkflowTask(m)
         if kind == Vocabulary.RunWebAppTask_CLASS:
@@ -3416,6 +3455,8 @@ class ProjectTaskBase(Task):
             return ImportWorkflowTask(m)
         if kind == Vocabulary.TestOperatorTask_CLASS:
             return TestOperatorTask(m)
+        if kind == Vocabulary.ImportGitDatasetTask_CLASS:
+            return ImportGitDatasetTask(m)
         if kind == Vocabulary.RunWorkflowTask_CLASS:
             return RunWorkflowTask(m)
         if kind == Vocabulary.RunWebAppTask_CLASS:
@@ -3641,6 +3682,7 @@ class JoinOperatorBase(SciObject):
     def __init__(self, m=None):
         if m is None:
             super().__init__(m)
+            self.joinType = ""
             self.leftPair = ColumnPair()
             self.rightRelation = Relation()
         else:
@@ -3651,6 +3693,7 @@ class JoinOperatorBase(SciObject):
         self.subKind = m.get(Vocabulary.SUBKIND)
         if self.subKind is None and m.get(Vocabulary.KIND) != Vocabulary.JoinOperator_CLASS:
             self.subKind = m.get(Vocabulary.KIND)
+        self.joinType = m[Vocabulary.joinType_DP]
         if m.get(Vocabulary.leftPair_OP) is None:
             self.leftPair = ColumnPair()
         else:
@@ -3677,12 +3720,52 @@ class JoinOperatorBase(SciObject):
             m[Vocabulary.SUBKIND] = self.subKind
         else:
             m.pop(Vocabulary.SUBKIND, None)
+        m[Vocabulary.joinType_DP] = self.joinType
         m[Vocabulary.leftPair_OP] = self.leftPair if self.leftPair is None else self.leftPair.toJson()
         m[Vocabulary.rightRelation_OP] = self.rightRelation if self.rightRelation is None else self.rightRelation.toJson()
         return m
 
 
 class JoinOperator(JoinOperatorBase):
+    def __init__(self, m=None):
+        super().__init__(m)
+
+
+class OperatorModelBase(SciObject):
+    def __init__(self, m=None):
+        if m is not None:
+            self.fromJson(m)
+
+        else:
+            super().__init__(m)
+
+    def fromJson(self, m):
+        super().fromJson(m)
+        self.subKind = m.get(Vocabulary.SUBKIND)
+        if self.subKind is None and m.get(Vocabulary.KIND) != Vocabulary.OperatorModel_CLASS:
+            self.subKind = m.get(Vocabulary.KIND)
+
+    @classmethod
+    def createFromJson(cls, m):
+        kind = m.get(Vocabulary.KIND)
+        if kind == Vocabulary.OperatorModel_CLASS:
+            return OperatorModel(m)
+        if kind == Vocabulary.AnnotationOperatorModel_CLASS:
+            return AnnotationOperatorModel(m)
+        raise ValueError("bad kind : " + kind +
+                         " for class OperatorModel in createFromJson")
+
+    def toJson(self):
+        m = super().toJson()
+        m[Vocabulary.KIND] = Vocabulary.OperatorModel_CLASS
+        if self.subKind is not None and self.subKind != Vocabulary.OperatorModel_CLASS:
+            m[Vocabulary.SUBKIND] = self.subKind
+        else:
+            m.pop(Vocabulary.SUBKIND, None)
+        return m
+
+
+class OperatorModel(OperatorModelBase):
     def __init__(self, m=None):
         super().__init__(m)
 
@@ -4506,36 +4589,6 @@ class ComputationTaskBase(CubeQueryTask):
         else:
             self.fromJson(m)
 
-    # def subclassHierarchy( self, baseClass ):
-    #     classes = [baseClass]
-
-    #     sc = baseClass.__subclasses__()
-
-    #     if sc == None or len(sc) == 0:
-    #         return classes
-    #     else:
-    #         for cls in sc:
-    #             subClasses = self.subclassHierarchy(cls)
-
-    #             for cc in subClasses:
-    #                 classes.append( cc )
-
-    #         return classes
-
-
-    # def specificClassFromJsonTask( self, m):
-    #     className = m['kind']
-    #     subclasses = self.subclassHierarchy( Relation )
-
-    #     klass = None
-    #     for cl in subclasses:
-    #         if cl.__name__ == className:
-    #             klass = cl
-    #             break
-    #     newObj = klass(m)
-
-    #     return newObj
-
     def fromJson(self, m):
         super().fromJson(m)
         self.subKind = m.get(Vocabulary.SUBKIND)
@@ -4546,8 +4599,6 @@ class ComputationTaskBase(CubeQueryTask):
         if m.get(Vocabulary.computedRelation_OP) is None:
             self.computedRelation = Relation()
         else:
-
-            # self.computedRelation = self.specificClassFromJsonTask(m.get(Vocabulary.computedRelation_OP))
             self.computedRelation = RelationBase.createFromJson(
                 m.get(Vocabulary.computedRelation_OP))
 
@@ -5230,6 +5281,109 @@ class JetPalette(JetPaletteBase):
         super().__init__(m)
 
 
+class SimpleRelationBase(Relation):
+    def __init__(self, m=None):
+        if m is None:
+            super().__init__(m)
+            self.index = 0
+        else:
+            self.fromJson(m)
+
+    def fromJson(self, m):
+        super().fromJson(m)
+        self.subKind = m.get(Vocabulary.SUBKIND)
+        if self.subKind is None and m.get(Vocabulary.KIND) != Vocabulary.SimpleRelation_CLASS:
+            self.subKind = m.get(Vocabulary.KIND)
+        self.index = m[Vocabulary.index_DP]
+
+    @classmethod
+    def createFromJson(cls, m):
+        kind = m.get(Vocabulary.KIND)
+        if kind == Vocabulary.SimpleRelation_CLASS:
+            return SimpleRelation(m)
+        if kind == Vocabulary.TableRelation_CLASS:
+            return TableRelation(m)
+        if kind == Vocabulary.ReferenceRelation_CLASS:
+            return ReferenceRelation(m)
+        raise ValueError("bad kind : " + kind +
+                         " for class SimpleRelation in createFromJson")
+
+    def toJson(self):
+        m = super().toJson()
+        m[Vocabulary.KIND] = Vocabulary.SimpleRelation_CLASS
+        if self.subKind is not None and self.subKind != Vocabulary.SimpleRelation_CLASS:
+            m[Vocabulary.SUBKIND] = self.subKind
+        else:
+            m.pop(Vocabulary.SUBKIND, None)
+        m[Vocabulary.index_DP] = self.index
+        return m
+
+
+class SimpleRelation(SimpleRelationBase):
+    def __init__(self, m=None):
+        super().__init__(m)
+
+
+class TableRelationBase(SimpleRelation):
+    def __init__(self, m=None):
+        if m is None:
+            super().__init__(m)
+            self.nRows = 0
+            self.data_dir = ""
+            self.meta_data = list()
+            self.attributes = list()
+        else:
+            self.fromJson(m)
+
+    def fromJson(self, m):
+        super().fromJson(m)
+        self.subKind = m.get(Vocabulary.SUBKIND)
+        if self.subKind is None and m.get(Vocabulary.KIND) != Vocabulary.TableRelation_CLASS:
+            self.subKind = m.get(Vocabulary.KIND)
+        self.nRows = m[Vocabulary.nRows_DP]
+        self.data_dir = m[Vocabulary.data_dir_DP]
+        if m.get(Vocabulary.meta_data_OP) is None:
+            self.meta_data = list()
+        else:
+            self.meta_data = list()
+            for o in m.get(Vocabulary.meta_data_OP):
+                self.meta_data.append(PairBase.createFromJson(o))
+        if m.get(Vocabulary.attributes_OP) is None:
+            self.attributes = list()
+        else:
+            self.attributes = list()
+            for o in m.get(Vocabulary.attributes_OP):
+                self.attributes.append(AttributeBase.createFromJson(o))
+
+    @classmethod
+    def createFromJson(cls, m):
+        kind = m.get(Vocabulary.KIND)
+        if kind == Vocabulary.TableRelation_CLASS:
+            return TableRelation(m)
+        raise ValueError("bad kind : " + kind +
+                         " for class TableRelation in createFromJson")
+
+    def toJson(self):
+        m = super().toJson()
+        m[Vocabulary.KIND] = Vocabulary.TableRelation_CLASS
+        if self.subKind is not None and self.subKind != Vocabulary.TableRelation_CLASS:
+            m[Vocabulary.SUBKIND] = self.subKind
+        else:
+            m.pop(Vocabulary.SUBKIND, None)
+        m[Vocabulary.meta_data_OP] = list(
+            map(lambda x: x.toJson(), self.meta_data))
+        m[Vocabulary.nRows_DP] = self.nRows
+        m[Vocabulary.data_dir_DP] = self.data_dir
+        m[Vocabulary.attributes_OP] = list(
+            map(lambda x: x.toJson(), self.attributes))
+        return m
+
+
+class TableRelation(TableRelationBase):
+    def __init__(self, m=None):
+        super().__init__(m)
+
+
 class DateBase(SciObject):
     def __init__(self, m=None):
         if m is None:
@@ -5608,6 +5762,7 @@ class XYAxisBase(SciObject):
             self.labels = Labels()
             self.xAxis = Axis()
             self.yAxis = Axis()
+            self.preprocessors = list()
         else:
             self.fromJson(m)
 
@@ -5644,6 +5799,12 @@ class XYAxisBase(SciObject):
             self.yAxis = Axis()
         else:
             self.yAxis = AxisBase.createFromJson(m.get(Vocabulary.yAxis_OP))
+        if m.get(Vocabulary.preprocessors_OP) is None:
+            self.preprocessors = list()
+        else:
+            self.preprocessors = list()
+            for o in m.get(Vocabulary.preprocessors_OP):
+                self.preprocessors.append(PreProcessorBase.createFromJson(o))
 
     @classmethod
     def createFromJson(cls, m):
@@ -5667,6 +5828,8 @@ class XYAxisBase(SciObject):
         m[Vocabulary.xAxis_OP] = self.xAxis if self.xAxis is None else self.xAxis.toJson()
         m[Vocabulary.yAxis_OP] = self.yAxis if self.yAxis is None else self.yAxis.toJson()
         m[Vocabulary.taskId_DP] = self.taskId
+        m[Vocabulary.preprocessors_OP] = list(
+            map(lambda x: x.toJson(), self.preprocessors))
         return m
 
 
@@ -6086,47 +6249,6 @@ class ImportGitWorkflowTaskBase(ImportWorkflowTask):
 
 
 class ImportGitWorkflowTask(ImportGitWorkflowTaskBase):
-    def __init__(self, m=None):
-        super().__init__(m)
-
-
-class SimpleRelationBase(Relation):
-    def __init__(self, m=None):
-        if m is None:
-            super().__init__(m)
-            self.index = 0
-        else:
-            self.fromJson(m)
-
-    def fromJson(self, m):
-        super().fromJson(m)
-        self.subKind = m.get(Vocabulary.SUBKIND)
-        if self.subKind is None and m.get(Vocabulary.KIND) != Vocabulary.SimpleRelation_CLASS:
-            self.subKind = m.get(Vocabulary.KIND)
-        self.index = m[Vocabulary.index_DP]
-
-    @classmethod
-    def createFromJson(cls, m):
-        kind = m.get(Vocabulary.KIND)
-        if kind == Vocabulary.SimpleRelation_CLASS:
-            return SimpleRelation(m)
-        if kind == Vocabulary.ReferenceRelation_CLASS:
-            return ReferenceRelation(m)
-        raise ValueError("bad kind : " + kind +
-                         " for class SimpleRelation in createFromJson")
-
-    def toJson(self):
-        m = super().toJson()
-        m[Vocabulary.KIND] = Vocabulary.SimpleRelation_CLASS
-        if self.subKind is not None and self.subKind != Vocabulary.SimpleRelation_CLASS:
-            m[Vocabulary.SUBKIND] = self.subKind
-        else:
-            m.pop(Vocabulary.SUBKIND, None)
-        m[Vocabulary.index_DP] = self.index
-        return m
-
-
-class SimpleRelation(SimpleRelationBase):
     def __init__(self, m=None):
         super().__init__(m)
 
@@ -6700,6 +6822,57 @@ class Worker(WorkerBase):
         super().__init__(m)
 
 
+class ImportGitDatasetTaskBase(ProjectTask):
+    def __init__(self, m=None):
+        if m is None:
+            super().__init__(m)
+            self.version = ""
+            self.gitToken = ""
+            self.schemaId = ""
+            self.url = Url()
+        else:
+            self.fromJson(m)
+
+    def fromJson(self, m):
+        super().fromJson(m)
+        self.subKind = m.get(Vocabulary.SUBKIND)
+        if self.subKind is None and m.get(Vocabulary.KIND) != Vocabulary.ImportGitDatasetTask_CLASS:
+            self.subKind = m.get(Vocabulary.KIND)
+        self.version = m[Vocabulary.version_DP]
+        self.gitToken = m[Vocabulary.gitToken_DP]
+        self.schemaId = m[Vocabulary.schemaId_DP]
+        if m.get(Vocabulary.url_OP) is None:
+            self.url = Url()
+        else:
+            self.url = UrlBase.createFromJson(m.get(Vocabulary.url_OP))
+
+    @classmethod
+    def createFromJson(cls, m):
+        kind = m.get(Vocabulary.KIND)
+        if kind == Vocabulary.ImportGitDatasetTask_CLASS:
+            return ImportGitDatasetTask(m)
+        raise ValueError("bad kind : " + kind +
+                         " for class ImportGitDatasetTask in createFromJson")
+
+    def toJson(self):
+        m = super().toJson()
+        m[Vocabulary.KIND] = Vocabulary.ImportGitDatasetTask_CLASS
+        if self.subKind is not None and self.subKind != Vocabulary.ImportGitDatasetTask_CLASS:
+            m[Vocabulary.SUBKIND] = self.subKind
+        else:
+            m.pop(Vocabulary.SUBKIND, None)
+        m[Vocabulary.url_OP] = self.url if self.url is None else self.url.toJson()
+        m[Vocabulary.version_DP] = self.version
+        m[Vocabulary.gitToken_DP] = self.gitToken
+        m[Vocabulary.schemaId_DP] = self.schemaId
+        return m
+
+
+class ImportGitDatasetTask(ImportGitDatasetTaskBase):
+    def __init__(self, m=None):
+        super().__init__(m)
+
+
 class AceBase(SciObject):
     def __init__(self, m=None):
         if m is None:
@@ -6888,6 +7061,7 @@ class OperatorSettingsBase(SciObject):
             self.namespace = ""
             self.operatorRef = OperatorRef()
             self.environment = list()
+            self.operatorModel = OperatorModel()
         else:
             self.fromJson(m)
 
@@ -6908,6 +7082,11 @@ class OperatorSettingsBase(SciObject):
             self.environment = list()
             for o in m.get(Vocabulary.environment_OP):
                 self.environment.append(PairBase.createFromJson(o))
+        if m.get(Vocabulary.operatorModel_OP) is None:
+            self.operatorModel = OperatorModel()
+        else:
+            self.operatorModel = OperatorModelBase.createFromJson(
+                m.get(Vocabulary.operatorModel_OP))
 
     @classmethod
     def createFromJson(cls, m):
@@ -6928,6 +7107,7 @@ class OperatorSettingsBase(SciObject):
         m[Vocabulary.operatorRef_OP] = self.operatorRef if self.operatorRef is None else self.operatorRef.toJson()
         m[Vocabulary.environment_OP] = list(
             map(lambda x: x.toJson(), self.environment))
+        m[Vocabulary.operatorModel_OP] = self.operatorModel if self.operatorModel is None else self.operatorModel.toJson()
         return m
 
 
@@ -7952,6 +8132,7 @@ class DataStepBase(CrossTabStep):
     def __init__(self, m=None):
         if m is None:
             super().__init__(m)
+            self.parentDataStepId = ""
             self.computedRelation = Relation()
         else:
             self.fromJson(m)
@@ -7961,6 +8142,7 @@ class DataStepBase(CrossTabStep):
         self.subKind = m.get(Vocabulary.SUBKIND)
         if self.subKind is None and m.get(Vocabulary.KIND) != Vocabulary.DataStep_CLASS:
             self.subKind = m.get(Vocabulary.KIND)
+        self.parentDataStepId = m[Vocabulary.parentDataStepId_DP]
         if m.get(Vocabulary.computedRelation_OP) is None:
             self.computedRelation = Relation()
         else:
@@ -7983,6 +8165,7 @@ class DataStepBase(CrossTabStep):
         else:
             m.pop(Vocabulary.SUBKIND, None)
         m[Vocabulary.computedRelation_OP] = self.computedRelation if self.computedRelation is None else self.computedRelation.toJson()
+        m[Vocabulary.parentDataStepId_DP] = self.parentDataStepId
         return m
 
 
@@ -8037,6 +8220,117 @@ class SearchResultBase(SciObject):
 
 
 class SearchResult(SearchResultBase):
+    def __init__(self, m=None):
+        super().__init__(m)
+
+
+class PreProcessorBase(SciObject):
+    def __init__(self, m=None):
+        if m is None:
+            super().__init__(m)
+            self.type = ""
+            self.operatorRef = OperatorRef()
+        else:
+            self.fromJson(m)
+
+    def fromJson(self, m):
+        super().fromJson(m)
+        self.subKind = m.get(Vocabulary.SUBKIND)
+        if self.subKind is None and m.get(Vocabulary.KIND) != Vocabulary.PreProcessor_CLASS:
+            self.subKind = m.get(Vocabulary.KIND)
+        self.type = m[Vocabulary.type_DP]
+        if m.get(Vocabulary.operatorRef_OP) is None:
+            self.operatorRef = OperatorRef()
+        else:
+            self.operatorRef = OperatorRefBase.createFromJson(
+                m.get(Vocabulary.operatorRef_OP))
+
+    @classmethod
+    def createFromJson(cls, m):
+        kind = m.get(Vocabulary.KIND)
+        if kind == Vocabulary.PreProcessor_CLASS:
+            return PreProcessor(m)
+        raise ValueError("bad kind : " + kind +
+                         " for class PreProcessor in createFromJson")
+
+    def toJson(self):
+        m = super().toJson()
+        m[Vocabulary.KIND] = Vocabulary.PreProcessor_CLASS
+        if self.subKind is not None and self.subKind != Vocabulary.PreProcessor_CLASS:
+            m[Vocabulary.SUBKIND] = self.subKind
+        else:
+            m.pop(Vocabulary.SUBKIND, None)
+        m[Vocabulary.type_DP] = self.type
+        m[Vocabulary.operatorRef_OP] = self.operatorRef if self.operatorRef is None else self.operatorRef.toJson()
+        return m
+
+
+class PreProcessor(PreProcessorBase):
+    def __init__(self, m=None):
+        super().__init__(m)
+
+
+class AnnotationModelBase(SciObject):
+    def __init__(self, m=None):
+        if m is None:
+            super().__init__(m)
+            self.taskId = ""
+            self.factors = list()
+            self.annotationFactors = list()
+            self.relation = Relation()
+        else:
+            self.fromJson(m)
+
+    def fromJson(self, m):
+        super().fromJson(m)
+        self.subKind = m.get(Vocabulary.SUBKIND)
+        if self.subKind is None and m.get(Vocabulary.KIND) != Vocabulary.AnnotationModel_CLASS:
+            self.subKind = m.get(Vocabulary.KIND)
+        self.taskId = m[Vocabulary.taskId_DP]
+        if m.get(Vocabulary.factors_OP) is None:
+            self.factors = list()
+        else:
+            self.factors = list()
+            for o in m.get(Vocabulary.factors_OP):
+                self.factors.append(GraphicalFactorBase.createFromJson(o))
+        if m.get(Vocabulary.annotationFactors_OP) is None:
+            self.annotationFactors = list()
+        else:
+            self.annotationFactors = list()
+            for o in m.get(Vocabulary.annotationFactors_OP):
+                self.annotationFactors.append(
+                    GraphicalFactorBase.createFromJson(o))
+        if m.get(Vocabulary.relation_OP) is None:
+            self.relation = Relation()
+        else:
+            self.relation = RelationBase.createFromJson(
+                m.get(Vocabulary.relation_OP))
+
+    @classmethod
+    def createFromJson(cls, m):
+        kind = m.get(Vocabulary.KIND)
+        if kind == Vocabulary.AnnotationModel_CLASS:
+            return AnnotationModel(m)
+        raise ValueError("bad kind : " + kind +
+                         " for class AnnotationModel in createFromJson")
+
+    def toJson(self):
+        m = super().toJson()
+        m[Vocabulary.KIND] = Vocabulary.AnnotationModel_CLASS
+        if self.subKind is not None and self.subKind != Vocabulary.AnnotationModel_CLASS:
+            m[Vocabulary.SUBKIND] = self.subKind
+        else:
+            m.pop(Vocabulary.SUBKIND, None)
+        m[Vocabulary.factors_OP] = list(
+            map(lambda x: x.toJson(), self.factors))
+        m[Vocabulary.annotationFactors_OP] = list(
+            map(lambda x: x.toJson(), self.annotationFactors))
+        m[Vocabulary.relation_OP] = self.relation if self.relation is None else self.relation.toJson()
+        m[Vocabulary.taskId_DP] = self.taskId
+        return m
+
+
+class AnnotationModel(AnnotationModelBase):
     def __init__(self, m=None):
         super().__init__(m)
 
@@ -9770,6 +10064,66 @@ class AppDesign(AppDesignBase):
         super().__init__(m)
 
 
+class GarbageTasks2Base(GarbageObject):
+    def __init__(self, m=None):
+        if m is None:
+            super().__init__(m)
+            self.date = ""
+            self.workflowId = ""
+            self.deletedTaskIds = list()
+            self.addedTaskIds = list()
+            self.deletedStepIds = list()
+        else:
+            self.fromJson(m)
+
+    def fromJson(self, m):
+        super().fromJson(m)
+        self.subKind = m.get(Vocabulary.SUBKIND)
+        if self.subKind is None and m.get(Vocabulary.KIND) != Vocabulary.GarbageTasks2_CLASS:
+            self.subKind = m.get(Vocabulary.KIND)
+        self.date = m[Vocabulary.date_DP]
+        self.workflowId = m[Vocabulary.workflowId_DP]
+        if m.get(Vocabulary.deletedTaskIds_DP) is None:
+            self.deletedTaskIds = list()
+        else:
+            self.deletedTaskIds = m[Vocabulary.deletedTaskIds_DP]
+        if m.get(Vocabulary.addedTaskIds_DP) is None:
+            self.addedTaskIds = list()
+        else:
+            self.addedTaskIds = m[Vocabulary.addedTaskIds_DP]
+        if m.get(Vocabulary.deletedStepIds_DP) is None:
+            self.deletedStepIds = list()
+        else:
+            self.deletedStepIds = m[Vocabulary.deletedStepIds_DP]
+
+    @classmethod
+    def createFromJson(cls, m):
+        kind = m.get(Vocabulary.KIND)
+        if kind == Vocabulary.GarbageTasks2_CLASS:
+            return GarbageTasks2(m)
+        raise ValueError("bad kind : " + kind +
+                         " for class GarbageTasks2 in createFromJson")
+
+    def toJson(self):
+        m = super().toJson()
+        m[Vocabulary.KIND] = Vocabulary.GarbageTasks2_CLASS
+        if self.subKind is not None and self.subKind != Vocabulary.GarbageTasks2_CLASS:
+            m[Vocabulary.SUBKIND] = self.subKind
+        else:
+            m.pop(Vocabulary.SUBKIND, None)
+        m[Vocabulary.date_DP] = self.date
+        m[Vocabulary.workflowId_DP] = self.workflowId
+        m[Vocabulary.deletedTaskIds_DP] = self.deletedTaskIds
+        m[Vocabulary.addedTaskIds_DP] = self.addedTaskIds
+        m[Vocabulary.deletedStepIds_DP] = self.deletedStepIds
+        return m
+
+
+class GarbageTasks2(GarbageTasks2Base):
+    def __init__(self, m=None):
+        super().__init__(m)
+
+
 class WorkflowBase(ProjectDocument):
     def __init__(self, m=None):
         if m is None:
@@ -9996,6 +10350,59 @@ class ExportModelBase(StepModel):
 
 
 class ExportModel(ExportModelBase):
+    def __init__(self, m=None):
+        super().__init__(m)
+
+
+class AnnotationOperatorModelBase(OperatorModel):
+    def __init__(self, m=None):
+        if m is None:
+            super().__init__(m)
+            self.filters = Filters()
+            self.annotationModels = list()
+        else:
+            self.fromJson(m)
+
+    def fromJson(self, m):
+        super().fromJson(m)
+        self.subKind = m.get(Vocabulary.SUBKIND)
+        if self.subKind is None and m.get(Vocabulary.KIND) != Vocabulary.AnnotationOperatorModel_CLASS:
+            self.subKind = m.get(Vocabulary.KIND)
+        if m.get(Vocabulary.filters_OP) is None:
+            self.filters = Filters()
+        else:
+            self.filters = FiltersBase.createFromJson(
+                m.get(Vocabulary.filters_OP))
+        if m.get(Vocabulary.annotationModels_OP) is None:
+            self.annotationModels = list()
+        else:
+            self.annotationModels = list()
+            for o in m.get(Vocabulary.annotationModels_OP):
+                self.annotationModels.append(
+                    AnnotationModelBase.createFromJson(o))
+
+    @classmethod
+    def createFromJson(cls, m):
+        kind = m.get(Vocabulary.KIND)
+        if kind == Vocabulary.AnnotationOperatorModel_CLASS:
+            return AnnotationOperatorModel(m)
+        raise ValueError("bad kind : " + kind +
+                         " for class AnnotationOperatorModel in createFromJson")
+
+    def toJson(self):
+        m = super().toJson()
+        m[Vocabulary.KIND] = Vocabulary.AnnotationOperatorModel_CLASS
+        if self.subKind is not None and self.subKind != Vocabulary.AnnotationOperatorModel_CLASS:
+            m[Vocabulary.SUBKIND] = self.subKind
+        else:
+            m.pop(Vocabulary.SUBKIND, None)
+        m[Vocabulary.filters_OP] = self.filters if self.filters is None else self.filters.toJson()
+        m[Vocabulary.annotationModels_OP] = list(
+            map(lambda x: x.toJson(), self.annotationModels))
+        return m
+
+
+class AnnotationOperatorModel(AnnotationOperatorModelBase):
     def __init__(self, m=None):
         super().__init__(m)
 
@@ -10619,6 +11026,51 @@ class FormulaProperty(FormulaPropertyBase):
         super().__init__(m)
 
 
+class UserSecretBase(PersistentObject):
+    def __init__(self, m=None):
+        if m is None:
+            super().__init__(m)
+            self.userId = ""
+            self.salt = ""
+            self.hashPassword = ""
+        else:
+            self.fromJson(m)
+
+    def fromJson(self, m):
+        super().fromJson(m)
+        self.subKind = m.get(Vocabulary.SUBKIND)
+        if self.subKind is None and m.get(Vocabulary.KIND) != Vocabulary.UserSecret_CLASS:
+            self.subKind = m.get(Vocabulary.KIND)
+        self.userId = m[Vocabulary.userId_DP]
+        self.salt = m[Vocabulary.salt_DP]
+        self.hashPassword = m[Vocabulary.hashPassword_DP]
+
+    @classmethod
+    def createFromJson(cls, m):
+        kind = m.get(Vocabulary.KIND)
+        if kind == Vocabulary.UserSecret_CLASS:
+            return UserSecret(m)
+        raise ValueError("bad kind : " + kind +
+                         " for class UserSecret in createFromJson")
+
+    def toJson(self):
+        m = super().toJson()
+        m[Vocabulary.KIND] = Vocabulary.UserSecret_CLASS
+        if self.subKind is not None and self.subKind != Vocabulary.UserSecret_CLASS:
+            m[Vocabulary.SUBKIND] = self.subKind
+        else:
+            m.pop(Vocabulary.SUBKIND, None)
+        m[Vocabulary.userId_DP] = self.userId
+        m[Vocabulary.salt_DP] = self.salt
+        m[Vocabulary.hashPassword_DP] = self.hashPassword
+        return m
+
+
+class UserSecret(UserSecretBase):
+    def __init__(self, m=None):
+        super().__init__(m)
+
+
 class GroupByRelationBase(Relation):
     def __init__(self, m=None):
         if m is None:
@@ -10664,50 +11116,5 @@ class GroupByRelationBase(Relation):
 
 
 class GroupByRelation(GroupByRelationBase):
-    def __init__(self, m=None):
-        super().__init__(m)
-
-
-class UserSecretBase(PersistentObject):
-    def __init__(self, m=None):
-        if m is None:
-            super().__init__(m)
-            self.userId = ""
-            self.salt = ""
-            self.hashPassword = ""
-        else:
-            self.fromJson(m)
-
-    def fromJson(self, m):
-        super().fromJson(m)
-        self.subKind = m.get(Vocabulary.SUBKIND)
-        if self.subKind is None and m.get(Vocabulary.KIND) != Vocabulary.UserSecret_CLASS:
-            self.subKind = m.get(Vocabulary.KIND)
-        self.userId = m[Vocabulary.userId_DP]
-        self.salt = m[Vocabulary.salt_DP]
-        self.hashPassword = m[Vocabulary.hashPassword_DP]
-
-    @classmethod
-    def createFromJson(cls, m):
-        kind = m.get(Vocabulary.KIND)
-        if kind == Vocabulary.UserSecret_CLASS:
-            return UserSecret(m)
-        raise ValueError("bad kind : " + kind +
-                         " for class UserSecret in createFromJson")
-
-    def toJson(self):
-        m = super().toJson()
-        m[Vocabulary.KIND] = Vocabulary.UserSecret_CLASS
-        if self.subKind is not None and self.subKind != Vocabulary.UserSecret_CLASS:
-            m[Vocabulary.SUBKIND] = self.subKind
-        else:
-            m.pop(Vocabulary.SUBKIND, None)
-        m[Vocabulary.userId_DP] = self.userId
-        m[Vocabulary.salt_DP] = self.salt
-        m[Vocabulary.hashPassword_DP] = self.hashPassword
-        return m
-
-
-class UserSecret(UserSecretBase):
     def __init__(self, m=None):
         super().__init__(m)

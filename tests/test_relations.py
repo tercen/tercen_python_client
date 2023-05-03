@@ -96,8 +96,10 @@ class TestTercen(unittest.TestCase):
         rdf = utl.as_relation(df)
         crel = self.context.get_crelation()
         rrel = self.context.get_rrelation()
-        
-        rdf = utl.left_join_relation(rdf, crel, ".i", crel.get_rids())
+
+        rids_factor = ''.join((crel.id, "._rids"))
+
+        rdf = utl.left_join_relation(rdf, crel, ".i", rids_factor)
         jdf = utl.as_join_operator(rdf, self.context.context.cnames, self.context.context.cnames)
         # jdf = utl.as_join_operator(rdf, [], [])
 

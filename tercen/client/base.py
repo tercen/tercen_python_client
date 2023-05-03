@@ -202,31 +202,6 @@ class FileServiceBase (HttpClientService):
             self.onError(e)
         return answer
 
-    # Pass the iterator to post and build from there...
-    def uploadTable(self, file, tableJson):
-        answer = None
-        try: 
-            uri = URI.create("api/v1/file" + "/" + "upload")
-            parts = []
-            parts.append(MultiPart({"Content-Type": "application/json"},
-                         json.JSONEncoder().encode([file.toJson()]).encode("utf-8")))
-            parts.append(
-                MultiPart({"Content-Type": "application/octet-stream"}, tableJson))
-            # parts.append(
-                # MultiPart({"Content-Type": "application/octet-stream"},
-                        #    json.JSONEncoder().encode([tableJson]).encode("utf-8") ))
-
-            response = self.getHttpClient().multipart(
-                self.getServiceUri(uri).toString(), None, parts)
-            if response.code() != 200:
-                self.onResponseError(response)
-            else:
-                answer = tercen.model.base.FileDocumentBase.createFromJson(
-                    decodeTSON(response))
-        except BaseException as e:
-            self.onError(e)
-        return answer
-    
     def append(self, file, bytes):
         answer = None
         try:
@@ -282,6 +257,9 @@ class GarbageCollectorServiceBase (HttpClientService):
             return tercen.model.base.GarbageObjectBase(m)
         else:
             return tercen.model.base.GarbageObject(m)
+
+    def findGarbageTasks2ByDate(self, startKey, endKey, limit=200, skip=0, descending=True, useFactory=False):
+        return self.findStartKeys("findGarbageTasks2ByDate", startKey, endKey, limit, skip, descending, useFactory)
 
 
 class LockServiceBase (HttpClientService):
@@ -553,6 +531,22 @@ class PersistentServiceBase (HttpClientService):
     def findByKind(self, keys, useFactory=False):
         return self.findKeys("findByKind", keys, useFactory)
 
+    def createNewIds(self, n):
+        answer = None
+        try:
+            uri = URI.create("api/v1/po" + "/" + "createNewIds")
+            params = {}
+            params["n"] = n
+            response = self.getHttpClient().post(
+                self.getServiceUri(uri).toString(), None, encodeTSON(params))
+            if response.code() != 200:
+                self.onResponseError(response)
+            else:
+                answer = decodeTSON(response)
+        except BaseException as e:
+            self.onError(e)
+        return answer
+
     def summary(self, teamOrProjectId):
         answer = None
         try:
@@ -629,24 +623,6 @@ class ActivityServiceBase (HttpClientService):
 
     def findByProjectAndDate(self, startKey, endKey, limit=200, skip=0, descending=True, useFactory=False):
         return self.findStartKeys("findByProjectAndDate", startKey, endKey, limit, skip, descending, useFactory)
-
-    def getPublicActivityCount(self, kind, limit):
-        answer = None
-        try:
-            uri = URI.create("api/v1/activity" + "/" +
-                             "getPublicActivityCount")
-            params = {}
-            params["kind"] = kind
-            params["limit"] = limit
-            response = self.getHttpClient().post(
-                self.getServiceUri(uri).toString(), None, encodeTSON(params))
-            if response.code() != 200:
-                self.onResponseError(response)
-            else:
-                answer = None
-        except BaseException as e:
-            self.onError(e)
-        return answer
 
 
 class FolderServiceBase (HttpClientService):
@@ -726,11 +702,24 @@ class TableSchemaServiceBase (HttpClientService):
         else:
             return tercen.model.base.Schema(m)
 
-    def findByQueryHash(self, keys, useFactory=False):
-        return self.findKeys("findByQueryHash", keys, useFactory)
-
     def findSchemaByDataDirectory(self, startKey, endKey, limit=200, skip=0, descending=True, useFactory=False):
         return self.findStartKeys("findSchemaByDataDirectory", startKey, endKey, limit, skip, descending, useFactory)
+
+    def findByQueryHash(self, ids):
+        answer = None
+        try:
+            uri = URI.create("api/v1/schema" + "/" + "findByQueryHash")
+            params = {}
+            params["ids"] = ids
+            response = self.getHttpClient().post(
+                self.getServiceUri(uri).toString(), None, encodeTSON(params))
+            if response.code() != 200:
+                self.onResponseError(response)
+            else:
+                answer = None
+        except BaseException as e:
+            self.onError(e)
+        return answer
 
     def select(self, tableId, cnames, offset, limit):
         answer = None
@@ -773,7 +762,7 @@ class TableSchemaServiceBase (HttpClientService):
         return answer
 
     def selectStream(self, tableId, cnames, offset, limit):
-        response = None
+        answer = None
         try:
             uri = URI.create("api/v1/schema" + "/" + "selectStream")
             params = {}
@@ -785,11 +774,11 @@ class TableSchemaServiceBase (HttpClientService):
                 self.getServiceUri(uri).toString(), None, encodeTSON(params))
             if response.code() != 200:
                 self.onResponseError(response)
-            # else:
-            #     answer = response
+            else:
+                answer = response.stream
         except BaseException as e:
             self.onError(e)
-        return response
+        return answer
 
     def selectCSV(self, tableId, cnames, offset, limit, separator, quote, encoding):
         answer = None
@@ -809,7 +798,7 @@ class TableSchemaServiceBase (HttpClientService):
             if response.code() != 200:
                 self.onResponseError(response)
             else:
-                answer = response.body().bytes()
+                answer = response.stream
         except BaseException as e:
             self.onError(e)
         return answer
@@ -870,36 +859,6 @@ class TaskServiceBase (HttpClientService):
         except BaseException as e:
             self.onError(e)
         return answer
-    
-    def subclassHierarchy( self, baseClass ):
-        classes = [baseClass]
-
-        sc = baseClass.__subclasses__()
-
-        if sc == None or len(sc) == 0:
-            return classes
-        else:
-            for cls in sc:
-                subClasses = self.subclassHierarchy(cls)
-
-                for cc in subClasses:
-                    classes.append( cc )
-
-            return classes
-
-
-    def specificClassFromJsonTask( self, m):
-        className = m['kind']
-        subclasses = self.subclassHierarchy( tercen.model.base.TaskBase )
-
-        klass = None
-        for cl in subclasses:
-            if cl.__name__ == className:
-                klass = cl
-                break
-        newObj = klass(m)
-
-        return newObj
 
     def waitDone(self, taskId):
         answer = None
@@ -912,15 +871,8 @@ class TaskServiceBase (HttpClientService):
             if response.code() != 200:
                 self.onResponseError(response)
             else:
-                # answer = tercen.model.base.TaskBase.createFromJson(
-                #     decodeTSON(response))
-                # respTson = decodeTSON(response)
-                
-                # answer1 = tercen.model.base.TaskBase.createFromJson(respTson)
-
-                answer = self.specificClassFromJsonTask(decodeTSON(response))
-
-                
+                answer = tercen.model.base.TaskBase.createFromJson(
+                    decodeTSON(response))
         except BaseException as e:
             self.onError(e)
         return answer
@@ -1268,8 +1220,7 @@ class UserServiceBase (HttpClientService):
                 self.onResponseError(response)
             else:
                 answer = tercen.model.base.UserSessionBase.createFromJson(
-                    decodeTSON(response) )
-                    
+                    decodeTSON(response))
         except BaseException as e:
             self.onError(e)
         return answer
@@ -1698,7 +1649,7 @@ class CranLibraryServiceBase (HttpClientService):
             if response.code() != 200:
                 self.onResponseError(response)
             else:
-                answer = response.body().bytes()
+                answer = response.stream
         except BaseException as e:
             self.onError(e)
         return answer
@@ -1715,7 +1666,7 @@ class CranLibraryServiceBase (HttpClientService):
             if response.code() != 200:
                 self.onResponseError(response)
             else:
-                answer = response.body().bytes()
+                answer = response.stream
         except BaseException as e:
             self.onError(e)
         return answer
@@ -1732,7 +1683,7 @@ class CranLibraryServiceBase (HttpClientService):
             if response.code() != 200:
                 self.onResponseError(response)
             else:
-                answer = response.body().bytes()
+                answer = response.stream
         except BaseException as e:
             self.onError(e)
         return answer
@@ -1751,7 +1702,7 @@ class CranLibraryServiceBase (HttpClientService):
             if response.code() != 200:
                 self.onResponseError(response)
             else:
-                answer = response.body().bytes()
+                answer = response.stream
         except BaseException as e:
             self.onError(e)
         return answer
@@ -1769,7 +1720,7 @@ class CranLibraryServiceBase (HttpClientService):
             if response.code() != 200:
                 self.onResponseError(response)
             else:
-                answer = response.body().bytes()
+                answer = response.stream
         except BaseException as e:
             self.onError(e)
         return answer
@@ -2012,6 +1963,23 @@ class DocumentServiceBase (HttpClientService):
             self.onError(e)
         return answer
 
+    def getTercenLibrary(self, offset, limit):
+        answer = None
+        try:
+            uri = URI.create("api/v1/d" + "/" + "getTercenLibrary")
+            params = {}
+            params["offset"] = offset
+            params["limit"] = limit
+            response = self.getHttpClient().post(
+                self.getServiceUri(uri).toString(), None, encodeTSON(params))
+            if response.code() != 200:
+                self.onResponseError(response)
+            else:
+                answer = None
+        except BaseException as e:
+            self.onError(e)
+        return answer
+
     def getTercenOperatorLibrary(self, offset, limit):
         answer = None
         try:
@@ -2050,6 +2018,23 @@ class DocumentServiceBase (HttpClientService):
         answer = None
         try:
             uri = URI.create("api/v1/d" + "/" + "getTercenAppLibrary")
+            params = {}
+            params["offset"] = offset
+            params["limit"] = limit
+            response = self.getHttpClient().post(
+                self.getServiceUri(uri).toString(), None, encodeTSON(params))
+            if response.code() != 200:
+                self.onResponseError(response)
+            else:
+                answer = None
+        except BaseException as e:
+            self.onError(e)
+        return answer
+
+    def getTercenDatasetLibrary(self, offset, limit):
+        answer = None
+        try:
+            uri = URI.create("api/v1/d" + "/" + "getTercenDatasetLibrary")
             params = {}
             params["offset"] = offset
             params["limit"] = limit
