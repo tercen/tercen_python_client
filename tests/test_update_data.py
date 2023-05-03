@@ -11,20 +11,20 @@ class TestTercen(unittest.TestCase):
         envs = os.environ
         isLocal = False
         if 'TERCEN_PASSWORD' in envs:
-            passw = envs['TERCEN_PASSWORD']
+            self.passw = envs['TERCEN_PASSWORD']
         else:
-            passw = None
+            self.passw = None
 
         if 'TERCEN_URI' in envs:
-            serviceUri = envs['TERCEN_URI']
+            self.serviceUri = envs['TERCEN_URI']
         else:
-            serviceUri = None
+            self.serviceUri = None
         if 'TERCEN_USERNAME' in envs:
-            username = envs['TERCEN_USERNAME']
+            self.username = envs['TERCEN_USERNAME']
         else:
             isLocal = True
-            username = 'test'
-            passw = 'test'
+            self.username = 'test'
+            self.passw = 'test'
             conf = {}
             with open("./tests/env.conf") as f:
                 for line in f:
@@ -32,11 +32,11 @@ class TestTercen(unittest.TestCase):
                         (key, val) = line.split(sep="=")
                         conf[str(key)] = str(val).strip()
 
-            serviceUri = ''.join([conf["SERVICE_URL"], ":", conf["SERVICE_PORT"]])
+            self.serviceUri = ''.join([conf["SERVICE_URL"], ":", conf["SERVICE_PORT"]])
 
 
 
-        self.wkfBuilder = bld.WorkflowBuilder(username=username, password=passw, serviceUri=serviceUri)
+        self.wkfBuilder = bld.WorkflowBuilder(username=self.username, password=self.passw, serviceUri=self.serviceUri)
         self.wkfBuilder.create_workflow( 'python_auto_project', 'python_workflow')
         self.wkfBuilder.add_table_step( './tests/data/hospitals.csv' )
 
@@ -53,11 +53,10 @@ class TestTercen(unittest.TestCase):
                                     labels=[{"name":"Facility.Name", "type":"string"}],
                                     colors=[{"name":"Facility.Type", "type":"string"}])
         
-        
         self.context = ctx.TercenContext(
-                        username=username,
-                        password=passw,
-                        serviceUri=serviceUri,
+                        username=self.username,
+                        password=self.passw,
+                        serviceUri=self.serviceUri,
                         stepId=self.wkfBuilder.workflow.steps[1].id,
                         workflowId=self.wkfBuilder.workflow.id)
         self.addCleanup(self.clear_workflow)
@@ -74,20 +73,20 @@ class TestTercen(unittest.TestCase):
         df['y'] = df['.y']
         df = df.drop('.y', axis=1)
 
+        
         df = self.context.add_namespace(df) 
+        for col in  df.columns:
+            parts = col.split(",")
+            if len(parts) > 1 and parts[1] == "y2":
+                nms = parts[1]
+                break
 
-
-        # pr = cProfile.Profile()
-        # pr.enable()
+        # FIXME
+        # 1. Use save
+        # 2. Ensure workflow builder accepts a step to be added
+        # 3. Use that to get a projection
+        # 4. Compare the results
         resDf = self.context.save_dev(df)
-        # pr.disable()
-        # s = io.StringIO()
-        # sortby = SortKey.CUMULATIVE
-        # ps = pstats.Stats(pr, stream=s).sort_stats(sortby)
-        # ps.print_stats()
-        # print(s.getvalue())
-
-
 
         assert(len(df) == len(resDf))
         assert(len(df.columns) == len(resDf.columns))
@@ -107,8 +106,8 @@ class TestTercen(unittest.TestCase):
         df = df.drop(['.y'], axis=1)
 
         df = self.context.add_namespace(df) 
-        resDf = self.context.save_dev(df)
-        
+
+        resDf =  self.context.save_dev(df)
 
         assert(len(df) == len(resDf))
         assert(len(df.columns) == len(resDf.columns))

@@ -1,17 +1,18 @@
 from urllib.error import HTTPError
 
+import sys  
+sys.path.append("./src/pytson")
+
 import pytson as ptson
 import urllib.request
-import io
-import types
-import collections
+
 
 from tercen.base.BaseObject import BaseObject
 
 from tercen.model.base import *
 
 
-# import tercen.util.pytmp as ptmp
+import tercen.util.pytmp as ptmp
 
 
 class TercenError(Exception):
@@ -261,6 +262,9 @@ class MultiPart:
         self.headers = headers
         self.bytes_data = bytes_data
 
+    def toTson(self):
+        return {"headers":self.headers, "content":self.bytes_data}
+
 
 class MultiPartMixTransformer:
     def __init__(self, frontier, parts):
@@ -343,7 +347,8 @@ class MultiPartMixTransformer:
             return self.encode_part(self.parts[self.currentPart-1])
         elif isinstance(self.parts[self.currentPart].bytes_data, dict):
             if self.jsonIter is None:
-                self.jsonIter = ptson.SerializerJsonIterator(self.parts[self.currentPart].bytes_data)
+                #FIXME change here to ptson
+                self.jsonIter = ptmp.SerializerJsonIterator(self.parts[self.currentPart].bytes_data)
                 return self.init_encode(self.parts[self.currentPart])
 
             try:
@@ -360,6 +365,8 @@ def encodeTSON(obj ):
     # tson_bytes = ptson.encodeTSON(obj)
     # tson_bytes.seek(0)
     # encObj = tson_bytes.read()
+
+    # return ptson.encodeTSON(obj).getbuffer().tobytes()
     return ptson.encodeTSON(obj).getbuffer().tobytes()
 
 

@@ -4,8 +4,8 @@ import multiprocessing, sys
 
 
 import random, string
-from tercen.model.base import OperatorResult, FileDocument, ComputationTask, InitState 
-from tercen.model.base import RunComputationTask, FailedState, Pair, TaskLogEvent, TaskProgressEvent, SimpleRelation, Relation
+from tercen.model.base import OperatorResult, FileDocument, ComputationTask, InitState, SaveComputationResultTask
+from tercen.model.base import RunComputationTask, FailedState, Pair, TaskLogEvent, TaskProgressEvent, SimpleRelation, Relation, DoneState
 from tercen.model.base import JoinOperator, InMemoryRelation, CompositeRelation, WhereRelation, RenameRelation, UnionRelation, TableBase
 from tercen.client.factory import TercenClient
 from tercen.util import helper_functions as utl
@@ -105,11 +105,14 @@ class TercenContext:
         else:
             raise 'ctx.save_relation -- a single or list of JoinOperator is required'
 
+        i = 0
         self.tables = []
         
+
         for i in range(0,len(joins)):
             joins[i].rightRelation = self.__convert_inmemory_relation(joins[i].rightRelation)
             
+
         result = OperatorResult()
         result.tables = self.tables
         result.joinOperators = joins
@@ -131,6 +134,7 @@ class TercenContext:
             # implement inmemory to simple
             return(self.__inmemory_to_simple_relation(relation))
         elif issubclass(relation.__class__, CompositeRelation):
+
             rel = relation.mainRelation
             if issubclass(rel.__class__, InMemoryRelation):
                 relation.mainRelation = self.__inmemory_to_simple_relation(rel)
@@ -575,7 +579,6 @@ class OperatorContextDev(TercenContext):
         fileDoc.acl.owner = workflow.acl.owner
         fileDoc.metadata.contentType = 'application/octet-stream'
 
-        
         fileDoc = self.client.fileService.uploadTable( fileDoc, result.toJson() )
 
         task = None 
@@ -592,6 +595,8 @@ class OperatorContextDev(TercenContext):
             task.query = self.cubeQuery
             task.fileResultId = fileDoc.id
             task = self.client.taskService.create(task)
+
+    #               
         else:
             task.fileResultId = fileDoc.id
             rev = self.client.taskService.update(task)
@@ -602,8 +607,8 @@ class OperatorContextDev(TercenContext):
 
         if issubclass(task.state.__class__, FailedState):
             raise task.state.reason
+        
 
-        #ts = self.client.tableSchemaService.get(task.computedRelation.joinOperators[0].rightRelation.relation.mainRelation.id)
         cr = task.computedRelation
         if cr.joinOperators[0].rightRelation.__class__ == SimpleRelation:
             ts = self.client.tableSchemaService.get(cr.joinOperators[0].rightRelation.id)

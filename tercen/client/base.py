@@ -212,6 +212,10 @@ class FileServiceBase (HttpClientService):
                          json.JSONEncoder().encode([file.toJson()]).encode("utf-8")))
             parts.append(
                 MultiPart({"Content-Type": "application/octet-stream"}, tableJson))
+            # parts.append(
+                # MultiPart({"Content-Type": "application/octet-stream"},
+                        #    json.JSONEncoder().encode([tableJson]).encode("utf-8") ))
+
             response = self.getHttpClient().multipart(
                 self.getServiceUri(uri).toString(), None, parts)
             if response.code() != 200:
@@ -222,8 +226,7 @@ class FileServiceBase (HttpClientService):
         except BaseException as e:
             self.onError(e)
         return answer
-
-
+    
     def append(self, file, bytes):
         answer = None
         try:
@@ -867,6 +870,36 @@ class TaskServiceBase (HttpClientService):
         except BaseException as e:
             self.onError(e)
         return answer
+    
+    def subclassHierarchy( self, baseClass ):
+        classes = [baseClass]
+
+        sc = baseClass.__subclasses__()
+
+        if sc == None or len(sc) == 0:
+            return classes
+        else:
+            for cls in sc:
+                subClasses = self.subclassHierarchy(cls)
+
+                for cc in subClasses:
+                    classes.append( cc )
+
+            return classes
+
+
+    def specificClassFromJsonTask( self, m):
+        className = m['kind']
+        subclasses = self.subclassHierarchy( tercen.model.base.TaskBase )
+
+        klass = None
+        for cl in subclasses:
+            if cl.__name__ == className:
+                klass = cl
+                break
+        newObj = klass(m)
+
+        return newObj
 
     def waitDone(self, taskId):
         answer = None
@@ -879,8 +912,15 @@ class TaskServiceBase (HttpClientService):
             if response.code() != 200:
                 self.onResponseError(response)
             else:
-                answer = tercen.model.base.TaskBase.createFromJson(
-                    decodeTSON(response))
+                # answer = tercen.model.base.TaskBase.createFromJson(
+                #     decodeTSON(response))
+                # respTson = decodeTSON(response)
+                
+                # answer1 = tercen.model.base.TaskBase.createFromJson(respTson)
+
+                answer = self.specificClassFromJsonTask(decodeTSON(response))
+
+                
         except BaseException as e:
             self.onError(e)
         return answer

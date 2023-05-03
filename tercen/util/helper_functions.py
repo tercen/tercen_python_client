@@ -13,7 +13,7 @@ from tercen.model.base import CompositeRelation, JoinOperator, ColumnPair
 
 
 
-def pandas_to_table(df) -> Table:
+def pandas_to_table(df, values_as_list=False) -> Table:
     tbl = Table()
     tbl.nRows = int(  df.shape[0] )
     tbl.columns = []
@@ -35,8 +35,10 @@ def pandas_to_table(df) -> Table:
             column.type = 'int32'
         else:
             raise "Bad column type"
-        
-        column.values = values
+        if values_as_list == True:
+            column.values = values.tolist()
+        else:
+            column.values = values
         column.nRows = tbl.nRows
 
         tbl.columns.append( column )
@@ -144,8 +146,17 @@ def as_relation(obj) -> Relation:
 
 
 def left_join_relation( left, right, lby, rby) -> Relation:
+    if lby.__class__ == str:
+        lby = [lby]
+
+    if rby.__class__ == str:
+        rby = [rby]
+
     compositeRelation = as_composite_relation(left)
-    compositeRelation.joinOperators  = [ compositeRelation.joinOperator, as_join_operator(right, lby, rby)]
+    if compositeRelation.joinOperators == None or len(compositeRelation.joinOperators) == 0:
+        compositeRelation.joinOperators  = [ as_join_operator(right, lby, rby) ]
+    else:
+        compositeRelation.joinOperators.append( as_join_operator(right, lby, rby) )
 
     return compositeRelation
 

@@ -1309,6 +1309,9 @@ class RelationBase(IdObject):
         else:
             super().__init__(m)
 
+    def get_rids(self):
+        return ''.join((self.id, "._rids"))
+
     def fromJson(self, m):
         super().fromJson(m)
         self.subKind = m.get(Vocabulary.SUBKIND)
@@ -4503,6 +4506,36 @@ class ComputationTaskBase(CubeQueryTask):
         else:
             self.fromJson(m)
 
+    # def subclassHierarchy( self, baseClass ):
+    #     classes = [baseClass]
+
+    #     sc = baseClass.__subclasses__()
+
+    #     if sc == None or len(sc) == 0:
+    #         return classes
+    #     else:
+    #         for cls in sc:
+    #             subClasses = self.subclassHierarchy(cls)
+
+    #             for cc in subClasses:
+    #                 classes.append( cc )
+
+    #         return classes
+
+
+    # def specificClassFromJsonTask( self, m):
+    #     className = m['kind']
+    #     subclasses = self.subclassHierarchy( Relation )
+
+    #     klass = None
+    #     for cl in subclasses:
+    #         if cl.__name__ == className:
+    #             klass = cl
+    #             break
+    #     newObj = klass(m)
+
+    #     return newObj
+
     def fromJson(self, m):
         super().fromJson(m)
         self.subKind = m.get(Vocabulary.SUBKIND)
@@ -4513,6 +4546,8 @@ class ComputationTaskBase(CubeQueryTask):
         if m.get(Vocabulary.computedRelation_OP) is None:
             self.computedRelation = Relation()
         else:
+
+            # self.computedRelation = self.specificClassFromJsonTask(m.get(Vocabulary.computedRelation_OP))
             self.computedRelation = RelationBase.createFromJson(
                 m.get(Vocabulary.computedRelation_OP))
 

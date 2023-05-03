@@ -103,7 +103,7 @@ class WorkflowBuilder():
         fileDoc.acl.owner = self.proj.acl.owner
         fileDoc.metadata.contentEncoding = "application/octet-stream"
 
-        self.fileDoc = self.client.fileService.uploadTable(fileDoc, utl.pandas_to_table(df).toJson() )
+        self.fileDoc = self.client.fileService.uploadTable(fileDoc, utl.pandas_to_table(df, values_as_list=True).toJson() )
 
         task = CSVTask()
         task.state = InitState()
