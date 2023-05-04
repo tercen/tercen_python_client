@@ -4,8 +4,8 @@ import multiprocessing, sys
 
 
 import random, string
-from tercen.model.base import OperatorResult, FileDocument, ComputationTask, InitState, SaveComputationResultTask
-from tercen.model.base import RunComputationTask, FailedState, Pair, TaskLogEvent, TaskProgressEvent, SimpleRelation, Relation, DoneState
+from tercen.model.base import OperatorResult, FileDocument, ComputationTask, InitState
+from tercen.model.base import RunComputationTask, FailedState, Pair, TaskLogEvent, TaskProgressEvent, SimpleRelation, Relation
 from tercen.model.base import JoinOperator, InMemoryRelation, CompositeRelation, WhereRelation, RenameRelation, UnionRelation, TableBase
 from tercen.client.factory import TercenClient
 from tercen.util import helper_functions as utl
@@ -40,8 +40,46 @@ class TercenContext:
             self.context = OperatorContext( authToken=authToken,
                     username=username, password=password, taskId=taskId, serviceUri=serviceUri )
             
+        self.cubeQuery = self.context.cubeQuery
 
-    
+        self.schema = self.context.client.tableSchemaService.get( self.cubeQuery.qtHash )
+        try:
+            self.cschema = self.context.client.tableSchemaService.get( self.cubeQuery.columnHash)
+        except:
+            self.cschema = []
+        
+        try:
+            self.rschema = self.context.client.tableSchemaService.get( self.cubeQuery.rowHash )
+        except:
+            self.rschema = []
+
+        
+
+        self.names = [col.name for col in self.schema.columns] 
+        self.cnames = [col.name for col in self.cschema.columns] 
+        self.rnames = [col.name for col in self.rschema.columns] 
+
+        axisQueries = self.cubeQuery.axisQueries
+
+        self.colors = [c.name for q in axisQueries for c in q.colors]
+        self.labels = [l.name for q in axisQueries for l in q.labels]
+        self.errors = [l.name for q in axisQueries for l in q.errors]
+        self.chartType = [q.chartType for q in axisQueries ]
+        self.pointSizes = [q.pointSize for q in axisQueries ]
+
+        
+        self.yAxis = utl.unique_and_nonempty( [q.yAxis.name for q in axisQueries])
+        self.xAxis = utl.unique_and_nonempty( [q.xAxis.name for q in axisQueries])
+
+
+        self.hasXAxis = any([ col.name == ".x" for col in self.schema.columns ])
+        self.hasNumericXAxis = any([ col.name == ".x" and col.type == "double" for col in self.schema.columns ])
+
+        self.isPairwise = self.cnames != [''] and self.rnames != [''] and len(set(self.cnames).intersection( set(self.rnames) )) > 0
+
+        self.task = self.context.task
+        self.namespace = self.context.namespace
+   
     
 
     def parse_args(self) -> dict:
@@ -88,10 +126,10 @@ class TercenContext:
         self.save(result)
         
     def get_crelation( self ) -> Relation:
-        return utl.as_relation( self.context.cschema )
+        return utl.as_relation( self.cschema )
 
     def get_rrelation( self ) -> Relation:
-        return utl.as_relation( self.context.rschema )
+        return utl.as_relation( self.rschema )
 
     def __save_relation( self, object ) -> Relation:
         self.tables = []
@@ -179,7 +217,7 @@ class TercenContext:
             rows = sdf[:,2].toarray()[list(lines)].flatten()
 
 
-            sdf = ssp.csr_matrix((y, (rows, cols)), shape=(int(self.context.rschema.nRows), int(self.context.cschema.nRows)))
+            sdf = ssp.csr_matrix((y, (rows, cols)), shape=(int(self.rschema.nRows), int(self.cschema.nRows)))
         
 
         return sdf
@@ -190,13 +228,10 @@ class TercenContext:
             nr = None
 
         if( names is None or len(names) == 0 or (len(names) == 1 and names[0] == '' )):
-            where = utl.logical_index([ c.type != 'uint64' and c.type != 'int64' for c in self.context.schema.columns ])
-            names = [ c.name for c in utl.get_from_idx_list( self.context.schema.columns, where) ]
+            where = utl.logical_index([ c.type != 'uint64' and c.type != 'int64' for c in self.schema.columns ])
+            names = [ c.name for c in utl.get_from_idx_list( self.schema.columns, where) ]
 
-        # tbl_bytes = super().selectStream(tableId, cnames, offset, limit)
-        # answer = tercen.model.base.TableBase.createFromJson(decodeTSON(tbl_bytes))
-
-        res = self.context.client.tableSchemaService.selectStream(self.context.schema.id, names, offset, nr)
+        res = self.context.client.tableSchemaService.selectStream(self.schema.id, names, offset, nr)
 
         answer = TableBase.createFromJson(decodeTSON(res))
 
@@ -205,93 +240,46 @@ class TercenContext:
         return df
 
     def select(self, names=[], offset=0, nr=None) -> pd.DataFrame:
-        return self.select_stream(names, offset=0, nr=None)
+        return self.select_stream(names, offset, nr)
+
+    def cselect_stream(self, names=[], offset=0, nr=None):
+        if not nr is None and nr < 0:
+            nr = None
+
+        if( names is None or len(names) == 0 or (len(names) == 1 and names[0] == '' )):
+            where = utl.logical_index([ c.type != 'uint64' and c.type != 'int64' for c in self.cschema.columns ])
+            names = [ c.name for c in utl.get_from_idx_list( self.cschema.columns, where) ]
+
+        res = self.context.client.tableSchemaService.selectStream(self.cschema.id, names, offset, nr)
+
+        answer = TableBase.createFromJson(decodeTSON(res))
+
+        df = utl.table_to_pandas(answer)
+
+        return df
+    
+    def rselect_stream(self, names=[], offset=0, nr=None):
+        if not nr is None and nr < 0:
+            nr = None
+
+        if( names is None or len(names) == 0 or (len(names) == 1 and names[0] == '' )):
+            where = utl.logical_index([ c.type != 'uint64' and c.type != 'int64' for c in self.rschema.columns ])
+            names = [ c.name for c in utl.get_from_idx_list( self.rschema.columns, where) ]
+
+        res = self.context.client.tableSchemaService.selectStream(self.rschema.id, names, offset, nr)
+
+        answer = TableBase.createFromJson(decodeTSON(res))
+
+        df = utl.table_to_pandas(answer)
+
+        return df
 
     def cselect(self, names=[], offset=0, nr=None) -> pd.DataFrame:
-        if not nr is None and nr < 0:
-            nr = None
-
-        if( names is None or len(names) == 0 or (len(names) == 1 and names[0] == '' )):
-            where = utl.logical_index([ c.type != 'uint64' and c.type != 'int64' for c in self.context.cschema.columns ])
-            names = [ c.name for c in utl.get_from_idx_list( self.context.cschema.columns, where) ]
-
-        df = pd.DataFrame()
-
-        if self.context.cschema.nRows <= 1600000:
-            res = self.context.client.tableSchemaService.select(  self.context.cschema.id, names, offset, nr)
-
-            for c in res.columns:
-                df[c.name] = c.values
-        else:
-            offset = 0
-            nr = 1500000
-            chunkSize = nr
-            hasMoreChunks = True
-
-            while hasMoreChunks:
-                if (offset + nr) > self.context.cschema.nRows:
-                    hasMoreChunks = False
-
-                    nr = self.context.cschema.nRows - offset 
-
-                res = self.context.client.tableSchemaService.select(  self.context.cschema.id, names, offset, nr)
-
-                chunkDf = pd.DataFrame()
-                for c in res.columns:
-                    chunkDf[c.name] = c.values
-
-                if offset == 0:
-                    df = chunkDf
-                else:
-                    df = pd.concat([df, chunkDf], ignore_index=True)
-                
-                offset = offset + chunkSize 
-
-        
-        return df
+        return self.cselect_stream(names, offset, nr)
 
     def rselect(self, names=[], offset=0, nr=None) -> pd.DataFrame:
-        if not nr is None and nr < 0:
-            nr = None
+        return self.rselect_stream(names, offset, nr)
 
-        if( names is None or len(names) == 0 or (len(names) == 1 and names[0] == '' )):
-            where = utl.logical_index([ c.type != 'uint64' and c.type != 'int64' for c in self.context.rschema.columns ])
-            names = [ c.name for c in utl.get_from_idx_list( self.context.rschema.columns, where) ]
-
-        df = pd.DataFrame()
-
-        if self.context.rschema.nRows <= 1600000:
-            res = self.context.client.tableSchemaService.select(  self.context.rschema.id, names, offset, nr)
-
-            for c in res.columns:
-                df[c.name] = c.values
-        else:
-            offset = 0
-            nr = 1500000
-            chunkSize = nr
-            hasMoreChunks = True
-
-            while hasMoreChunks:
-                if (offset + nr) > self.context.rschema.nRows:
-                    hasMoreChunks = False
-
-                    nr = self.context.rschema.nRows - offset 
-
-                res = self.context.client.tableSchemaService.select(  self.context.rschema.id, names, offset, nr)
-
-                chunkDf = pd.DataFrame()
-                for c in res.columns:
-                    chunkDf[c.name] = c.values
-
-                if offset == 0:
-                    df = chunkDf
-                else:
-                    df = pd.concat([df, chunkDf], ignore_index=True)
-                
-                offset = offset + chunkSize
-
-        
-        return df
 
     def available_cores(self) -> int:
         return multiprocessing.cpu_count()
@@ -390,35 +378,6 @@ class OperatorContext(TercenContext):
 
 
         self.cubeQuery = self.task.query
-        
-
-        self.schema = self.client.tableSchemaService.get( self.cubeQuery.qtHash )
-        self.cschema = self.client.tableSchemaService.get( self.cubeQuery.columnHash)
-        self.rschema = self.client.tableSchemaService.get( self.cubeQuery.rowHash )
-
-        self.names = [col.name for col in self.schema.columns] 
-        self.cnames = [col.name for col in self.cschema.columns] 
-        self.rnames = [col.name for col in self.rschema.columns] 
-
-        axisQueries = self.cubeQuery.axisQueries
-
-        self.colors = [c.name for q in axisQueries for c in q.colors]
-        self.labels = [l.name for q in axisQueries for l in q.labels]
-        self.errors = [l.name for q in axisQueries for l in q.errors]
-        self.chartType = [q.chartType for q in axisQueries ]
-        self.pointSizes = [q.pointSize for q in axisQueries ]
-
-        
-        self.yAxis = utl.unique_and_nonempty( [q.yAxis.name for q in axisQueries])
-        self.xAxis = utl.unique_and_nonempty( [q.xAxis.name for q in axisQueries])
-
-
-        self.hasXAxis = any([ col.name == ".x" for col in self.schema.columns ])
-        self.hasNumericXAxis = any([ col.name == ".x" and col.type == "double" for col in self.schema.columns ])
-
-        self.isPairwise = len(set(self.cnames).intersection( set(self.rnames) )) > 0
-
-        
 
         self.namespace = self.cubeQuery.operatorSettings.namespace
 
@@ -496,55 +455,6 @@ class OperatorContextDev(TercenContext):
             task = self.client.taskService.get(stp.model.taskId)
             self.cubeQuery  = task.query
 
-        self.schema = self.client.tableSchemaService.get( self.cubeQuery.qtHash)
-        self.cschema = self.client.tableSchemaService.get(self.cubeQuery.columnHash )
-        self.rschema = self.client.tableSchemaService.get( self.cubeQuery.rowHash )
-
-        hasCSchema = True
-        hasRSchema = True
-
-        # if len(self.schema) > 0:
-        #     self.schema = self.schema[0]
-        # if len(self.cschema) > 0:
-        #     self.cschema = self.cschema[0]
-        #     hasCSchema = True
-        # if len(self.rschema) > 0:
-        #     self.rschema = self.rschema[0]
-        #     hasRSchema = True
-
-        # self.schema = self.client.tableSchemaService.findByQueryHash( keys=[self.cubeQuery.qtHash] )[0]
-        # self.cschema = self.client.tableSchemaService.findByQueryHash( keys=[self.cubeQuery.columnHash] )[0]
-        # self.rschema = self.client.tableSchemaService.findByQueryHash( keys=[self.cubeQuery.rowHash] )[0]
-
-        self.names = [col.name for col in self.schema.columns] 
-        if hasCSchema:
-            self.cnames = [col.name for col in self.cschema.columns] 
-        else:
-            self.cnames = []
-
-        if hasRSchema:
-            self.rnames = [col.name for col in self.rschema.columns] 
-        else:
-            self.rnames = []
-
-        axisQueries = self.cubeQuery.axisQueries
-
-        self.colors = [c.name for q in axisQueries for c in q.colors]
-        self.labels = [l.name for q in axisQueries for l in q.labels]
-        self.errors = [l.name for q in axisQueries for l in q.errors]
-        self.chartType = [q.chartType for q in axisQueries ]
-        self.pointSizes = [q.pointSize for q in axisQueries ]
-
-        
-        self.yAxis = utl.unique_and_nonempty( [q.yAxis.name for q in axisQueries])
-        self.xAxis = utl.unique_and_nonempty( [q.xAxis.name for q in axisQueries])
-
-
-        self.hasXAxis = any([ col.name == ".x" for col in self.schema.columns ])
-        self.hasNumericXAxis = any([ col.name == ".x" and col.type == "double" for col in self.schema.columns ])
-
-        self.isPairwise = self.cnames != [''] and self.rnames != [''] and len(set(self.cnames).intersection( set(self.rnames) )) > 0
-
         self.task = None
 
         self.namespace = self.cubeQuery.operatorSettings.namespace
@@ -553,9 +463,6 @@ class OperatorContextDev(TercenContext):
             letters = string.ascii_uppercase
             self.namespace = 'ds_' + ''.join(random.choice(letters) for i in range(2)) 
             
-
-
-
     # For development testing, returns the resulting table
     def save( self, df ) -> pd.DataFrame:
         if issubclass(df.__class__, OperatorResult):
@@ -579,26 +486,19 @@ class OperatorContextDev(TercenContext):
 
         fileDoc = self.client.fileService.uploadTable( fileDoc, result.toJson() )
 
-        task = None 
-        if task is None:
-            print("task is null, create a task")
-            if self.session.serverVersion is None:
-                task = ComputationTask()
-            else:
-                task = RunComputationTask()
-
-            task.state = InitState()
-            task.owner = workflow.acl.owner
-            task.projectId = workflow.projectId
-            task.query = self.cubeQuery
-            task.fileResultId = fileDoc.id
-            task = self.client.taskService.create(task)
-
-    #               
+        print("task is null, create a task")
+        if self.session.serverVersion is None:
+            task = ComputationTask()
         else:
-            task.fileResultId = fileDoc.id
-            rev = self.client.taskService.update(task)
-            task.rev = rev
+            task = RunComputationTask()
+
+        task.state = InitState()
+        task.owner = workflow.acl.owner
+        task.projectId = workflow.projectId
+        task.query = self.cubeQuery
+        task.fileResultId = fileDoc.id
+        task = self.client.taskService.create(task)
+
 
         self.client.taskService.runTask( task.id )
         task = self.client.taskService.waitDone( task.id )
@@ -634,49 +534,11 @@ class OperatorContextDev(TercenContext):
 
         df = pd.DataFrame()
 
-
-            # res = self.client.tableSchemaService.selectPairwise(  schema.id, names, offset, nr)
-        if schema.nRows <= 1600000:
-            if( self.isPairwise ):
-                res = self.client.tableSchemaService.selectPairwise(  schema.id, names, offset, nr)
-            else:
-                res = self.client.tableSchemaService.select(  schema.id, names, offset, nr)
+        res = self.client.tableSchemaService.selectStream( schema.id, names, offset, nr)
 
 
-            for c in res.columns:
-                df[c.name] = c.values
-        else:
-            # res = self.client.tableSchemaService.select(  schema.id, names, offset, nr)
-            offset = 0
-            nr = 1500000
-            chunkSize = nr
-            hasMoreChunks = True
+        answer = TableBase.createFromJson(decodeTSON(res))
 
-            while hasMoreChunks:
-                if (offset + nr) > schema.nRows:
-                    hasMoreChunks = False
-
-                    nr = schema.nRows - offset 
-
-                if( self.isPairwise ):
-                    res = self.client.tableSchemaService.selectPairwise( schema.id, names, offset, nr)
-                else:
-                    res = self.client.tableSchemaService.select(  schema.id, names, offset, nr)
-
-                chunkDf = pd.DataFrame()
-                for c in res.columns:
-                    chunkDf[c.name] = c.values
-
-                if offset == 0:
-                    df = chunkDf
-                else:
-                    df = pd.concat([df, chunkDf], ignore_index=True)
-
-                offset = offset + chunkSize 
-
-        # df = pd.DataFrame()
-
-        # for c in res.columns:
-        #     df[c.name] = c.values
+        df = utl.table_to_pandas(answer)
 
         return df

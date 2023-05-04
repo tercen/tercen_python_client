@@ -100,7 +100,7 @@ class TestTercen(unittest.TestCase):
         rids_factor = ''.join((crel.id, "._rids"))
 
         rdf = utl.left_join_relation(rdf, crel, ".i", rids_factor)
-        jdf = utl.as_join_operator(rdf, self.context.context.cnames, self.context.context.cnames)
+        jdf = utl.as_join_operator(rdf, self.context.cnames, self.context.cnames)
         # jdf = utl.as_join_operator(rdf, [], [])
 
 
