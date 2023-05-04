@@ -51,6 +51,9 @@ class WorkflowBuilder():
                 self.proj = p
                 break
 
+        if not self.proj is None:
+            self.client.projectService.delete(self.proj.id, self.proj.rev)
+
         if self.proj is None:
             # Create project
             proj = Project()
