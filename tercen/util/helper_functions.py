@@ -246,3 +246,17 @@ def get_temp_filepath(ext=''):
             ext))
     
     return file_path
+
+
+def flatten(l):
+    ll = []
+
+    for i in l:
+        if isinstance(i, list):
+            items = flatten(i)
+            for k in items:
+                ll.append(k)
+        else:
+            ll.append(i)
+      
+    return ll
