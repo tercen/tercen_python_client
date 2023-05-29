@@ -1,11 +1,10 @@
 import pandas as pd
-import zlib
 
 from io import BytesIO
 import tempfile, string, random
 
 import pytson as ptson
-import uuid
+import uuid, os, hashlib, base64
 from tercen.model.base import Table, Column, InMemoryRelation, Relation, SchemaBase, SimpleRelation
 from tercen.model.base import CompositeRelation, JoinOperator, ColumnPair
 
@@ -99,12 +98,6 @@ def pandas_to_bytes(df):
 def bytes_to_pandas( tableBytes ) -> pd.DataFrame:
     dwnTbl = Table()
     
-
-    # s = BytesIO(zlib.decompress(tableBytes))
-    # FIXME
-    # Check if this is still necessary
-    # If not, remove
-    # If yes, avoid creating the buffer here.
     buf = BytesIO()
     buf.write(tableBytes)
     buf.seek(0)
@@ -205,3 +198,51 @@ def unique_and_nonempty( strList) -> list:
             res.append(el)
 
     return res
+
+
+def image_file_to_df(file_path):
+    filename = os.path.basename(file_path)
+    ftype = os.path.splitext(file_path)[1]
+
+    if ftype == '.png':
+        mimetype = "image/png"
+    elif ftype == '.svg':
+        mimetype = "image/svg+xml"
+    elif ftype == '.pdf':
+        mimetype = "image/pdf"
+    else:
+        mimetype = 'unknown'
+
+    checksum = hashlib.md5(open(file_path,'rb').read()).hexdigest()
+
+    output_str = []
+
+    for fpath in file_path:
+        with open(file_path, mode="rb") as f:
+            fc = f.read()
+            output_str.append([base64.b64encode(fc)])
+
+
+    o = output_str[0][0]
+
+    outs = o.decode('utf-8')
+    imgDf = pd.DataFrame({
+        "filename":[filename],
+        "mimetype":[mimetype],
+        "checksum":[checksum],
+        ".content":[outs]
+    })
+
+    return imgDf
+
+def get_temp_filepath(ext=''):
+    
+    if ext != '' and str.find(ext, '.') < 0: 
+        ext = ''.join([".", ext])
+
+    letters = string.ascii_letters
+    fname = ''.join(random.choice(letters) for i in range(32))
+    file_path = ''.join((tempfile.gettempdir(), '/', fname,
+            ext))
+    
+    return file_path
