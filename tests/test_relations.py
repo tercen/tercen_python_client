@@ -38,10 +38,6 @@ class TestTercen(unittest.TestCase):
 
 
 
-        df = pd.DataFrame(data={"colFactor":["C1", "C1", "C2", "C2"],
-                           "rowFactor":["R1", "R2", "R1", "C2"],
-                           "measurement":[12, 0.7, -4, 33]})
-
         self.wkfBuilder = bld.WorkflowBuilder(username=self.username, password=self.passw, serviceUri=self.serviceUri)
         self.wkfBuilder.create_workflow( 'python_auto_project', 'python_workflow')
         self.wkfBuilder.add_table_step( './tests/data/hospitals.csv' )

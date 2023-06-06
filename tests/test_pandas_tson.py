@@ -6,8 +6,9 @@ import pandas as pd
 import tercen.util.helper_functions as utl
 
 
-
+#TODO Recreate the venv folder with correct python paths
 class TestTercen(unittest.TestCase):
+
     def setUp(self):
         numVars = 3
         numObs = 15
@@ -25,7 +26,7 @@ class TestTercen(unittest.TestCase):
 
 
     def test_pandas_to_table(self):
-        tbl = utl.pandas_to_table( self.df )
+        tbl = utl.pandas_to_table( self.df ) 
 
         assert(len(tbl.columns) == 3)
         assert(tbl.nRows == 45)

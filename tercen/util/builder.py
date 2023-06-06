@@ -23,8 +23,9 @@ class WorkflowBuilder():
 
         self.user = username
 
-        self.steps = []
-        self.schemas = []
+        self.steps = {}
+        self.schemas = {}
+        self.cbQueries = {}
         self.namespaceCount = 0
 
 
@@ -43,24 +44,21 @@ class WorkflowBuilder():
         end_key = ["test", False, ""]
         projects = self.client.projectService.findByTeamAndIsPublicAndLastModifiedDate(start_key, end_key)
 
-        # projects = self.client.projectService.findByIsPublicAndLastModifiedDate([True, '2000'], None)
-
         self.proj = None
         for p in projects:
             if p.name == projectName:
                 self.proj = p
                 break
 
+        
         if not self.proj is None:
             self.client.projectService.delete(self.proj.id, self.proj.rev)
 
-        if self.proj is None:
-            # Create project
-            proj = Project()
-            
-            proj.name = 'python_auto_project'
-            proj.acl.owner = self.user
-            self.proj = self.client.projectService.create(proj)
+        proj = Project()
+        
+        proj.name = 'python_auto_project'
+        proj.acl.owner = self.user
+        self.proj = self.client.projectService.create(proj)
 
 
         self.workflow = None
@@ -72,18 +70,21 @@ class WorkflowBuilder():
                 self.workflow = wkf
                 break
 
-        if self.workflow is None:
-            self.workflow = Workflow()
-            self.workflow.steps = []
-            self.workflow.projectId = self.proj.id
-            self.workflow.acl.owner = self.proj.acl.owner
-            self.workflow.name = workflowName
+        if not self.workflow is None:
+            self.client.workflowService.delete(self.workflow.id, self.workflow.rev)
 
-            self.workflow = self.client.workflowService.create(self.workflow)
+        self.workflow = Workflow()
+        self.workflow.steps = []
+        self.workflow.projectId = self.proj.id
+        self.workflow.acl.owner = self.proj.acl.owner
+        self.workflow.name = workflowName
+
+        self.workflow = self.client.workflowService.create(self.workflow)
 
 
-
-    def add_table_step(self, data) -> int:
+    # By default, if a number is not x.x, pandas converts it to int, which might not be desirable
+    # Thus, int columns need to be manually specified through the int_columns parameter
+    def add_table_step(self, data, int_columns=None):
         if data is None:
             raise "data parameter is empty"
         if isinstance( data, str ):
@@ -93,16 +94,16 @@ class WorkflowBuilder():
         else:
             raise "data must either be a file path or a pandas DataFrame"
 
-        # Converts everything to float
-        # By default, if a number is not x.x, pandas converts it to int, which might not be desirable
+       
         # However, it might be necessary to alter this behavior
         colNames = list(df)
 
         for n in colNames:
-            if isinstance( df[n].values.tolist()[0], int):
+            if (not int_columns is None) and  n in int_columns:
+                df = df.astype({n: np.int32})
+            elif isinstance( df[n].values.tolist()[0], int):
                 df = df.astype({n: np.double})
 
-        # dfBytes = utl.pandas_to_bytes(df)
 
         fileDoc = FileDocument()
         fileDoc.name = "data.csv"
@@ -124,7 +125,7 @@ class WorkflowBuilder():
         self.csvTask = self.client.taskService.waitDone(task.id)
 
         csvSchema = self.client.tableSchemaService.get(self.csvTask.schemaId)
-        self.schemas.append(csvSchema)
+        self.schemas["tableStep"]  = csvSchema
 
         tableStep = TableStep()
         
@@ -174,10 +175,12 @@ class WorkflowBuilder():
         stepSt.taskState = DoneState() # Marks the little square on the step green, though it might not be necessary
         tableStep.state = stepSt
 
-        self.workflow.steps.append( tableStep )
+        nSteps = len(self.workflow.steps)
+        self.workflow.steps.append(tableStep)
+        # self.workflow.steps[nSteps]  =  tableStep 
 
 
-
+        self.steps["tableStep"] = tableStep
         self.client.workflowService.update(self.workflow)
 
 
@@ -195,7 +198,137 @@ class WorkflowBuilder():
         # self.tableStepTask = self.client.taskService.waitDone(tableTask.id)
 
         # Return the index of the step
-        return len(self.workflow.steps)-1
+        # Return name of the step
+        # return "tableStep" #len(self.workflow.steps)-1
+
+
+    def add_data_step(self, name=None, columns:list=None, rows:list=None,
+                labels:list=None, errors:list=None, colors:list=None,
+                yAxis:dict=None, xAxis:dict=None, linkTo:str=None, 
+                operator:dict=None) -> None:
+        if linkTo is None:
+            linkTo = 'tableStep'
+
+        if yAxis is None:
+            raise 'y-axis is mandatory'
+
+        if name is None:
+            name = ''.join(['Data_Step_', self.__randomString(2)])
+
+        dataStep = DataStep()
+        dataStep.name = name
+        dataStep.id = uuid.uuid4().__str__()
+
+        dataStep.outputs = [self.__create_port( dataStep.id, type='out')]
+        dataStep.inputs = [self.__create_port( dataStep.id, type='in')]
+
+        stpState = StepState()
+        stpState.taskState = InitState()
+
+        dataStep.state = stpState
+        dataStep.model = self.__add_crosstab_model(stepName=name, yAxis=yAxis, xAxis=xAxis,
+                            columns=columns, rows=rows, labels=labels, errors=errors,
+                             colors=colors, prevStep=linkTo)
+
+
+        dataStep.model.operatorSettings.namespace = ''.join(['ds', str(self.namespaceCount)]) 
+        self.namespaceCount = self.namespaceCount + 1
+
+        # Add operator to step
+        if not operator is None:
+            opKeys = list(operator.keys())
+            if not (np.any([k == 'name' for k in opKeys]) and np.any([k == 'version' for k in opKeys]) and np.any([k == 'url' for k in opKeys])):
+                raise Exception("Operator parameter must be a dict with name, version and url")
+                
+            opObj = self.get_operator(opName=operator["name"], opGit=operator["url"], opVersion=operator["version"])
+
+            dataStep.model.operatorSettings.operatorRef.operatorId = opObj.id
+            # dataStep.model.operatorSettings.operatorRef.operatorKind = opObj.__class__
+            dataStep.model.operatorSettings.operatorRef.operatorName = opObj.name
+            dataStep.model.operatorSettings.operatorRef.operatorVersion = opObj.version
+
+        
+
+        link = Link()
+        # FIXME Only considering the first input and output here
+        # A better solution might be to create the output for each step here, as needed
+        link.inputId = dataStep.inputs[0].id
+
+        stpId = self.steps[linkTo].id
+        matchList = ([s.id == stpId for s in self.workflow.steps])
+        
+        linkIdx = [i for i, x in enumerate(matchList) if x]
+        linkIdx = linkIdx[0]
+        
+        link.outputId = self.workflow.steps[linkIdx].outputs[0].id
+
+        self.workflow.steps.append( dataStep )
+        self.workflow.links.append(link)
+
+        self.client.workflowService.update(self.workflow)
+
+        self.steps[name] = dataStep
+
+        if not operator is None:
+            task = self.run_computation_task(dataStepName=name, prevStep=linkTo)
+            self.cbQueries[name] = task.query
+            self.schemas[name] = task.computedRelation
+
+
+
+
+    def __install_operator(self, opGit, opName, opVersion, gitToken) -> None:
+
+        # Retrieve list of available operators and try to install the desired one
+        opList = self.client.documentService.getTercenOperatorLibrary(0,10)
+        if opList is None:
+            opList = []
+
+        matchList = [p.name ==  opName for p in  opList]
+        opIdx = [i for i, x in enumerate(matchList) if x]
+
+        # Operator not found, must install it
+        if (not np.any(matchList)) or (len(opIdx) == 0):
+            print(''.join( ('Operator ', opGit, '@', opVersion, ' not installed. Going to install.'    ) ))
+            installTask = CreateGitOperatorTask()
+            installTask.state = InitState()
+            installTask.url.uri = opGit
+            installTask.version = opVersion
+            installTask.isDeleted = False
+            installTask.testRequired = False
+            # installTask.gitToken = gitToken
+            installTask.owner = self.user
+
+            installTask = self.client.taskService.create(installTask)
+            self.client.taskService.runTask(installTask.id)
+            installTask = self.client.taskService.waitDone(installTask.id)
+            print('Operator installed succesfully')
+            return self.client.operatorService.get(installTask.operatorId)
+        else:
+            print(''.join( ('Operator ', opGit, '@', opVersion, ' is installed.'    ) ))
+            return opList[opIdx]
+
+
+    def get_operator(self, opName, opGit, opVersion, gitToken=''):
+        # Check if operator is installed 
+        installedOps = self.client.documentService.findOperatorByOwnerLastModifiedDate(self.user, '')
+
+        isInstalled = True
+        opId = ''.join((opName, '@', opVersion))
+        matchList = [''.join((p.name, '@', p.version)) == opId  for p in  installedOps]
+        if not np.any(matchList):
+            isInstalled = False
+        else:
+            opIdx = [i for i, x in enumerate(matchList) if x]
+            if len(opIdx) == 0:
+                isInstalled = False
+
+        if not isInstalled:
+            operator = self.__install_operator(opName=opName, opVersion=opVersion, opGit=opGit, gitToken='')
+        else:
+            operator = installedOps[opIdx[0]]
+        
+        return operator
 
 
     def __create_graphical_factor(self, facName: str, facType: str) -> GraphicalFactor:
@@ -309,7 +442,67 @@ class WorkflowBuilder():
             facs.append(gFac.factor)
         return facs
     
-    def __run_cube_query_task(self, crosstabModel, prevStep:int):
+    def run_computation_task(self, dataStepName, prevStep:str):
+                     # TASK Definition
+        
+        dataStep = self.steps[dataStepName]
+        crosstabModel = dataStep.model
+        cbTask = RunComputationTask()
+        xyAxis = crosstabModel.axis.xyAxis[0]
+
+        cbQuery = CubeQuery()
+
+        schema = self.schemas[prevStep]
+        cbQuery.relation = utl.as_relation(schema)
+
+        axisQuery = CubeAxisQuery()
+
+        colTbl = crosstabModel.columnTable
+
+        colFacs = []
+        for gf in colTbl.graphicalFactors:
+            colFacs.append(gf.factor)
+        
+        cbQuery.colColumns = colFacs
+
+        yAx = xyAxis.yAxis.graphicalFactor.factor
+        xAx = xyAxis.xAxis.graphicalFactor.factor
+
+        if yAx.name != '':
+            axisQuery.yAxis.name = yAx.name
+            axisQuery.yAxis.type = yAx.type
+
+        if not xAx is None and xAx.name != '':
+            axisQuery.xAxis.name = xAx.name
+            axisQuery.xAxis.type = xAx.type
+        
+        axisQuery.labels = xyAxis.labels.factors
+        axisQuery.colors = xyAxis.colors.factors
+        axisQuery.errors = xyAxis.errors.factors
+        
+        cbQuery.axisQueries = [axisQuery]
+        # Factor list
+      
+        cbQuery.colColumns = self.__factors_from_graphical(crosstabModel.columnTable.graphicalFactors)
+        cbQuery.rowColumns = self.__factors_from_graphical(crosstabModel.rowTable.graphicalFactors)
+
+        cbQuery.operatorSettings = crosstabModel.operatorSettings
+
+        cbTask.query = cbQuery
+        cbTask.schemaIds = [schema.id]
+        cbTask.projectId = self.proj.id
+        cbTask.owner = self.proj.acl.owner
+
+        cbTask.state = InitState()
+        cbTask = self.client.taskService.create( cbTask )
+        self.client.taskService.runTask(cbTask.id)
+        cbTask = self.client.taskService.waitDone(cbTask.id)
+        
+
+        return cbTask
+        
+    
+    def __run_cube_query_task(self, crosstabModel, prevStep:str):
         # FIXME Change to cubequery task, possibly
         cbTask = CubeQueryTask() #RunComputationTask()
         xyAxis = crosstabModel.axis.xyAxis[0]
@@ -358,13 +551,13 @@ class WorkflowBuilder():
         cbTask.state = InitState()
         cbTask = self.client.taskService.create( cbTask )
         self.client.taskService.runTask(cbTask.id)
-        self.cbTask = self.client.taskService.waitDone(cbTask.id)
+        cbTask = self.client.taskService.waitDone(cbTask.id)
         
         
-        return self.cbTask.id
+        return cbTask
         
 
-    def __add_crosstab_model(self, prevStep:int, columns:list=None, rows:list=None,
+    def __add_crosstab_model(self, stepName:str, prevStep:str, columns:list=None, rows:list=None,
                 labels:list=None, errors:list=None, colors:list=None,
                 yAxis:dict=None, xAxis:dict=None ) -> Crosstab:
         model = Crosstab()
@@ -469,8 +662,11 @@ class WorkflowBuilder():
         model.axis = axisList
         model.filters = fltrs
 
-        cbTaskId = self.__run_cube_query_task(model, prevStep)
+        # TODO get the cubequery from this function and store it elsewhere, so it is easier to run
+        cbTask = self.__run_cube_query_task(model, prevStep)
+        cbTaskId = cbTask.id
 
+        self.cbQueries[stepName] = cbTask.query
 
         model.taskId = cbTaskId 
         model.axis.xyAxis[0].taskId = cbTaskId
@@ -484,50 +680,3 @@ class WorkflowBuilder():
         self.client.projectService.delete(self.proj.id, self.proj.rev)
 
 
-    def add_data_step(self, name=None, columns:list=None, rows:list=None,
-                labels:list=None, errors:list=None, colors:list=None,
-                yAxis:dict=None, xAxis:dict=None, linkTo:int=None) -> None:
-        if linkTo is None:
-            linkTo = len(self.workflow.steps)-1
-        else:
-            linkTo = linkTo - 1
-
-
-        if yAxis is None:
-            raise 'y-axis is mandatory'
-
-        if name is None:
-            stepName = ''.join(['Data_Step_', self.__randomString(2)])
-
-        dataStep = DataStep()
-        dataStep.name = 'OperatorStep'
-        dataStep.id = uuid.uuid4().__str__()
-
-        dataStep.outputs = [self.__create_port( dataStep.id, type='out')]
-        dataStep.inputs = [self.__create_port( dataStep.id, type='in')]
-
-        stpState = StepState()
-        stpState.taskState = InitState()
-
-        dataStep.state = stpState
-        dataStep.model = self.__add_crosstab_model(yAxis=yAxis, xAxis=xAxis,
-                            columns=columns, rows=rows, labels=labels, errors=errors,
-                             colors=colors, prevStep=linkTo)
-
-
-        dataStep.model.operatorSettings.namespace = ''.join(['ds', str(self.namespaceCount)]) 
-        self.namespaceCount = self.namespaceCount + 1
-        
-
-
-
-        link = Link()
-        # FIXME Only considering the first input and output here
-        # A better solution might be to create the output for each step here, as needed
-        link.inputId = dataStep.inputs[0].id
-        link.outputId = self.workflow.steps[linkTo].outputs[0].id
-
-        self.workflow.steps.append( dataStep )
-        self.workflow.links.append(link)
-
-        self.client.workflowService.update(self.workflow)
