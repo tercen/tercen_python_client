@@ -26,6 +26,8 @@ class WorkflowBuilder():
         self.steps = {}
         self.schemas = {}
         self.cbQueries = {}
+
+        self.cubeSteps = []
         self.namespaceCount = 0
 
 
@@ -212,6 +214,15 @@ class WorkflowBuilder():
         if yAxis is None:
             raise 'y-axis is mandatory'
 
+        # Populate needed steps for cubeQuery
+        self.cubeSteps = [] 
+        if not columns is None:
+            for d in columns:
+                if "step" in d:
+                    self.cubeSteps.append(d["step"])
+
+
+
         if name is None:
             name = ''.join(['Data_Step_', self.__randomString(2)])
 
@@ -273,6 +284,19 @@ class WorkflowBuilder():
             task = self.run_computation_task(dataStepName=name, prevStep=linkTo)
             self.cbQueries[name] = task.query
             self.schemas[name] = task.computedRelation
+
+            cr = task.computedRelation
+            if cr.joinOperators[0].rightRelation.__class__ == SimpleRelation:
+                ts = self.client.tableSchemaService.get(cr.joinOperators[0].rightRelation.id)
+            else:
+                ts = self.client.tableSchemaService.get(task.computedRelation.joinOperators[0].rightRelation.relation.mainRelation.id)
+
+            cols = ts.columns
+            self.schemas[name] = ts
+
+            
+
+            
 
 
 
@@ -509,7 +533,17 @@ class WorkflowBuilder():
 
         cbQuery = CubeQuery()
 
+        #TODO Join the necessary schemas
+        # Possibly needs to add .ci and .ri if the operator does not return them
+        # 1. Find out which schemas schould be joined
+        # 2. Che
         schema = self.schemas[prevStep]
+        # if prevStep != "tableStep":
+            # schema2 = self.schemas["tableStep"]
+            # utl.as_relation(schema)
+            # utl.left_join_relation()
+            # cbQuery.relation = utl.as_relation(schema)
+        # else:
         cbQuery.relation = utl.as_relation(schema)
 
         axisQuery = CubeAxisQuery()

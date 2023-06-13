@@ -39,46 +39,47 @@ class TercenContext:
         else:
             self.context = OperatorContext( authToken=authToken,
                     username=username, password=password, taskId=taskId, serviceUri=serviceUri )
+        
+        if not stepId is None:        
+            self.cubeQuery = self.context.cubeQuery
+
+            self.schema = self.context.client.tableSchemaService.get( self.cubeQuery.qtHash )
+            try:
+                self.cschema = self.context.client.tableSchemaService.get( self.cubeQuery.columnHash)
+            except:
+                self.cschema = []
             
-        self.cubeQuery = self.context.cubeQuery
+            try:
+                self.rschema = self.context.client.tableSchemaService.get( self.cubeQuery.rowHash )
+            except:
+                self.rschema = []
 
-        self.schema = self.context.client.tableSchemaService.get( self.cubeQuery.qtHash )
-        try:
-            self.cschema = self.context.client.tableSchemaService.get( self.cubeQuery.columnHash)
-        except:
-            self.cschema = []
-        
-        try:
-            self.rschema = self.context.client.tableSchemaService.get( self.cubeQuery.rowHash )
-        except:
-            self.rschema = []
+            
 
-        
+            self.names = [col.name for col in self.schema.columns] 
+            self.cnames = [col.name for col in self.cschema.columns] 
+            self.rnames = [col.name for col in self.rschema.columns] 
 
-        self.names = [col.name for col in self.schema.columns] 
-        self.cnames = [col.name for col in self.cschema.columns] 
-        self.rnames = [col.name for col in self.rschema.columns] 
+            axisQueries = self.cubeQuery.axisQueries
 
-        axisQueries = self.cubeQuery.axisQueries
+            self.colors = [c.name for q in axisQueries for c in q.colors]
+            self.labels = [l.name for q in axisQueries for l in q.labels]
+            self.errors = [l.name for q in axisQueries for l in q.errors]
+            self.chartType = [q.chartType for q in axisQueries ]
+            self.pointSizes = [q.pointSize for q in axisQueries ]
 
-        self.colors = [c.name for q in axisQueries for c in q.colors]
-        self.labels = [l.name for q in axisQueries for l in q.labels]
-        self.errors = [l.name for q in axisQueries for l in q.errors]
-        self.chartType = [q.chartType for q in axisQueries ]
-        self.pointSizes = [q.pointSize for q in axisQueries ]
-
-        
-        self.yAxis = utl.unique_and_nonempty( [q.yAxis.name for q in axisQueries])
-        self.xAxis = utl.unique_and_nonempty( [q.xAxis.name for q in axisQueries])
+            
+            self.yAxis = utl.unique_and_nonempty( [q.yAxis.name for q in axisQueries])
+            self.xAxis = utl.unique_and_nonempty( [q.xAxis.name for q in axisQueries])
 
 
-        self.hasXAxis = any([ col.name == ".x" for col in self.schema.columns ])
-        self.hasNumericXAxis = any([ col.name == ".x" and col.type == "double" for col in self.schema.columns ])
+            self.hasXAxis = any([ col.name == ".x" for col in self.schema.columns ])
+            self.hasNumericXAxis = any([ col.name == ".x" and col.type == "double" for col in self.schema.columns ])
 
-        self.isPairwise = self.cnames != [''] and self.rnames != [''] and len(set(self.cnames).intersection( set(self.rnames) )) > 0
+            self.isPairwise = self.cnames != [''] and self.rnames != [''] and len(set(self.cnames).intersection( set(self.rnames) )) > 0
 
-        self.task = self.context.task
-        self.namespace = self.context.namespace
+            self.task = self.context.task
+            self.namespace = self.context.namespace
    
     
 
@@ -438,30 +439,33 @@ class OperatorContextDev(TercenContext):
         # self.cubeQuery = self.client.workflowService.getCubeQuery(workflowId, stepId)
         wkf = self.client.workflowService.get(workflowId)
 
-        stp = None
-        for s in wkf.steps:
-            if s.id == stepId:
-                stp = s
-                break
+        # If stepId is not required, most of the context will not work
+        # This is only ever useful when running all steps of a workflow
+        if not stepId is None:  
+            stp = None
+            for s in wkf.steps:
+                if s.id == stepId:
+                    stp = s
+                    break
 
-        
-        if stp is None:
-            raise "Step not found"
+            
+            if stp is None:
+                raise "Step not found"
 
-        
-        if stp.model.taskId == '':
-            self.cubeQuery = self.client.workflowService.getCubeQuery(workflowId, stepId)
-        else:
-            task = self.client.taskService.get(stp.model.taskId)
-            self.cubeQuery  = task.query
+            
+            if stp.model.taskId == '':
+                self.cubeQuery = self.client.workflowService.getCubeQuery(workflowId, stepId)
+            else:
+                task = self.client.taskService.get(stp.model.taskId)
+                self.cubeQuery  = task.query
 
-        self.task = None
+            self.task = None
 
-        self.namespace = self.cubeQuery.operatorSettings.namespace
+            self.namespace = self.cubeQuery.operatorSettings.namespace
 
-        if self.namespace == '':
-            letters = string.ascii_uppercase
-            self.namespace = 'ds_' + ''.join(random.choice(letters) for i in range(2)) 
+            if self.namespace == '':
+                letters = string.ascii_uppercase
+                self.namespace = 'ds_' + ''.join(random.choice(letters) for i in range(2)) 
             
     # For development testing, returns the resulting table
     def save( self, df ) -> pd.DataFrame:
