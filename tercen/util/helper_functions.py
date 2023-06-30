@@ -1,9 +1,12 @@
 import pandas as pd
+import polars as pl
+import polars.datatypes.classes as plc
 
 from io import BytesIO
 import tempfile, string, random
 
 import pytson as ptson
+
 import uuid, os, hashlib, base64
 from tercen.model.base import Table, Column, InMemoryRelation, Relation, SchemaBase, SimpleRelation
 from tercen.model.base import CompositeRelation, JoinOperator, ColumnPair
@@ -12,17 +15,38 @@ from tercen.model.base import CompositeRelation, JoinOperator, ColumnPair
 
 
 
-def pandas_to_table(df, values_as_list=False) -> Table:
+def dataframe_to_table(df, values_as_list=False) -> Table:
+
+    df_lib = "polars"
+    if df.__class__ == pd.DataFrame:
+        df_lib = "pandas"
+
     tbl = Table()
     tbl.nRows = int(  df.shape[0] )
     tbl.columns = []
 
-    colnames = list(df)
-    dtypes = df.dtypes
+    
+    if df_lib == "polars":
+        colnames = df.columns
+        dtypes = [ str.lower(str(dt)) for dt in  df.dtypes]
+        for i in range(0, len(dtypes)):
+            if dtypes[i] == 'utf8':
+                dtypes[i] = 'object'
+
+        
+    else:
+        colnames = list(df)
+        dtypes = df.dtypes
+
+    
     for i in range(0, len(colnames)):
         column = Column()
         column.name = colnames[i]
-        values = df.loc[:,colnames[i]].values
+        if df_lib == "polars":
+            values = df.drop_in_place( colnames[i]).to_numpy()
+        else:
+            values = df.loc[:,colnames[i]].values
+            df = df.drop(colnames[i], axis=1)
         
 
         # FIXME Not handling categorical (factor) and  boolean yet (dtype == bool)
@@ -39,18 +63,37 @@ def pandas_to_table(df, values_as_list=False) -> Table:
         else:
             column.values = values
         column.nRows = tbl.nRows
-
+        
         tbl.columns.append( column )
 
-    return tbl
+    # df is returned so we are changing the input df
+    return (tbl, df)
 
-def table_to_pandas(tbl) -> pd.DataFrame:
-    df = pd.DataFrame()
 
-    for c in tbl.columns:
-        df[c.name] = c.values
+def tson_to_polars(tson:dict) -> pl.DataFrame:
+    df = None
+    for col in tson.pop("columns"):
+        if df is None:
+            df = pl.DataFrame({
+                col.pop("id"):col.pop("values")})
+        else:
+            df = pl.concat([df,pl.DataFrame({
+                col.pop("id"):col.pop("values")})], how="horizontal")
 
     return df
+
+def tson_to_pandas(tson:dict) -> pl.DataFrame:
+    df = None
+    for col in tson.pop("columns"):
+        if df is None:
+            df = pd.DataFrame({
+                col.pop("id"):col.pop("values")})
+        else:
+            df = pd.concat([df,pd.DataFrame({
+                col.pop("id"):col.pop("values")},dtype=int)], axis=1)
+
+    return df
+
 
 
 class TercenBytes():
@@ -82,19 +125,24 @@ class TercenBytes():
         raise StopIteration
 
 
-def pandas_to_bytes(df):
+# @TODO adjust for polars, or deprecate
+def dataframe_to_bytes(df, clone=False):
     nDigits = 10
     fName = tempfile.gettempdir().join('/')
     fName.join(random.choices(string.ascii_uppercase + string.digits, k=nDigits))
 
-    tbl = pandas_to_table( df )
+    if clone == True and df.__class__  == pl.DataFrame:
+        tbl = dataframe_to_table( df.clone() )[0]
+    else:
+        tbl = dataframe_to_table( df )[0]
 
     tsonObj = ptson.encodeTSON( tbl.toJson() ) 
-    #tblBytes = zlib.compress(tsonObj.getvalue())
+
 
     return tsonObj.getvalue()
 
 
+# @TODO adjust for polars, or deprecate
 def bytes_to_pandas( tableBytes ) -> pd.DataFrame:
     dwnTbl = Table()
     
@@ -113,13 +161,39 @@ def bytes_to_pandas( tableBytes ) -> pd.DataFrame:
 
     return dwnDf
 
+def bytes_to_dataframe( tableBytes, df_engine="polars" ) -> pd.DataFrame:
+    dwnTbl = Table()
+    
+    buf = BytesIO()
+    buf.write(tableBytes)
+    buf.seek(0)
+    dwnTson = ptson.decodeTSON(buf)
+
+    dwnTbl.fromJson(dwnTson)
+
+    if df_engine == "pandas":
+                # From table to pandas
+        dwnDf = pd.DataFrame()
+        for i in range(0, len(dwnTbl.columns)):
+            col = dwnTbl.columns[i]
+            dwnDf.insert(i, col.name, col.values)
+    else:
+        # From table to polars
+        dwnDf = pl.DataFrame()
+        for i in range(0, len(dwnTbl.columns)):
+            col = dwnTbl.columns[i]
+            dwnDf = dwnDf.with_column( pl.col(col.values).alias(col.name))
+
+
+    return dwnDf
+
 
 def as_relation(obj) -> Relation:
     if issubclass(obj.__class__, Relation):
         return obj
 
-    if isinstance(obj, pd.DataFrame):
-        tbl = pandas_to_table(obj)
+    if isinstance(obj, pd.DataFrame) or isinstance(obj, pl.DataFrame) or isinstance(obj, pl.LazyFrame):
+        tbl = dataframe_to_table(obj)[0]
     elif issubclass(obj.__class__, Table):
         tbl = obj
     elif issubclass(obj.__class__, SchemaBase):

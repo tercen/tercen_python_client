@@ -2,6 +2,7 @@ import unittest
 import numpy as np
 import numpy.testing as npt
 import pandas as pd
+import polars as pl
 
 import os
 
@@ -63,13 +64,6 @@ class TestTercen(unittest.TestCase):
                                     colors=[{"name":"Facility.Type", "type":"string"}])
         
         
-        # if isLocal == True: # Running locally
-
-        #     self.context = ctx.TercenContext(
-        #                     stepId=self.wkfBuilder.workflow.steps[1].id,
-        #                     workflowId=self.wkfBuilder.workflow.id,
-        #                     serviceUri = serviceUri)
-        # else: # Running from Github Actions
         self.context = ctx.TercenContext(
                         username=username,
                         password=passw,
@@ -85,7 +79,7 @@ class TestTercen(unittest.TestCase):
  
     def test_select_x(self) -> None:
         '''x_axis'''
-        targetYDf = pd.read_csv('tests/data/Test_Full_Projection_Table_1.csv')
+        targetYDf = pl.read_csv('tests/data/Test_Full_Projection_Table_1.csv')
        
  
         selNames = ['.y', '.x']
@@ -102,7 +96,7 @@ class TestTercen(unittest.TestCase):
 
     def test_select_empty_row(self) -> None:
         '''one_col'''
-        targetYDf = pd.read_csv('tests/data/Test_Full_Projection_Table_1.csv')
+        targetYDf = pl.read_csv('tests/data/Test_Full_Projection_Table_1.csv')
        
 
         selNames = ['.y', '.ci', '.ri']
@@ -118,7 +112,7 @@ class TestTercen(unittest.TestCase):
 
     def test_select_empty_col_row(self) -> None:
         '''simple'''
-        targetYDf = pd.read_csv('tests/data/Test_Full_Projection_Table_1.csv')
+        targetYDf = pl.read_csv('tests/data/Test_Full_Projection_Table_1.csv')
        
 
         selNames = ['.y', '.ci', '.ri']
@@ -133,9 +127,9 @@ class TestTercen(unittest.TestCase):
 
 
     def test_select_col_row(self) -> None:
-        targetYDf = pd.read_csv('tests/data/Test_Full_Projection_Table_1.csv')
-        targetColDf = pd.read_csv('tests/data/Test_Full_Projection_Table_2.csv')
-        targetRowDf = pd.read_csv('tests/data/Test_Full_Projection_Table_3.csv')
+        targetYDf = pl.read_csv('tests/data/Test_Full_Projection_Table_1.csv')
+        targetColDf = pl.read_csv('tests/data/Test_Full_Projection_Table_2.csv')
+        targetRowDf = pl.read_csv('tests/data/Test_Full_Projection_Table_3.csv')
 
         
 
@@ -155,7 +149,7 @@ class TestTercen(unittest.TestCase):
 
     def test_select_one(self) -> None:
         # http://127.0.0.1:5402/test/w/9b611b90f412969d6f617f559f005bc6/ds/2ca54ff5-5b7f-44e9-870b-48facabc41ae
-        targetDf = pd.read_csv('tests/data/Test_Full_Projection_Table_1.csv')
+        targetDf = pl.read_csv('tests/data/Test_Full_Projection_Table_1.csv')
 
         selNames = ['.y']
 
@@ -166,11 +160,11 @@ class TestTercen(unittest.TestCase):
       
         assert( not resDf is None )
         assert(resDf.shape == targetDf.shape)
-        np.testing.assert_array_equal(resDf.loc[:,selNames], targetDf.loc[:,selNames])
+        np.testing.assert_array_equal(resDf[:,selNames], targetDf[:,selNames])
 
     def test_select_many(self) -> None:
         # http://127.0.0.1:5402/test/w/9b611b90f412969d6f617f559f005bc6/ds/2ca54ff5-5b7f-44e9-870b-48facabc41ae
-        targetDf = pd.read_csv('tests/data/Test_Full_Projection_Table_1.csv')
+        targetDf = pl.read_csv('tests/data/Test_Full_Projection_Table_1.csv')
 
         selNames = ['.y', 'Facility.Type', 'Facility.Name' ]
 
@@ -181,16 +175,16 @@ class TestTercen(unittest.TestCase):
         assert(resDf.shape == targetDf.shape)
 
         for selName in selNames:
-            np.testing.assert_array_equal(resDf.loc[:,selName], targetDf.loc[:,selName])
+            np.testing.assert_array_equal(resDf[:,selName], targetDf[:,selName])
 
     def test_select_all(self) -> None:
         # http://127.0.0.1:5402/test/w/9b611b90f412969d6f617f559f005bc6/ds/2ca54ff5-5b7f-44e9-870b-48facabc41ae
-        targetDf = pd.read_csv('tests/data/Test_Full_Projection_Table_1.csv')
+        targetDf = pl.read_csv('tests/data/Test_Full_Projection_Table_1.csv')
 
         selNames = ['']
 
-        targetDf = targetDf.drop(".cri", axis=1) # int64
-        # targetDf = targetDf.drop(".tlbIdx", axis=1) # int64
+        # targetDf = targetDf.drop(".cri", axis=1) # int64
+        targetDf = targetDf.drop(".cri") # int64
         resDf = self.context.select( selNames )
         
         assert( not resDf is None )
@@ -198,12 +192,12 @@ class TestTercen(unittest.TestCase):
 
         cnames = [n for n in resDf.columns]
         for selName in cnames:
-            np.testing.assert_array_equal(resDf.loc[:,selName], targetDf.loc[:,selName])
+            np.testing.assert_array_equal(resDf[:,selName], targetDf[:,selName])
         
 
 
     def test_select_all_columns(self):
-        targetDf = pd.read_csv('tests/data/Test_Full_Projection_Table_2.csv')
+        targetDf = pl.read_csv('tests/data/Test_Full_Projection_Table_2.csv')
 
         selNames = ['']
 
@@ -215,10 +209,10 @@ class TestTercen(unittest.TestCase):
 
         cnames = [n for n in resDf.columns]
         for selName in cnames:
-            np.testing.assert_array_equal(resDf.loc[:,selName], targetDf.loc[:,selName])
+            np.testing.assert_array_equal(resDf[:,selName], targetDf[:,selName])
 
     def test_select_columns(self):
-        targetDf = pd.read_csv('tests/data/Test_Full_Projection_Table_2.csv')
+        targetDf = pl.read_csv('tests/data/Test_Full_Projection_Table_2.csv')
 
         selNames = ['Rating.Imaging']
         targetDf = targetDf[selNames]
@@ -230,10 +224,10 @@ class TestTercen(unittest.TestCase):
 
         cnames = [n for n in resDf.columns]
         for selName in cnames:
-            np.testing.assert_array_equal(resDf.loc[:,selName], targetDf.loc[:,selName])
+            np.testing.assert_array_equal(resDf[:,selName], targetDf[:,selName])
 
     def test_select_all_rows(self):
-        targetDf = pd.read_csv('tests/data/Test_Full_Projection_Table_3.csv')
+        targetDf = pl.read_csv('tests/data/Test_Full_Projection_Table_3.csv')
 
         selNames = ['']
 
@@ -245,10 +239,10 @@ class TestTercen(unittest.TestCase):
 
         cnames = [n for n in resDf.columns]
         for selName in cnames:
-            np.testing.assert_array_equal(resDf.loc[:,selName], targetDf.loc[:,selName])
+            np.testing.assert_array_equal(resDf[:,selName], targetDf[:,selName])
 
     def test_select_rows(self):
-        targetDf = pd.read_csv('tests/data/Test_Full_Projection_Table_3.csv')
+        targetDf = pl.read_csv('tests/data/Test_Full_Projection_Table_3.csv')
 
         selNames = ['Rating.Effectiveness']
         targetDf = targetDf[selNames]
@@ -260,7 +254,7 @@ class TestTercen(unittest.TestCase):
 
         cnames = [n for n in resDf.columns]
         for selName in cnames:
-            np.testing.assert_array_equal(resDf.loc[:,selName], targetDf.loc[:,selName])
+            np.testing.assert_array_equal(resDf[:,selName], targetDf[:,selName])
 
 if __name__ == '__main__':
     unittest.main()

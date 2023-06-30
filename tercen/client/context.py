@@ -11,7 +11,7 @@ from tercen.client.factory import TercenClient
 from tercen.util import helper_functions as utl
 from tercen.http.HttpClientService import encodeTSON, decodeTSON
 import scipy.sparse as ssp
-
+import polars as pl
 
 
 class TercenContext:
@@ -223,8 +223,8 @@ class TercenContext:
 
         return sdf
 
-
-    def select_stream(self, names=[], offset=0, nr=None) -> pd.DataFrame:
+    
+    def select_stream(self, names=[], offset=0, nr=None, df_lib="polars") -> pd.DataFrame:
         if not nr is None and nr < 0:
             nr = None
 
@@ -232,18 +232,21 @@ class TercenContext:
             where = utl.logical_index([ c.type != 'uint64' and c.type != 'int64' for c in self.schema.columns ])
             names = [ c.name for c in utl.get_from_idx_list( self.schema.columns, where) ]
 
-        res = self.context.client.tableSchemaService.selectStream(self.schema.id, names, offset, nr)
 
-        answer = TableBase.createFromJson(decodeTSON(res))
+        if df_lib == "polars":
+            return utl.tson_to_polars(
+            decodeTSON(self.context.client.tableSchemaService.selectStream(self.schema.id, names, offset, nr))
+        )
+        else:
+            return utl.tson_to_pandas(
+                decodeTSON(self.context.client.tableSchemaService.selectStream(self.schema.id, names, offset, nr))
+            )
 
-        df = utl.table_to_pandas(answer)
 
-        return df
-
-    def select(self, names=[], offset=0, nr=None) -> pd.DataFrame:
+    def select(self, names=[], offset=0, nr=None, df_lib="polars") -> pd.DataFrame:
         return self.select_stream(names, offset, nr)
 
-    def cselect_stream(self, names=[], offset=0, nr=None):
+    def cselect_stream(self, names=[], offset=0, nr=None, df_lib="polars"):
         if not nr is None and nr < 0:
             nr = None
 
@@ -251,15 +254,18 @@ class TercenContext:
             where = utl.logical_index([ c.type != 'uint64' and c.type != 'int64' for c in self.cschema.columns ])
             names = [ c.name for c in utl.get_from_idx_list( self.cschema.columns, where) ]
 
-        res = self.context.client.tableSchemaService.selectStream(self.cschema.id, names, offset, nr)
 
-        answer = TableBase.createFromJson(decodeTSON(res))
+        if df_lib == "polars":
+            return utl.tson_to_polars(
+                decodeTSON(self.context.client.tableSchemaService.selectStream(self.cschema.id, names, offset, nr))
+            )
+        else:
+            return utl.tson_to_pandas(
+                decodeTSON(self.context.client.tableSchemaService.selectStream(self.cschema.id, names, offset, nr))
+            )
 
-        df = utl.table_to_pandas(answer)
-
-        return df
     
-    def rselect_stream(self, names=[], offset=0, nr=None):
+    def rselect_stream(self, names=[], offset=0, nr=None, df_lib="polars"):
         if not nr is None and nr < 0:
             nr = None
 
@@ -267,19 +273,21 @@ class TercenContext:
             where = utl.logical_index([ c.type != 'uint64' and c.type != 'int64' for c in self.rschema.columns ])
             names = [ c.name for c in utl.get_from_idx_list( self.rschema.columns, where) ]
 
-        res = self.context.client.tableSchemaService.selectStream(self.rschema.id, names, offset, nr)
+        if df_lib == "polars":
+            return utl.tson_to_polars(
+                decodeTSON(self.context.client.tableSchemaService.selectStream(self.rschema.id, names, offset, nr))
+            )
+        else:
+            return utl.tson_to_pandas(
+                decodeTSON(self.context.client.tableSchemaService.selectStream(self.rschema.id, names, offset, nr))
+            )
 
-        answer = TableBase.createFromJson(decodeTSON(res))
 
-        df = utl.table_to_pandas(answer)
-
-        return df
-
-    def cselect(self, names=[], offset=0, nr=None) -> pd.DataFrame:
+    def cselect(self, names=[], offset=0, nr=None):
         return self.cselect_stream(names, offset, nr)
 
-    def rselect(self, names=[], offset=0, nr=None) -> pd.DataFrame:
-        return self.rselect_stream(names, offset, nr)
+    def rselect(self, names=[], offset=0, nr=None, df_lib="polars"):
+        return self.rselect_stream(names, offset, nr, df_lib)
 
 
     def available_cores(self) -> int:
@@ -389,9 +397,9 @@ class OperatorContext(TercenContext):
             result = OperatorResult()
 
             if isinstance(df, list):
-                result.tables = [ utl.pandas_to_table(t) for t in df ]
+                result.tables = [ utl.dataframe_to_table(t) for t in df ]
             else:
-                result.tables = [utl.pandas_to_table(df)]
+                result.tables = [utl.dataframe_to_table(df)]
         
         
         resultBytes = encodeTSON( result.toJson() ) 
@@ -475,9 +483,9 @@ class OperatorContextDev(TercenContext):
             result = OperatorResult()
 
             if isinstance(df, list):
-                result.tables = [ utl.pandas_to_table(t) for t in df ]
+                result.tables = [ utl.dataframe_to_table(t)[0] for t in df ]
             else:
-                result.tables = [ utl.pandas_to_table(df)]
+                result.tables = [ utl.dataframe_to_table(df)[0]]
         
         #resultBytes = encodeTSON( result.toJson() )
 
@@ -521,9 +529,22 @@ class OperatorContextDev(TercenContext):
         dff = self.__select_from_schema(ts, '') 
         cols = dff.columns
         if not ".ci" in cols:
-            dff.insert(0, '.ci', 0)
+            dff = dff.with_columns(pl.lit(0).alias('.ci'))
+            c = dff.columns
+            idx = [len(c)-1]
+            [ idx.append(cn) for cn in range(0, len(c)-1)]
+            
+            dff = dff.select( [c[i] for i in idx]  )
+            
         if not ".ri" in cols:
-            dff.insert(1, '.ri', 0)
+            dff = dff.with_columns(pl.lit(0).alias('.ri'))
+            c = dff.columns
+            
+            idx = [len(c)-1]
+            [ idx.append(cn) for cn in range(0, len(c)-1)]
+
+            dff = dff.select( [c[i] for i in idx]  )
+            
 
         return dff
 
@@ -541,8 +562,8 @@ class OperatorContextDev(TercenContext):
         res = self.client.tableSchemaService.selectStream( schema.id, names, offset, nr)
 
 
-        answer = TableBase.createFromJson(decodeTSON(res))
 
-        df = utl.table_to_pandas(answer)
+        return utl.tson_to_polars(
+            decodeTSON(self.client.tableSchemaService.selectStream(schema.id, names, offset, nr)) 
+            )
 
-        return df

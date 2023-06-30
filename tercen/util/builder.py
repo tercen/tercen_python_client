@@ -14,8 +14,7 @@ import tercen.util.helper_functions as utl
 
 
 # TODO Add support for multiple links between steps
-# TODO Only supports TableStep -> DataStep Workflows (no multiple steps)
-# TODO Does not support installing and running operators
+# TODO Switch to polars
 class WorkflowBuilder():
     def __init__(self, username='test', password='test', serviceUri="http://127.0.0.1:5400/"):
         self.client = TercenClient(serviceUri)
@@ -113,7 +112,8 @@ class WorkflowBuilder():
         fileDoc.acl.owner = self.proj.acl.owner
         fileDoc.metadata.contentEncoding = "application/octet-stream"
 
-        self.fileDoc = self.client.fileService.uploadTable(fileDoc, utl.pandas_to_table(df, values_as_list=True).toJson() )
+        
+        self.fileDoc = self.client.fileService.uploadTable(fileDoc, utl.dataframe_to_table(df, values_as_list=True)[0].toJson() )
 
         task = CSVTask()
         task.state = InitState()

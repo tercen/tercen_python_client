@@ -5,6 +5,7 @@ from tercen.client import context as ctx
 import tercen.util.builder as bld
 
 import numpy.testing as npt
+import polars as pl
 
 class TestTercen(unittest.TestCase):
     def setUp(self):
@@ -64,16 +65,15 @@ class TestTercen(unittest.TestCase):
     def clear_workflow(self):
         self.wkfBuilder.clean_up_workflow()
 
-    # 112.5    
-    # @memunit.assert_mb
     def test_save(self) -> None:
         df = self.context.select(['.y', '.ci', '.ri'])
 
-        df['y2'] = df['.y'] * 2
-        df['y'] = df['.y']
-        df = df.drop('.y', axis=1)
-
+        df = df.with_columns( (pl.col(".y") * 2).alias("y2") )
+        df = df.with_columns( (pl.col(".y") ).alias("y") )
+        df = df.drop(".y")
         
+
+
         df = self.context.add_namespace(df) 
         for col in  df.columns:
             parts = col.split(",")
@@ -81,12 +81,8 @@ class TestTercen(unittest.TestCase):
                 nms = parts[1]
                 break
 
-        # FIXME
-        # 1. Use save
-        # 2. Ensure workflow builder accepts a step to be added
-        # 3. Use that to get a projection
-        # 4. Compare the results
-        resDf = self.context.save_dev(df)
+        resDf = self.context.save_dev(df.clone())
+        # resDf = resDf.drop(".ri")
 
         assert(len(df) == len(resDf))
         assert(len(df.columns) == len(resDf.columns))
@@ -96,39 +92,44 @@ class TestTercen(unittest.TestCase):
             c1 = str.split(resDf.columns[i] , sep='.')[-1]
             
             assert(c0 == c1)
-            npt.assert_array_almost_equal(df[".ci"].values, resDf[".ci"].values)
+            npt.assert_array_almost_equal(df[".ci"].to_numpy(), resDf[".ci"].to_numpy())
 
     def test_save_no_rowcol(self) -> None:
         '''simple'''
         df = self.context.select(['.y', '.ci', '.ri'])
-        df['y2'] = df['.y'] * 2
-        df['y'] = df['.y']
-        df = df.drop(['.y'], axis=1)
+
+        df = df.with_columns( (pl.col(".y") * 2).alias("y2") )
+        df = df.with_columns( (pl.col(".y") ).alias("y") )
+        df = df.drop(".y", ".ri")
+
 
         df = self.context.add_namespace(df) 
 
-        resDf =  self.context.save_dev(df)
+        resDf =  self.context.save_dev(df.clone())
+        resDf = resDf.drop(".ri")
 
         assert(len(df) == len(resDf))
         assert(len(df.columns) == len(resDf.columns))
         
         for i in range(0, len(resDf.columns)):
             c0 = df.columns[i] 
+
             c1 = resDf.columns[i] 
             
             assert(c0 == c1)
-            npt.assert_array_almost_equal(df[c0].values, resDf[c1].values)
+            npt.assert_array_almost_equal(df[c0].to_numpy(), resDf[c1].to_numpy())
 
     def test_save_no_col(self) -> None:
         '''simple02'''
         df = self.context.select(['.y', '.ci', '.ri'])
-        df['y2'] = df['.y'] * 2
-        df['y'] = df['.y']
-        df = df.drop(['.y'], axis=1)
+
+        df = df.with_columns( (pl.col(".y") * 2).alias("y2") )
+        df = df.with_columns( (pl.col(".y") ).alias("y") )
+        df = df.drop(".y", ".ri")
 
         df = self.context.add_namespace(df) 
-        resDf = self.context.save_dev(df) 
-        
+        resDf = self.context.save_dev(df.clone()) 
+        resDf = resDf.drop(".ri")
 
         assert(len(df) == len(resDf))
         assert(len(df.columns) == len(resDf.columns))
@@ -138,7 +139,7 @@ class TestTercen(unittest.TestCase):
             c1 = resDf.columns[i] 
             
             assert(c0 == c1)
-            npt.assert_array_almost_equal(df[c0].values, resDf[c1].values)
+            npt.assert_array_almost_equal(df[c0].to_numpy(), resDf[c1].to_numpy())
 
 
 

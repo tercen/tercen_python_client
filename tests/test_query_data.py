@@ -71,7 +71,7 @@ class TestTercen(unittest.TestCase):
         return data
 
     def upload_file_doc(self, df):
-        dfBytes = utl.pandas_to_bytes(df)
+        dfBytes = utl.dataframe_to_bytes(df)
 
         fileDoc = FileDocument()
         fileDoc.name = "input_datatable"
@@ -103,6 +103,7 @@ class TestTercen(unittest.TestCase):
     def test_transfer_file_document(self) -> None:
         df = self.create_data()
 
+        #FIX Pandas
         self.fileDoc = self.upload_file_doc(df)
         
 
@@ -110,7 +111,7 @@ class TestTercen(unittest.TestCase):
         
 
         fileDownloaded = self.client.fileService.download( self.fileDoc.id )
-        dwnDf = utl.bytes_to_pandas(fileDownloaded.read())
+        dwnDf = utl.bytes_to_dataframe(fileDownloaded.read(), df_engine="pandas")
 
         assert(  dwnFileDoc.id == self.fileDoc.id )
         npt.assert_array_equal( df.iloc[:,0], dwnDf.iloc[:,0] )

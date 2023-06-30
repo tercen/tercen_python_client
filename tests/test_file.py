@@ -33,7 +33,7 @@ class TestFileService(unittest.TestCase):
     def test_upload_download_large_file(self):
         df = pd.read_csv('./tests/data/hospitals.csv')
         # df = pd.read_csv('./tests/data/scRNAseq_large_by25_no0.csv')
-        bytes_data = utl.pandas_to_bytes(df)
+        bytes_data = utl.dataframe_to_bytes(df)
 
 
         project = Project()

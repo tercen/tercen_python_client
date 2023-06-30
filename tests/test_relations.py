@@ -5,7 +5,8 @@ from tercen.client import context as ctx
 import tercen.util.builder as bld
 import tercen.util.helper_functions as utl
 import pandas as pd
-
+import polars as pl
+import numpy as np
 import numpy.testing as npt
 
 class TestTercen(unittest.TestCase):
@@ -76,21 +77,24 @@ class TestTercen(unittest.TestCase):
         '''simple'''
         df = self.context.select(['.y'])
 
-
-        df['y2'] = df['.y'] * 2
-        # df['i'] = df['.ci']
-        # df = df.drop('.y', axis=1)
-        # df = df.drop('.ci', axis=1)
+        df = df.with_columns((pl.col(".y") * 2).alias("y2"))
         
         df = self.context.add_namespace(df) 
 
-        rdf_smp = utl.as_relation(df)
+        
+        rdf_smp = utl.as_relation(df.clone())
         jdf_smp = utl.as_join_operator(rdf_smp, [ ], [ ])
 
 
         resDf = self.context.save_relation_dev(jdf_smp) 
-        resDf = resDf.drop(columns=[".ci", ".ri"]) # Automatically from save_dev
 
+        if np.any([c == ".ci" for c in resDf.columns]):
+            resDf = resDf.drop(".ci")
+
+        if np.any([c == ".ri" for c in resDf.columns]):
+            resDf = resDf.drop(".ri")
+        # resDf = resDf.drop(columns=[".ci", ".ri"]) # Automatically from save_dev
+        # resDf = resDf.drop(".ci", ".ri")
 
         assert(len(df) == len(resDf))
         assert(len(df.columns) == len(resDf.columns))
@@ -100,26 +104,20 @@ class TestTercen(unittest.TestCase):
             c1 = str.split(resDf.columns[i] , sep='.')[-1]
             
             assert(c0 == c1)
-            npt.assert_array_almost_equal(df[df.columns[i]].values, resDf[resDf.columns[i]].values)
+            npt.assert_array_almost_equal(df[df.columns[i]].to_numpy(), resDf[resDf.columns[i]].to_numpy())
 
     def test_save_col(self) -> None:
         df = self.context.select(['.y', '.ci', '.ri'])
 
+        df = df.with_columns((pl.col(".y") * 2).alias("y2"))
+        df = df.with_columns((pl.col(".ci") ).alias("i"))
+        df = df.with_columns((pl.col(".ri") ).alias("r"))
 
-        df['y2'] = df['.y'] * 2
-        df['i'] = df['.ci']
-        df['r'] = df['.ri']
-        df = df.drop('.y', axis=1)
-        df = df.drop('.ci', axis=1)
-        df = df.drop('.ri', axis=1)
-
+        df = df.drop(".ci", ".ri", ".y")
         
         df = self.context.add_namespace(df) 
 
-        rdf_smp = utl.as_relation(df)
-
-
-        rdf = utl.as_relation(df)
+        rdf = utl.as_relation(df.clone())
         crel = self.context.get_crelation()
         rrel = self.context.get_rrelation()
 
@@ -130,8 +128,13 @@ class TestTercen(unittest.TestCase):
         jdf = utl.as_join_operator(rdf, utl.flatten([self.context.cnames, self.context.rnames]), 
                                    utl.flatten([self.context.cnames, self.context.rnames]))
 
-        resDf = self.context.save_relation_dev(jdf) # does not work
-        resDf = resDf.drop(columns=[".ci", ".ri"]) # Automatically from save_dev
+        resDf = self.context.save_relation_dev(jdf) 
+        
+        if np.any([c == ".ci" for c in resDf.columns]):
+            resDf = resDf.drop(".ci")
+
+        if np.any([c == ".ri" for c in resDf.columns]):
+            resDf = resDf.drop(".ri")
 
 
         assert(len(df) == len(resDf))
@@ -142,4 +145,5 @@ class TestTercen(unittest.TestCase):
             c1 = str.split(resDf.columns[i] , sep='.')[-1]
             
             assert(c0 == c1)
-            npt.assert_array_almost_equal(df[df.columns[i]].values, resDf[resDf.columns[i]].values)
+            npt.assert_array_almost_equal(df[df.columns[i]].to_numpy(), resDf[resDf.columns[i]].to_numpy())
+            
