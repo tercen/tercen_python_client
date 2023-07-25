@@ -45,7 +45,7 @@ venvPythDist = glob.glob(''.join([venvPath, '/lib/python3*']) )[0]
 venvPkgs = glob.glob(''.join([venvPythDist, '/site-packages/*']))
 venvSrcPkgs = glob.glob(''.join([venvPath, '/src/*']))
 
-vp = venvPkgs[63]
+# vp = venvPkgs[63]
 
 str.split('pexpect\n', '\n')
 
