@@ -6,6 +6,16 @@ import os
 import json
 
 
+
+
+def print_help_message():
+    print("Utility to generate a new requirements file, or update an existing one.")
+    print("Call:")
+    print("python3 -m tercen.util.requirements BASE_PATH [--baseReq==BASE_REQ_FILE_PATH]")
+    print("")
+    print("* BASE_PATH: Path to the base source folder. MANDATORY")
+    print("* baseReq: Path to an existing requirements file. Only packages not already in the file will be added")
+
 def get_base_prefix_compat():
     return getattr(sys, "base_prefix", None) or getattr(sys, "real_prefix", None) or sys.prefix
 
@@ -19,16 +29,50 @@ venvName = str.split(venvPath, '/')[-1]
 if len(sys.argv) <= 1:
     raise "Base folder is required to detect requirements"
 
+baseReq = None
+if len(sys.argv) > 1:
+    for k in range(2, len(sys.argv)):
+        param = sys.argv[k].split("==")
+        if param[0] == "--baseReq":
+            baseReq = param[1]
+        if param[0] == "-h":
+            print_help_message()
+            sys.exit()
 
+
+baseModules = []
+if not baseReq is None and len(baseReq) > 0:
+    with open(baseReq, newline='') as csvfile:
+        reqReader = csv.reader(csvfile, delimiter='\t', quotechar='|')
+        for row in reqReader:
+            if len(row) == 0:
+                continue
+            rowParts = row[0].split("==")
+            if rowParts[0].startswith("#"):
+                continue
+            else:
+                if rowParts[0].startswith("-e"):
+                    baseModules.append(rowParts[0].split("/")[-1].split("@")[0])
+                    
+                else:
+                    baseModules.append(rowParts[0])
+
+print(baseModules)
 
 srcFolder = ''.join([os.path.abspath(sys.argv[1]), '/'])
 
 if not os.path.exists:
     raise "Given source path does not exist"
 
+#FIXME Only must get this path programmatically
+# path = os.environ["PATH"] + ":/config/.local/bin"
+# os.environ["PATH"] = path
+print(srcFolder)
+
 subprocess.call(["pipreqs", "--force", srcFolder], 
             stdout=subprocess.DEVNULL,
-            stderr=subprocess.STDOUT)
+            stderr=subprocess.STDOUT,
+            env=os.environ)
 
 
 reqModules = []
@@ -38,6 +82,12 @@ with open(srcFolder + 'requirements.txt', newline='') as csvfile:
         reqModules.append( str.split(row[0], "==")[0] )
 
 
+[reqModules.append(m) for m in baseModules]
+print(set(reqModules))
+
+
+
+
 distPkgs = []
 eggPkgs = []
 
@@ -45,9 +95,6 @@ venvPythDist = glob.glob(''.join([venvPath, '/lib/python3*']) )[0]
 venvPkgs = glob.glob(''.join([venvPythDist, '/site-packages/*']))
 venvSrcPkgs = glob.glob(''.join([venvPath, '/src/*']))
 
-vp = venvPkgs[63]
-
-str.split('pexpect\n', '\n')
 
 for vp in venvPkgs:
     if str.endswith(vp, 'dist-info'):
@@ -81,11 +128,10 @@ for vp in venvPkgs:
                 reqPkgs.append(reqPkg)
 
             if str.startswith(l, 'Name: '):
-                
+               
                 pkgName = str.split(l, ": ")[1]
                 pkgName = str.split(pkgName, "\n")[0]
                 version = pkgParts[1]
-
                 if not pkgGit is None:
                     version = pkgGit
                 
@@ -97,8 +143,8 @@ for vp in venvPkgs:
 # Packages distributed as source/egg (such as pytson)
 for vp_ in venvSrcPkgs:
     vp = glob.glob(''.join([vp_, '/*egg-info']))[0]
-    if str.endswith(vp, '.egg-info'):
-        
+    if str.endswith(vp, '.egg-info'): 
+       
         pkg = str.split(vp, '.egg')[0]
         pkg = str.split(pkg, '/')[-1]
         
