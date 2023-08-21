@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 setup(
     name='tercen',
-    version='0.7.3',
+    version='0.7.4',
     packages=find_packages(exclude=['tests']),
     install_requires=[
         'numpy==1.24.*',

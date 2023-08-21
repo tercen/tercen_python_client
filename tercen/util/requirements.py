@@ -57,33 +57,29 @@ if not baseReq is None and len(baseReq) > 0:
                 else:
                     baseModules.append(rowParts[0])
 
-print(baseModules)
+#print(baseModules)
 
 srcFolder = ''.join([os.path.abspath(sys.argv[1]), '/'])
-
+wdFolder = os.getcwd()
 if not os.path.exists:
     raise "Given source path does not exist"
 
-#FIXME Only must get this path programmatically
-# path = os.environ["PATH"] + ":/config/.local/bin"
-# os.environ["PATH"] = path
-print(srcFolder)
-
-subprocess.call(["pipreqs", "--force", srcFolder], 
+subprocess.call(["pipreqs", "--force", "--savepath", wdFolder + "/tmp_reqs.txt",  srcFolder ], 
             stdout=subprocess.DEVNULL,
             stderr=subprocess.STDOUT,
             env=os.environ)
 
 
 reqModules = []
-with open(srcFolder + 'requirements.txt', newline='') as csvfile:
+
+with open(wdFolder + '/tmp_reqs.txt', newline='') as csvfile:
     reqReader = csv.reader(csvfile, delimiter=' ', quotechar='|')
     for row in reqReader:
         reqModules.append( str.split(row[0], "==")[0] )
 
 
 [reqModules.append(m) for m in baseModules]
-print(set(reqModules))
+#print(set(reqModules))
 
 
 
@@ -221,3 +217,4 @@ for m in addedMods:
 for r in fullReqs:
     print(r)
             
+os.remove(wdFolder + "/tmp_reqs.txt")
