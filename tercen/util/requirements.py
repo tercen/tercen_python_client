@@ -22,6 +22,7 @@ def get_base_prefix_compat():
 if get_base_prefix_compat() == sys.prefix:
     "No virtual environment active."
 
+wdFolder = os.getcwd()
 
 venvPath = sys.prefix
 venvName = str.split(venvPath, '/')[-1]
@@ -29,15 +30,17 @@ venvName = str.split(venvPath, '/')[-1]
 if len(sys.argv) <= 1:
     raise "Base folder is required to detect requirements"
 
-baseReq = None
-if len(sys.argv) > 1:
-    for k in range(2, len(sys.argv)):
-        param = sys.argv[k].split("==")
-        if param[0] == "--baseReq":
-            baseReq = param[1]
-        if param[0] == "-h":
-            print_help_message()
-            sys.exit()
+
+# tercen_requirements.txt <- IF it exists...
+baseReq = wdFolder + "/tercen_requirements.txt"
+# if len(sys.argv) > 1:
+#     for k in range(2, len(sys.argv)):
+#         param = sys.argv[k].split("==")
+#         if param[0] == "--baseReq":
+#             baseReq = param[1]
+#         if param[0] == "-h":
+#             print_help_message()
+#             sys.exit()
 
 
 baseModules = []
@@ -62,7 +65,7 @@ if not baseReq is None and len(baseReq) > 0:
 
 
 srcFolder = ''.join([os.path.abspath(sys.argv[1]), '/'])
-wdFolder = os.getcwd()
+
 if not os.path.exists:
     raise "Given source path does not exist"
 
