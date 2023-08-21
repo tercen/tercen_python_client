@@ -41,6 +41,7 @@ if len(sys.argv) > 1:
 
 
 baseModules = []
+baseModulesLines = []
 if not baseReq is None and len(baseReq) > 0:
     with open(baseReq, newline='') as csvfile:
         reqReader = csv.reader(csvfile, delimiter='\t', quotechar='|')
@@ -52,19 +53,20 @@ if not baseReq is None and len(baseReq) > 0:
                 continue
             else:
                 if rowParts[0].startswith("-e"):
-                    baseModules.append(rowParts[0].split("/")[-1].split("@")[0])
-                    
+                    baseModulesLines.append(row[0])
+                elif rowParts[0].startswith("git"):
+                    baseModulesLines.append(row[0])
                 else:
                     baseModules.append(rowParts[0])
 
-#print(baseModules)
+
 
 srcFolder = ''.join([os.path.abspath(sys.argv[1]), '/'])
 wdFolder = os.getcwd()
 if not os.path.exists:
     raise "Given source path does not exist"
 
-subprocess.call(["pipreqs", "--force", "--savepath", wdFolder + "/tmp_reqs.txt",  srcFolder ], 
+subprocess.call(["pipreqs", "--force",  "--savepath", wdFolder + "/tmp_reqs.txt",  srcFolder ], 
             stdout=subprocess.DEVNULL,
             stderr=subprocess.STDOUT,
             env=os.environ)
@@ -74,12 +76,14 @@ reqModules = []
 
 with open(wdFolder + '/tmp_reqs.txt', newline='') as csvfile:
     reqReader = csv.reader(csvfile, delimiter=' ', quotechar='|')
+    
     for row in reqReader:
         reqModules.append( str.split(row[0], "==")[0] )
 
 
 [reqModules.append(m) for m in baseModules]
-#print(set(reqModules))
+
+reqModules = list(set(reqModules)) # Remove duplicates
 
 
 
@@ -139,6 +143,7 @@ for vp in venvPkgs:
 # Packages distributed as source/egg (such as pytson)
 for vp_ in venvSrcPkgs:
     vp = glob.glob(''.join([vp_, '/*egg-info']))[0]
+    
     if str.endswith(vp, '.egg-info'): 
        
         pkg = str.split(vp, '.egg')[0]
@@ -201,6 +206,8 @@ for modul in reqModules:
                         addedMods.append(r)
                 
 
+for r in baseModulesLines:
+    print(r)
 
 # Turn the modules into a module string
 # Some are options, so they might no actually be installed
@@ -213,8 +220,10 @@ for m in addedMods:
                 print(''.join([p["name"], '==', p["version"] ]))
 
 
-
 for r in fullReqs:
     print(r)
+
+
             
 os.remove(wdFolder + "/tmp_reqs.txt")
+
