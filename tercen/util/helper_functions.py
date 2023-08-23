@@ -92,6 +92,8 @@ def tson_to_pandas(tson:dict) -> pl.DataFrame:
             df = pd.concat([df,pd.DataFrame({
                 col.pop("id"):col.pop("values")},dtype=int)], axis=1)
 
+    # PRevents int columns, like .ci and .ri to be coded as indices of the dataframe
+    df.reset_index(inplace=True)
     return df
 
 

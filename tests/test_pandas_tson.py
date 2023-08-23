@@ -25,6 +25,12 @@ class TestTercen(unittest.TestCase):
             "Measurement": np.random.rand( totalVals)
         } )
 
+        self.df_cr = pd.DataFrame( data={
+            ".ci": obsVals,
+            ".ri": varVals,
+            "Measurement": np.random.rand( totalVals)
+        } )
+
         self.df2 = pl.DataFrame( data={
             "Observation": obsVals,
             "Variable": varVals,
@@ -43,6 +49,19 @@ class TestTercen(unittest.TestCase):
         npt.assert_array_equal( tbl.columns[0].values, self.df.iloc[:,0] )
         npt.assert_array_equal( tbl.columns[1].values, self.df.iloc[:,1] )
         npt.assert_array_equal( tbl.columns[2].values, self.df.iloc[:,2] )
+
+    def test_pandas_to_table_ci(self):
+        tbl = utl.dataframe_to_table( self.df_cr )[0]
+        print(tbl)
+
+        assert(len(tbl.columns) == 3)
+        assert(tbl.nRows == 45)
+        assert(tbl.columns[0].name == ".ci")
+        assert(tbl.columns[1].name == ".ri")
+        assert(tbl.columns[2].name == "Measurement")
+        npt.assert_array_equal( tbl.columns[0].values, self.df_cr.iloc[:,0] )
+        npt.assert_array_equal( tbl.columns[1].values, self.df_cr.iloc[:,1] )
+        npt.assert_array_equal( tbl.columns[2].values, self.df_cr.iloc[:,2] )
 
     def test_polars_to_table(self):
         tbl = utl.dataframe_to_table( self.df2.clone()  )[0]
