@@ -1,5 +1,6 @@
 import pandas as pd
 import polars as pl
+import numpy as np
 import polars.datatypes.classes as plc
 
 from io import BytesIO
@@ -72,28 +73,42 @@ def dataframe_to_table(df, values_as_list=False) -> Table:
 
 def tson_to_polars(tson:dict) -> pl.DataFrame:
     df = None
+    
     for col in tson.pop("columns"):
+        ctype = col.pop("type")
+        cname = col.pop("name")
+        dtype = pl.Int32
+        if ctype == "double":
+            dtype = pl.Float32
+        if ctype == "object" or ctype == "string":
+            dtype = pl.Object
         if df is None:
             df = pl.DataFrame({
-                col.pop("id"):col.pop("values")})
+                cname:col.pop("values")}, schema={cname:dtype})
         else:
             df = pl.concat([df,pl.DataFrame({
-                col.pop("id"):col.pop("values")})], how="horizontal")
+                cname:col.pop("values")}, schema={cname:dtype})], how="horizontal")
 
     return df
 
 def tson_to_pandas(tson:dict) -> pl.DataFrame:
     df = None
     for col in tson.pop("columns"):
+        ctype = col.pop("type")
+        dtype = np.int32
+        if ctype == "double":
+            dtype = np.double
+        if ctype == "object" or ctype == "string":
+            dtype = object
         if df is None:
             df = pd.DataFrame({
-                col.pop("id"):col.pop("values")})
+                col.pop("name"):col.pop("values")}, dtype=dtype)
         else:
             df = pd.concat([df,pd.DataFrame({
-                col.pop("id"):col.pop("values")},dtype=int)], axis=1)
+                col.pop("name"):col.pop("values")},dtype=dtype)], axis=1)
 
     # PRevents int columns, like .ci and .ri to be coded as indices of the dataframe
-    df.reset_index(inplace=True)
+    #df.reset_index(inplace=True)
     return df
 
 

@@ -3,6 +3,7 @@ import numpy as np
 import numpy.testing as npt
 import pandas as pd
 import polars as pl
+import json
 
 import tercen.util.helper_functions as utl
 
@@ -18,6 +19,9 @@ class TestTercen(unittest.TestCase):
         totalVals   = numVars * numObs * numReplicates
         varVals    = [str('var{}'.format( v+1 )) for v in range(0,numVars) for v1 in range(0, numObs) for v2 in range(0, numReplicates)]
         obsVals    = [str('obs{}'.format( v+1 )) for v1 in range(0,numVars) for v in range(0, numObs)  for v2 in range(0, numReplicates)]
+        
+        varIVals    = [v+1 for v in range(0,numVars) for v1 in range(0, numObs) for v2 in range(0, numReplicates)]
+        obsIVals    = [v+1 for v1 in range(0,numVars) for v in range(0, numObs)  for v2 in range(0, numReplicates)]
 
         self.df = pd.DataFrame( data={
             "Observation": obsVals,
@@ -26,8 +30,8 @@ class TestTercen(unittest.TestCase):
         } )
 
         self.df_cr = pd.DataFrame( data={
-            ".ci": obsVals,
-            ".ri": varVals,
+            ".ci": obsIVals,
+            ".ri": varIVals,
             "Measurement": np.random.rand( totalVals)
         } )
 
@@ -50,18 +54,54 @@ class TestTercen(unittest.TestCase):
         npt.assert_array_equal( tbl.columns[1].values, self.df.iloc[:,1] )
         npt.assert_array_equal( tbl.columns[2].values, self.df.iloc[:,2] )
 
-    def test_pandas_to_table_ci(self):
+    def test_tson_to_pandas(self):
         tbl = utl.dataframe_to_table( self.df_cr )[0]
-        print(tbl)
+        df = utl.tson_to_pandas(tbl.toJson())
+        
+        colnames = list(df)
+        dtypes = df.dtypes
 
-        assert(len(tbl.columns) == 3)
-        assert(tbl.nRows == 45)
-        assert(tbl.columns[0].name == ".ci")
-        assert(tbl.columns[1].name == ".ri")
-        assert(tbl.columns[2].name == "Measurement")
-        npt.assert_array_equal( tbl.columns[0].values, self.df_cr.iloc[:,0] )
-        npt.assert_array_equal( tbl.columns[1].values, self.df_cr.iloc[:,1] )
-        npt.assert_array_equal( tbl.columns[2].values, self.df_cr.iloc[:,2] )
+        assert(df.shape[1] == 3)
+        assert(df.shape[0] == 45)
+
+        assert(colnames[0] == ".ci")
+        assert(colnames[1] == ".ri")
+        assert(colnames[2] == "Measurement")
+
+        assert(dtypes[0] == np.int32)
+        assert(dtypes[1] == np.int32)
+        assert(dtypes[2] == np.double)
+
+        npt.assert_array_equal( df.iloc[:,0], self.df_cr.iloc[:,0] )
+        npt.assert_array_equal( df.iloc[:,1], self.df_cr.iloc[:,1] )
+        npt.assert_array_equal( df.iloc[:,2], self.df_cr.iloc[:,2] )
+
+    def test_tson_to_polars(self):
+        tbl = utl.dataframe_to_table( self.df_cr )[0]
+        df = utl.tson_to_polars(tbl.toJson())
+
+        colnames = df.columns
+        dtypes = [ str.lower(str(dt)) for dt in  df.dtypes]
+        for i in range(0, len(dtypes)):
+            if dtypes[i] == 'utf8':
+                dtypes[i] = 'object'
+
+
+        assert(df.shape[1] == 3)
+        assert(df.shape[0] == 45)
+
+        assert(colnames[0] == ".ci")
+        assert(colnames[1] == ".ri")
+        assert(colnames[2] == "Measurement")
+
+        assert(dtypes[0] == 'int32')
+        assert(dtypes[1] == 'int32')
+        assert(dtypes[2] == 'float32')
+
+        # Rounding errors from polars and pandas types
+        npt.assert_array_almost_equal( df[:,0], self.df_cr.iloc[:,0], 0.00001 )
+        npt.assert_array_almost_equal( df[:,1], self.df_cr.iloc[:,1], 0.00001 )
+        npt.assert_array_almost_equal( df[:,2], self.df_cr.iloc[:,2], 0.00001 )
 
     def test_polars_to_table(self):
         tbl = utl.dataframe_to_table( self.df2.clone()  )[0]
