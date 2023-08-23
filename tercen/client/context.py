@@ -244,7 +244,7 @@ class TercenContext:
 
 
     def select(self, names=[], offset=0, nr=None, df_lib="polars") -> pd.DataFrame:
-        return self.select_stream(names, offset, nr)
+        return self.select_stream(names, offset, nr, df_lib)
 
     def cselect_stream(self, names=[], offset=0, nr=None, df_lib="polars"):
         if not nr is None and nr < 0:
@@ -283,8 +283,8 @@ class TercenContext:
             )
 
 
-    def cselect(self, names=[], offset=0, nr=None):
-        return self.cselect_stream(names, offset, nr)
+    def cselect(self, names=[], offset=0, nr=None, df_lib="polars"):
+        return self.cselect_stream(names, offset, nr, df_lib)
 
     def rselect(self, names=[], offset=0, nr=None, df_lib="polars"):
         return self.rselect_stream(names, offset, nr, df_lib)
