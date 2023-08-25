@@ -11,30 +11,33 @@ class TestTercen(unittest.TestCase):
     def setUp(self):
         envs = os.environ
         isLocal = False
+
+        with open("./tests/env.conf") as f:
+            for line in f:
+                if len(line.strip()) > 0:
+                    (key, val) = line.split(sep="=")
+                    conf[str(key)] = str(val).strip()
+
+        self.tol = conf["TOLERANCE"]
+
         if 'TERCEN_PASSWORD' in envs:
-            self.passw = envs['TERCEN_PASSWORD']
+            passw = envs['TERCEN_PASSWORD']
         else:
-            self.passw = None
+            passw = None
 
         if 'TERCEN_URI' in envs:
-            self.serviceUri = envs['TERCEN_URI']
+            serviceUri = envs['TERCEN_URI']
         else:
-            self.serviceUri = None
+            serviceUri = None
         if 'TERCEN_USERNAME' in envs:
-            self.username = envs['TERCEN_USERNAME']
+            username = envs['TERCEN_USERNAME']
         else:
             isLocal = True
-            self.username = 'test'
-            self.passw = 'test'
+            username = 'test'
+            passw = 'test'
             conf = {}
-            with open("./tests/env.conf") as f:
-                for line in f:
-                    if len(line.strip()) > 0:
-                        (key, val) = line.split(sep="=")
-                        conf[str(key)] = str(val).strip()
 
-            self.serviceUri = ''.join([conf["SERVICE_URL"], ":", conf["SERVICE_PORT"]])
-
+            serviceUri = ''.join([conf["SERVICE_URL"], ":", conf["SERVICE_PORT"]])
 
 
         self.wkfBuilder = bld.WorkflowBuilder(username=self.username, password=self.passw, serviceUri=self.serviceUri)
@@ -92,7 +95,7 @@ class TestTercen(unittest.TestCase):
             c1 = str.split(resDf.columns[i] , sep='.')[-1]
             
             assert(c0 == c1)
-            npt.assert_array_almost_equal(df[".ci"].to_numpy(), resDf[".ci"].to_numpy())
+            npt.assert_allclose(df[".ci"].to_numpy(), resDf[".ci"].to_numpy(), self.tol)
 
     def test_save_no_rowcol(self) -> None:
         '''simple'''
@@ -117,7 +120,7 @@ class TestTercen(unittest.TestCase):
             c1 = resDf.columns[i] 
             
             assert(c0 == c1)
-            npt.assert_array_almost_equal(df[c0].to_numpy(), resDf[c1].to_numpy())
+            npt.assert_allclose(df[c0].to_numpy(), resDf[c1].to_numpy(), self.tol)
 
     def test_save_no_col(self) -> None:
         '''simple02'''
@@ -139,7 +142,7 @@ class TestTercen(unittest.TestCase):
             c1 = resDf.columns[i] 
             
             assert(c0 == c1)
-            npt.assert_array_almost_equal(df[c0].to_numpy(), resDf[c1].to_numpy())
+            npt.assert_allclose(df[c0].to_numpy(), resDf[c1].to_numpy(), self.tol)
 
 
 

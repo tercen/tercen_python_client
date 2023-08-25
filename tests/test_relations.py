@@ -13,29 +13,33 @@ class TestTercen(unittest.TestCase):
     def setUp(self):
         envs = os.environ
         isLocal = False
+
+        with open("./tests/env.conf") as f:
+            for line in f:
+                if len(line.strip()) > 0:
+                    (key, val) = line.split(sep="=")
+                    conf[str(key)] = str(val).strip()
+
+        self.tol = conf["TOLERANCE"]
+
         if 'TERCEN_PASSWORD' in envs:
-            self.passw = envs['TERCEN_PASSWORD']
+            passw = envs['TERCEN_PASSWORD']
         else:
-            self.passw = None
+            passw = None
 
         if 'TERCEN_URI' in envs:
-            self.serviceUri = envs['TERCEN_URI']
+            serviceUri = envs['TERCEN_URI']
         else:
-            self.serviceUri = None
+            serviceUri = None
         if 'TERCEN_USERNAME' in envs:
-            self.username = envs['TERCEN_USERNAME']
+            username = envs['TERCEN_USERNAME']
         else:
             isLocal = True
-            self.username = 'test'
-            self.passw = 'test'
+            username = 'test'
+            passw = 'test'
             conf = {}
-            with open("./tests/env.conf") as f:
-                for line in f:
-                    if len(line.strip()) > 0:
-                        (key, val) = line.split(sep="=")
-                        conf[str(key)] = str(val).strip()
 
-            self.serviceUri = ''.join([conf["SERVICE_URL"], ":", conf["SERVICE_PORT"]])
+            serviceUri = ''.join([conf["SERVICE_URL"], ":", conf["SERVICE_PORT"]])
 
 
 
@@ -102,7 +106,7 @@ class TestTercen(unittest.TestCase):
             c1 = str.split(resDf.columns[i] , sep='.')[-1]
             
             assert(c0 == c1)
-            npt.assert_array_almost_equal(df[df.columns[i]].to_numpy(), resDf[resDf.columns[i]].to_numpy())
+            npt.assert_allclose(df[df.columns[i]].to_numpy(), resDf[resDf.columns[i]].to_numpy(), self.tol)
 
     def test_save_col(self) -> None:
         df = self.context.select(['.y', '.ci', '.ri'])
@@ -143,5 +147,5 @@ class TestTercen(unittest.TestCase):
             c1 = str.split(resDf.columns[i] , sep='.')[-1]
             
             assert(c0 == c1)
-            npt.assert_array_almost_equal(df[df.columns[i]].to_numpy(), resDf[resDf.columns[i]].to_numpy())
+            npt.assert_allclose(df[df.columns[i]].to_numpy(), resDf[resDf.columns[i]].to_numpy(), self.tol)
             

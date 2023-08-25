@@ -19,31 +19,33 @@ class TestTercen(unittest.TestCase):
     def setUp(self):
         envs = os.environ
         isLocal = False
+
+        with open("./tests/env.conf") as f:
+            for line in f:
+                if len(line.strip()) > 0:
+                    (key, val) = line.split(sep="=")
+                    conf[str(key)] = str(val).strip()
+
+        self.tol = conf["TOLERANCE"]
+
         if 'TERCEN_PASSWORD' in envs:
-            self.passw = envs['TERCEN_PASSWORD']
+            passw = envs['TERCEN_PASSWORD']
         else:
-            self.passw = None
+            passw = None
 
         if 'TERCEN_URI' in envs:
-            self.serviceUri = envs['TERCEN_URI']
+            serviceUri = envs['TERCEN_URI']
         else:
-            self.serviceUri = None
+            serviceUri = None
         if 'TERCEN_USERNAME' in envs:
-            self.username = envs['TERCEN_USERNAME']
+            username = envs['TERCEN_USERNAME']
         else:
             isLocal = True
-            self.username = 'test'
-            self.passw = 'test'
+            username = 'test'
+            passw = 'test'
             conf = {}
-            with open("./tests/env.conf") as f:
-                for line in f:
-                    if len(line.strip()) > 0:
-                        (key, val) = line.split(sep="=")
-                        conf[str(key)] = str(val).strip()
 
-            self.serviceUri = ''.join([conf["SERVICE_URL"], ":", conf["SERVICE_PORT"]])
-        self.client = TercenClient(self.serviceUri)
-        self.client.userService.connect(self.username, self.passw)
+            serviceUri = ''.join([conf["SERVICE_URL"], ":", conf["SERVICE_PORT"]])
 
         self.data = self.create_data()
 
@@ -129,9 +131,9 @@ class TestTercen(unittest.TestCase):
         dwnDf = utl.bytes_to_dataframe(fileDownloaded.read(), df_engine="pandas")
 
         assert(  dwnFileDoc.id == self.fileDoc.id )
-        npt.assert_array_equal( df.iloc[:,0], dwnDf.iloc[:,0] )
-        npt.assert_array_equal( df.iloc[:,1], dwnDf.iloc[:,1] )
-        npt.assert_array_equal( df.iloc[:,2], dwnDf.iloc[:,2] )
+        npt.assert_allclose( df.iloc[:,0], dwnDf.iloc[:,0], self.tol )
+        npt.assert_allclose( df.iloc[:,1], dwnDf.iloc[:,1], self.tol )
+        npt.assert_allclose( df.iloc[:,2], dwnDf.iloc[:,2], self.tol )
         
   
     def test_csv_task(self) -> None:

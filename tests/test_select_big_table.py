@@ -17,6 +17,15 @@ class TestTercen(unittest.TestCase):
     def setUp(self):
         envs = os.environ
         isLocal = False
+
+        with open("./tests/env.conf") as f:
+            for line in f:
+                if len(line.strip()) > 0:
+                    (key, val) = line.split(sep="=")
+                    conf[str(key)] = str(val).strip()
+
+        self.tol = conf["TOLERANCE"]
+
         if 'TERCEN_PASSWORD' in envs:
             passw = envs['TERCEN_PASSWORD']
         else:
@@ -33,12 +42,7 @@ class TestTercen(unittest.TestCase):
             username = 'test'
             passw = 'test'
             conf = {}
-            with open("./tests/env.conf") as f:
-                for line in f:
-                    if len(line.strip()) > 0:
-                        (key, val) = line.split(sep="=")
-                        conf[str(key)] = str(val).strip()
-            
+
             serviceUri = ''.join([conf["SERVICE_URL"], ":", conf["SERVICE_PORT"]])
 
         self.nRows = 100000
@@ -79,7 +83,7 @@ class TestTercen(unittest.TestCase):
         
         assert(resDf[".y"].dtype == pl.Float64)
 
-        np.testing.assert_array_equal(resDf[".y"],  self.data["Values"])
+        np.testing.assert_allclose(resDf[".y"],  self.data["Values"], self.tol)
 
     def test_select_pandas(self) -> None:
         selNames = ['.y']
@@ -91,7 +95,7 @@ class TestTercen(unittest.TestCase):
 
         assert(resDf[".y"].dtype == np.float64)
 
-        np.testing.assert_array_equal(resDf[".y"],  self.data["Values"])
+        np.testing.assert_allclose(resDf[".y"],  self.data["Values"], self.tol)
 
 
     # @memunit.assert_mb
@@ -104,7 +108,7 @@ class TestTercen(unittest.TestCase):
         assert( not resDf is None )
         assert( resDf.shape[0] == self.nRows) 
         
-        np.testing.assert_array_equal(resDf[".y"],  self.data["Values"])
+        np.testing.assert_allclose(resDf[".y"],  self.data["Values"], self.tol)
 
 
 

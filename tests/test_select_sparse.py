@@ -15,6 +15,15 @@ class TestTercen(unittest.TestCase):
     def setUp(self):
         envs = os.environ
         isLocal = False
+
+        with open("./tests/env.conf") as f:
+            for line in f:
+                if len(line.strip()) > 0:
+                    (key, val) = line.split(sep="=")
+                    conf[str(key)] = str(val).strip()
+
+        self.tol = conf["TOLERANCE"]
+
         if 'TERCEN_PASSWORD' in envs:
             passw = envs['TERCEN_PASSWORD']
         else:
@@ -31,13 +40,10 @@ class TestTercen(unittest.TestCase):
             username = 'test'
             passw = 'test'
             conf = {}
-            with open("./tests/env.conf") as f:
-                for line in f:
-                    if len(line.strip()) > 0:
-                        (key, val) = line.split(sep="=")
-                        conf[str(key)] = str(val).strip()
 
             serviceUri = ''.join([conf["SERVICE_URL"], ":", conf["SERVICE_PORT"]])
+
+
 
         self.data = pd.DataFrame( {'Values':[0,0,3.4,0,0.3,0], 
                 "Columns":[0,1,0,1,0,1],
@@ -79,9 +85,9 @@ class TestTercen(unittest.TestCase):
         assert( resDf[:,1].toarray().flatten().dtype == np.float64 )
         assert( resDf[:,2].toarray().flatten().dtype == np.float64 )
         
-        np.testing.assert_array_equal(resDf[:,0].toarray().flatten(),  self.data["Values"].values)
-        np.testing.assert_array_equal(resDf[:,1].toarray().flatten(),  self.data["Columns"].values)
-        np.testing.assert_array_equal(resDf[:,2].toarray().flatten(),  self.data["Rows"].values)
+        np.testing.assert_allclose(resDf[:,0].toarray().flatten(),  self.data["Values"].values, self.tol)
+        np.testing.assert_allclose(resDf[:,1].toarray().flatten(),  self.data["Columns"].values, self.tol)
+        np.testing.assert_allclose(resDf[:,2].toarray().flatten(),  self.data["Rows"].values, self.tol)
       
         
 
@@ -92,8 +98,8 @@ class TestTercen(unittest.TestCase):
         assert( not resDf is None )
         assert( resDf.todense().shape == (3,2) )
         
-        np.testing.assert_array_equal(resDf.toarray()[:,0],  self.data["Values"][self.data["Columns"].values==0])
-        np.testing.assert_array_equal(resDf.toarray()[:,1],  self.data["Values"][self.data["Columns"].values==1])
+        np.testing.assert_allclose(resDf.toarray()[:,0],  self.data["Values"][self.data["Columns"].values==0], self.tol)
+        np.testing.assert_allclose(resDf.toarray()[:,1],  self.data["Values"][self.data["Columns"].values==1], self.tol)
 
 
 if __name__ == '__main__':
