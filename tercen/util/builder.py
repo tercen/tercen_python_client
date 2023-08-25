@@ -631,7 +631,7 @@ class WorkflowBuilder():
 
         xyAxis.yAxis = yAx
         xyAxis.xAxis = xAx
-        
+
         model.columnTable = self.__add_row_col_projection(columns, schema=self.schemas[prevStep])
         model.rowTable = self.__add_row_col_projection(rows, schema=self.schemas[prevStep])
         axisList.xyAxis = [xyAxis]

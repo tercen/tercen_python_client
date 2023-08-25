@@ -1,4 +1,4 @@
-import unittest
+import unittest, os
 import numpy as np
 import numpy.testing as npt
 import pandas as pd
@@ -17,18 +17,33 @@ from tercen.model.base import Project, FileDocument, CSVTask, InitState, DoneSta
 
 class TestTercen(unittest.TestCase):
     def setUp(self):
-        username = 'test'
-        passw = 'test'
-        conf = {}
-        with open("./tests/env.conf") as f:
-            for line in f:
-                if len(line.strip()) > 0:
-                    (key, val) = line.split(sep="=")
-                    conf[str(key)] = str(val).strip()
+        envs = os.environ
+        isLocal = False
+        if 'TERCEN_PASSWORD' in envs:
+            self.passw = envs['TERCEN_PASSWORD']
+        else:
+            self.passw = None
 
-        serviceUri = ''.join([conf["SERVICE_URL"], ":", conf["SERVICE_PORT"]])
-        self.client = TercenClient(serviceUri)
-        self.client.userService.connect(username, passw)
+        if 'TERCEN_URI' in envs:
+            self.serviceUri = envs['TERCEN_URI']
+        else:
+            self.serviceUri = None
+        if 'TERCEN_USERNAME' in envs:
+            self.username = envs['TERCEN_USERNAME']
+        else:
+            isLocal = True
+            self.username = 'test'
+            self.passw = 'test'
+            conf = {}
+            with open("./tests/env.conf") as f:
+                for line in f:
+                    if len(line.strip()) > 0:
+                        (key, val) = line.split(sep="=")
+                        conf[str(key)] = str(val).strip()
+
+            self.serviceUri = ''.join([conf["SERVICE_URL"], ":", conf["SERVICE_PORT"]])
+        self.client = TercenClient(self.serviceUri)
+        self.client.userService.connect(self.username, self.passw)
 
         self.data = self.create_data()
 

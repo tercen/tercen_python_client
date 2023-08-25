@@ -71,8 +71,6 @@ class TestTercen(unittest.TestCase):
     def clear_workflow(self):
         self.wkfBuilder.clean_up_workflow()
 
-    # 112.5    
-    # @memunit.assert_mb
     def test_save(self) -> None:
         '''simple'''
         df = self.context.select(['.y'])

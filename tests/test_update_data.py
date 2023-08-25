@@ -102,8 +102,8 @@ class TestTercen(unittest.TestCase):
         df = df.with_columns( (pl.col(".y") ).alias("y") )
         df = df.drop(".y", ".ri")
 
-
         df = self.context.add_namespace(df) 
+        
 
         resDf =  self.context.save_dev(df.clone())
         resDf = resDf.drop(".ri")

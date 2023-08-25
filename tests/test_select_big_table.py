@@ -3,6 +3,7 @@ import numpy as np
 
 import numpy.testing as npt
 import pandas as pd
+import polars as pl
 
 
 import os
@@ -71,11 +72,25 @@ class TestTercen(unittest.TestCase):
     def test_select(self) -> None:
         selNames = ['.y']
      
-        resDf = self.context.select( selNames )
+        resDf = self.context.select( selNames  )
         
         assert( not resDf is None )
         assert( resDf.shape[0] == self.nRows)
         
+        assert(resDf[".y"].dtype == pl.Float64)
+
+        np.testing.assert_array_equal(resDf[".y"],  self.data["Values"])
+
+    def test_select_pandas(self) -> None:
+        selNames = ['.y']
+     
+        resDf = self.context.select( selNames , df_lib="pandas" )
+        
+        assert( not resDf is None )
+        assert( resDf.shape[0] == self.nRows)
+
+        assert(resDf[".y"].dtype == np.float64)
+
         np.testing.assert_array_equal(resDf[".y"],  self.data["Values"])
 
 

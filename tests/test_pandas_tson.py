@@ -7,8 +7,6 @@ import json
 
 import tercen.util.helper_functions as utl
 
-
-#TODO Recreate the venv folder with correct python paths
 class TestTercen(unittest.TestCase):
 
     def setUp(self):
@@ -96,7 +94,7 @@ class TestTercen(unittest.TestCase):
 
         assert(dtypes[0] == 'int32')
         assert(dtypes[1] == 'int32')
-        assert(dtypes[2] == 'float32')
+        assert(dtypes[2] == 'float64')
 
         # Rounding errors from polars and pandas types
         npt.assert_array_almost_equal( df[:,0], self.df_cr.iloc[:,0], 0.00001 )

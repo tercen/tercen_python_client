@@ -209,6 +209,7 @@ class TercenContext:
  
 
     def select_sparse(self, wide=False):
+
         sdf = ssp.csr_matrix(self.select([".y", ".ci", ".ri"]))
         
         if wide == True:

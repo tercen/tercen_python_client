@@ -45,23 +45,33 @@ class TestTercen(unittest.TestCase):
 
         self.wkfBuilder = bld.WorkflowBuilder(username=username, password=passw, serviceUri=serviceUri)
         self.wkfBuilder.create_workflow( 'python_auto_project', 'python_workflow')
-        self.wkfBuilder.add_table_step( './tests/data/hospitals.csv' )
 
         name = self.shortDescription()
-        if name == "simple":
-            self.wkfBuilder.add_data_step(yAxis={"name":"Procedure.Hip Knee.Cost", "type":"double"})
-        elif name == "one_col":
-            self.wkfBuilder.add_data_step(yAxis={"name":"Procedure.Hip Knee.Cost", "type":"double"},
-                        columns=[{"name":"Rating.Imaging", "type":"string"}])
-        elif name == "x_axis":
-            self.wkfBuilder.add_data_step(yAxis={"name":"Procedure.Hip Knee.Cost", "type":"double"},
-                        xAxis={"name":"Procedure.Hip Knee.Cost", "type":"double"})
+        if name == "types":
+            self.data = pd.DataFrame( {'Values':[0,0,3.4,0,0.3,0], 
+                    "Columns":[0,1,0,1,0,1],
+                    "Rows":["0","0","1","1","2","2"]} )
+            
+            self.wkfBuilder.add_table_step( self.data, int_columns=["Columns"] )
+            self.wkfBuilder.add_data_step(yAxis={"name":"Values", "type":"double"}, 
+                                            columns=[{"name":"Columns", "type":"int32"}],
+                                            rows=[{"name":"Rows", "type":"string"}])
         else:
-            self.wkfBuilder.add_data_step(yAxis={"name":"Procedure.Hip Knee.Cost", "type":"double"}, 
-                                    columns=[{"name":"Rating.Imaging", "type":"string"}],
-                                    rows=[{"name":"Rating.Effectiveness", "type":"string"}],
-                                    labels=[{"name":"Facility.Name", "type":"string"}],
-                                    colors=[{"name":"Facility.Type", "type":"string"}])
+            self.wkfBuilder.add_table_step( './tests/data/hospitals.csv' )
+            if name == "simple":
+                self.wkfBuilder.add_data_step(yAxis={"name":"Procedure.Hip Knee.Cost", "type":"double"})
+            elif name == "one_col":
+                self.wkfBuilder.add_data_step(yAxis={"name":"Procedure.Hip Knee.Cost", "type":"double"},
+                            columns=[{"name":"Rating.Imaging", "type":"string"}])
+            elif name == "x_axis":
+                self.wkfBuilder.add_data_step(yAxis={"name":"Procedure.Hip Knee.Cost", "type":"double"},
+                            xAxis={"name":"Procedure.Hip Knee.Cost", "type":"double"})
+            else:
+                self.wkfBuilder.add_data_step(yAxis={"name":"Procedure.Hip Knee.Cost", "type":"double"}, 
+                                        columns=[{"name":"Rating.Imaging", "type":"string"}],
+                                        rows=[{"name":"Rating.Effectiveness", "type":"string"}],
+                                        labels=[{"name":"Facility.Name", "type":"string"}],
+                                        colors=[{"name":"Facility.Type", "type":"string"}])
         
         
         self.context = ctx.TercenContext(
@@ -98,7 +108,6 @@ class TestTercen(unittest.TestCase):
         '''one_col'''
         targetYDf = pl.read_csv('tests/data/Test_Full_Projection_Table_1.csv')
        
-
         selNames = ['.y', '.ci', '.ri']
      
         resDf = self.context.select( selNames )
@@ -107,8 +116,24 @@ class TestTercen(unittest.TestCase):
         yt = np.sort(targetYDf[selNames[0]])
 
         assert( not resDf is None )
-        np.testing.assert_array_equal(y, yt)
+        assert(resDf[:,0].dtype == pl.Float64)
+        
 
+
+    def test_select_types(self) -> None:
+        '''types'''
+        targetYDf = self.data
+       
+
+        selNames = ['.y', '.ci', '.ri']
+     
+        resDf = self.context.select( selNames )
+        
+        y = np.sort(resDf[selNames[0]])
+        yt = np.sort(targetYDf["Values"])
+
+        assert( not resDf is None )
+        np.testing.assert_array_equal(y, yt)
 
     def test_select_empty_col_row(self) -> None:
         '''simple'''

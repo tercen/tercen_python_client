@@ -43,12 +43,13 @@ class TestTercen(unittest.TestCase):
                 "Columns":[0,1,0,1,0,1],
                 "Rows":[0,0,1,1,2,2]}  )
 
+
         self.wkfBuilder = bld.WorkflowBuilder(username=username, password=passw, serviceUri=serviceUri)
         self.wkfBuilder.create_workflow( 'python_auto_project', 'python_workflow')
-        self.wkfBuilder.add_table_step( self.data )
+        self.wkfBuilder.add_table_step( self.data, int_columns=["Columns", "Rows"] )
         self.wkfBuilder.add_data_step(yAxis={"name":"Values", "type":"double"}, 
-                                        columns=[{"name":"Columns", "type":"double"}],
-                                        rows=[{"name":"Rows", "type":"double"}])
+                                        columns=[{"name":"Columns", "type":"int32"}],
+                                        rows=[{"name":"Rows", "type":"int32"}])
 
 
         self.context = ctx.TercenContext(
@@ -70,7 +71,13 @@ class TestTercen(unittest.TestCase):
  
         assert( not resDf is None )
 
+
         assert( resDf.shape == (6,3) )
+
+        # NOTE sparse matrix support only a single dtype per matrix!
+        assert( resDf[:,0].toarray().flatten().dtype == np.float64 )
+        assert( resDf[:,1].toarray().flatten().dtype == np.float64 )
+        assert( resDf[:,2].toarray().flatten().dtype == np.float64 )
         
         np.testing.assert_array_equal(resDf[:,0].toarray().flatten(),  self.data["Values"].values)
         np.testing.assert_array_equal(resDf[:,1].toarray().flatten(),  self.data["Columns"].values)
