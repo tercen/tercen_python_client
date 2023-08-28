@@ -2,7 +2,7 @@ import unittest
 import numpy as np
 import numpy.testing as npt
 import pandas as pd
-
+import scipy.sparse as ssp
 
 import os
 
@@ -15,14 +15,14 @@ class TestTercen(unittest.TestCase):
     def setUp(self):
         envs = os.environ
         isLocal = False
-
+        conf = {}
         with open("./tests/env.conf") as f:
             for line in f:
                 if len(line.strip()) > 0:
                     (key, val) = line.split(sep="=")
                     conf[str(key)] = str(val).strip()
 
-        self.tol = conf["TOLERANCE"]
+        self.tol = float(conf["TOLERANCE"])
 
         if 'TERCEN_PASSWORD' in envs:
             passw = envs['TERCEN_PASSWORD']
@@ -39,7 +39,7 @@ class TestTercen(unittest.TestCase):
             isLocal = True
             username = 'test'
             passw = 'test'
-            conf = {}
+
 
             serviceUri = ''.join([conf["SERVICE_URL"], ":", conf["SERVICE_PORT"]])
 
@@ -76,7 +76,7 @@ class TestTercen(unittest.TestCase):
         
  
         assert( not resDf is None )
-
+        assert(resDf.__class__ == ssp._csr.csr_matrix)
 
         assert( resDf.shape == (6,3) )
 

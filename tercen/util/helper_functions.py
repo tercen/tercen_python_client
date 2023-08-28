@@ -77,17 +77,20 @@ def tson_to_polars(tson:dict) -> pl.DataFrame:
     for col in tson.pop("columns"):
         ctype = col.pop("type")
         cname = col.pop("name")
+        vals = col.pop("values")
         dtype = pl.Int32
         if ctype == "double":
-            dtype = pl.Float32
-        if ctype == "object" or ctype == "string":
+            dtype = pl.Float64
+        if ctype == "string":
+            dtype = pl.Utf8
+        if ctype == "object":
             dtype = pl.Object
         if df is None:
             df = pl.DataFrame({
-                cname:col.pop("values")}, schema={cname:dtype})
+                cname:vals}, schema={cname:dtype})
         else:
             df = pl.concat([df,pl.DataFrame({
-                cname:col.pop("values")}, schema={cname:dtype})], how="horizontal")
+                cname:vals}, schema={cname:dtype})], how="horizontal")
 
     return df
 

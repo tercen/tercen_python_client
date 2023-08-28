@@ -16,13 +16,14 @@ class TestTercen(unittest.TestCase):
         envs = os.environ
         isLocal = False
 
+        conf = {}
         with open("./tests/env.conf") as f:
             for line in f:
                 if len(line.strip()) > 0:
                     (key, val) = line.split(sep="=")
                     conf[str(key)] = str(val).strip()
 
-        self.tol = conf["TOLERANCE"]
+        self.tol = float(conf["TOLERANCE"])
 
         if 'TERCEN_PASSWORD' in envs:
             passw = envs['TERCEN_PASSWORD']
@@ -39,7 +40,7 @@ class TestTercen(unittest.TestCase):
             isLocal = True
             username = 'test'
             passw = 'test'
-            conf = {}
+            
 
             serviceUri = ''.join([conf["SERVICE_URL"], ":", conf["SERVICE_PORT"]])
             
@@ -192,7 +193,6 @@ class TestTercen(unittest.TestCase):
         np.testing.assert_allclose(resDf[:,selNames], targetDf[:,selNames], self.tol)
 
     def test_select_many(self) -> None:
-        # http://127.0.0.1:5402/test/w/9b611b90f412969d6f617f559f005bc6/ds/2ca54ff5-5b7f-44e9-870b-48facabc41ae
         targetDf = pl.read_csv('tests/data/Test_Full_Projection_Table_1.csv')
 
         selNames = ['.y', 'Facility.Type', 'Facility.Name' ]
@@ -202,26 +202,34 @@ class TestTercen(unittest.TestCase):
         
         assert( not resDf is None )
         assert(resDf.shape == targetDf.shape)
+        
+        np.testing.assert_allclose(resDf[:,".y"].to_numpy(), targetDf[:,".y"].to_numpy(), self.tol)
+        
+        for selName in selNames[1:]:
+            np.testing.assert_equal(resDf[:,selName].to_numpy(), targetDf[:,selName].to_numpy())
 
-        for selName in selNames:
-            np.testing.assert_allclose(resDf[:,selName], targetDf[:,selName], self.tol)
+
 
     def test_select_all(self) -> None:
-        # http://127.0.0.1:5402/test/w/9b611b90f412969d6f617f559f005bc6/ds/2ca54ff5-5b7f-44e9-870b-48facabc41ae
         targetDf = pl.read_csv('tests/data/Test_Full_Projection_Table_1.csv')
+
 
         selNames = ['']
 
-        # targetDf = targetDf.drop(".cri", axis=1) # int64
-        targetDf = targetDf.drop(".cri") # int64
         resDf = self.context.select( selNames )
-        
-        assert( not resDf is None )
-        assert(resDf.shape == targetDf.shape)
 
+
+        assert( not resDf is None )
+        outCols = [n for n in targetDf.columns]
         cnames = [n for n in resDf.columns]
+
+        for cn in cnames:
+            assert(cn in outCols)
+        
+
+
         for selName in cnames:
-            np.testing.assert_allclose(resDf[:,selName], targetDf[:,selName], self.tol)
+            np.testing.assert_equal(resDf[:,selName].to_numpy(), targetDf[:,selName].to_numpy())
         
 
 
@@ -238,7 +246,7 @@ class TestTercen(unittest.TestCase):
 
         cnames = [n for n in resDf.columns]
         for selName in cnames:
-            np.testing.assert_allclose(resDf[:,selName], targetDf[:,selName], self.tol)
+            np.testing.assert_equal(resDf[:,selName].to_numpy(), targetDf[:,selName].to_numpy())
 
     def test_select_columns(self):
         targetDf = pl.read_csv('tests/data/Test_Full_Projection_Table_2.csv')
@@ -253,7 +261,7 @@ class TestTercen(unittest.TestCase):
 
         cnames = [n for n in resDf.columns]
         for selName in cnames:
-            np.testing.assert_allclose(resDf[:,selName], targetDf[:,selName], self.tol)
+            np.testing.assert_equal(resDf[:,selName].to_numpy(), targetDf[:,selName].to_numpy())
 
     def test_select_all_rows(self):
         targetDf = pl.read_csv('tests/data/Test_Full_Projection_Table_3.csv')
@@ -267,8 +275,9 @@ class TestTercen(unittest.TestCase):
 
 
         cnames = [n for n in resDf.columns]
+
         for selName in cnames:
-            np.testing.assert_allclose(resDf[:,selName], targetDf[:,selName], self.tol)
+            np.testing.assert_equal(resDf[:,selName].to_numpy(), targetDf[:,selName].to_numpy())
 
     def test_select_rows(self):
         targetDf = pl.read_csv('tests/data/Test_Full_Projection_Table_3.csv')
@@ -282,8 +291,9 @@ class TestTercen(unittest.TestCase):
         assert(resDf.shape == targetDf.shape)
 
         cnames = [n for n in resDf.columns]
+
         for selName in cnames:
-            np.testing.assert_allclose(resDf[:,selName], targetDf[:,selName], self.tol)
+            np.testing.assert_equal(resDf[:,selName].to_numpy(), targetDf[:,selName].to_numpy())
 
 if __name__ == '__main__':
     unittest.main()

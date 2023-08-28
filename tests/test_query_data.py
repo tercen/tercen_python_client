@@ -19,14 +19,14 @@ class TestTercen(unittest.TestCase):
     def setUp(self):
         envs = os.environ
         isLocal = False
-
+        conf = {}
         with open("./tests/env.conf") as f:
             for line in f:
                 if len(line.strip()) > 0:
                     (key, val) = line.split(sep="=")
                     conf[str(key)] = str(val).strip()
 
-        self.tol = conf["TOLERANCE"]
+        self.tol = float(conf["TOLERANCE"])
 
         if 'TERCEN_PASSWORD' in envs:
             passw = envs['TERCEN_PASSWORD']
@@ -43,7 +43,7 @@ class TestTercen(unittest.TestCase):
             isLocal = True
             username = 'test'
             passw = 'test'
-            conf = {}
+            
 
             serviceUri = ''.join([conf["SERVICE_URL"], ":", conf["SERVICE_PORT"]])
 
@@ -51,6 +51,9 @@ class TestTercen(unittest.TestCase):
 
         # Create project
         # Note: unit test for project creation is run elsewhere (test_project)
+        self.client = TercenClient(serviceUri)
+        session = self.client.userService.connect(username, passw)
+
         obj = Project()
         obj.name = 'python_project'
         obj.acl.owner = 'test'
@@ -131,9 +134,9 @@ class TestTercen(unittest.TestCase):
         dwnDf = utl.bytes_to_dataframe(fileDownloaded.read(), df_engine="pandas")
 
         assert(  dwnFileDoc.id == self.fileDoc.id )
-        npt.assert_allclose( df.iloc[:,0], dwnDf.iloc[:,0], self.tol )
-        npt.assert_allclose( df.iloc[:,1], dwnDf.iloc[:,1], self.tol )
-        npt.assert_allclose( df.iloc[:,2], dwnDf.iloc[:,2], self.tol )
+        npt.assert_equal( df.iloc[:,0].to_numpy(), dwnDf.iloc[:,0].to_numpy() )
+        npt.assert_equal( df.iloc[:,1].to_numpy(), dwnDf.iloc[:,1].to_numpy() )
+        npt.assert_allclose( df.iloc[:,2].to_numpy(), dwnDf.iloc[:,2].to_numpy(), self.tol )
         
   
     def test_csv_task(self) -> None:

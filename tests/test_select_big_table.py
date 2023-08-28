@@ -17,14 +17,14 @@ class TestTercen(unittest.TestCase):
     def setUp(self):
         envs = os.environ
         isLocal = False
-
+        conf = {}
         with open("./tests/env.conf") as f:
             for line in f:
                 if len(line.strip()) > 0:
                     (key, val) = line.split(sep="=")
                     conf[str(key)] = str(val).strip()
 
-        self.tol = conf["TOLERANCE"]
+        self.tol = float(conf["TOLERANCE"])
 
         if 'TERCEN_PASSWORD' in envs:
             passw = envs['TERCEN_PASSWORD']
@@ -41,7 +41,7 @@ class TestTercen(unittest.TestCase):
             isLocal = True
             username = 'test'
             passw = 'test'
-            conf = {}
+            
 
             serviceUri = ''.join([conf["SERVICE_URL"], ":", conf["SERVICE_PORT"]])
 
@@ -77,8 +77,9 @@ class TestTercen(unittest.TestCase):
         selNames = ['.y']
      
         resDf = self.context.select( selNames  )
-        
+
         assert( not resDf is None )
+        assert(resDf.__class__ == pl.dataframe.frame.DataFrame)
         assert( resDf.shape[0] == self.nRows)
         
         assert(resDf[".y"].dtype == pl.Float64)
@@ -90,7 +91,10 @@ class TestTercen(unittest.TestCase):
      
         resDf = self.context.select( selNames , df_lib="pandas" )
         
+        
+
         assert( not resDf is None )
+        assert(resDf.__class__ == pd.core.frame.DataFrame)
         assert( resDf.shape[0] == self.nRows)
 
         assert(resDf[".y"].dtype == np.float64)
@@ -98,7 +102,7 @@ class TestTercen(unittest.TestCase):
         np.testing.assert_allclose(resDf[".y"],  self.data["Values"], self.tol)
 
 
-    # @memunit.assert_mb
+
     def test_select_stream(self) -> None:
         selNames = ['.y']
 

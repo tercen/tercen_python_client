@@ -13,14 +13,14 @@ class TestTercen(unittest.TestCase):
     def setUp(self):
         envs = os.environ
         isLocal = False
-
+        conf = {}
         with open("./tests/env.conf") as f:
             for line in f:
                 if len(line.strip()) > 0:
                     (key, val) = line.split(sep="=")
                     conf[str(key)] = str(val).strip()
 
-        self.tol = conf["TOLERANCE"]
+        self.tol = float(conf["TOLERANCE"])
 
         if 'TERCEN_PASSWORD' in envs:
             passw = envs['TERCEN_PASSWORD']
@@ -37,13 +37,13 @@ class TestTercen(unittest.TestCase):
             isLocal = True
             username = 'test'
             passw = 'test'
-            conf = {}
+            
 
             serviceUri = ''.join([conf["SERVICE_URL"], ":", conf["SERVICE_PORT"]])
 
 
 
-        self.wkfBuilder = bld.WorkflowBuilder(username=self.username, password=self.passw, serviceUri=self.serviceUri)
+        self.wkfBuilder = bld.WorkflowBuilder(username=username, password=passw, serviceUri=serviceUri)
         self.wkfBuilder.create_workflow( 'python_auto_project', 'python_workflow')
         self.wkfBuilder.add_table_step( './tests/data/hospitals.csv' )
         # self.wkfBuilder.add_table_step( df )
@@ -65,9 +65,9 @@ class TestTercen(unittest.TestCase):
                         # rows=[{"name":"rowFactor", "type":"string"}])
         
         self.context = ctx.TercenContext(
-                        username=self.username,
-                        password=self.passw,
-                        serviceUri=self.serviceUri,
+                        username=username,
+                        password=passw,
+                        serviceUri=serviceUri,
                         stepId=self.wkfBuilder.workflow.steps[1].id,
                         workflowId=self.wkfBuilder.workflow.id)
         self.addCleanup(self.clear_workflow)
