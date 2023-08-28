@@ -31,16 +31,17 @@ class TercenContext:
             serviceUri = args["serviceUri"]
 
 
-        
+        devContext = False
         if taskId == None:
             self.context = OperatorContextDev(workflowId=workflowId,
                     stepId=stepId, authToken=authToken, username=username, password=password,
                     serviceUri=serviceUri)
+            devContext = True
         else:
             self.context = OperatorContext( authToken=authToken,
                     username=username, password=password, taskId=taskId, serviceUri=serviceUri )
         
-        if not stepId is None:        
+        if (not stepId is None) or (devContext == False):
             self.cubeQuery = self.context.cubeQuery
 
             self.schema = self.context.client.tableSchemaService.get( self.cubeQuery.qtHash )
