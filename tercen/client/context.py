@@ -399,9 +399,9 @@ class OperatorContext(TercenContext):
             result = OperatorResult()
 
             if isinstance(df, list):
-                result.tables = [ utl.dataframe_to_table(t) for t in df ]
+                result.tables = [ utl.dataframe_to_table(t)[0] for t in df ]
             else:
-                result.tables = [utl.dataframe_to_table(df)]
+                result.tables = [utl.dataframe_to_table(df)[0]]
         
         
         resultBytes = encodeTSON( result.toJson() ) 
