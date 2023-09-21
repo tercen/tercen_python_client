@@ -1333,9 +1333,6 @@ class RelationBase(IdObject):
         else:
             super().__init__(m)
 
-    # def get_rids(self):
-    #     return ''.join((self.id, "._rids"))
-
     def fromJson(self, m):
         super().fromJson(m)
         self.subKind = m.get(Vocabulary.SUBKIND)

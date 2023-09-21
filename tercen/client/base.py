@@ -136,7 +136,8 @@ class WorkerServiceBase (HttpClientService):
             if response.code() != 200:
                 self.onResponseError(response)
             else:
-                answer = None
+                answer = [tercen.model.base.PairBase.createFromJson(
+                    sch) for sch in decodeTSON(response)]
         except BaseException as e:
             self.onError(e)
         return answer
@@ -152,7 +153,8 @@ class WorkerServiceBase (HttpClientService):
             if response.code() != 200:
                 self.onResponseError(response)
             else:
-                answer = None
+                answer = [tercen.model.base.TableBase.createFromJson(
+                    sch) for sch in decodeTSON(response)]
         except BaseException as e:
             self.onError(e)
         return answer
@@ -373,7 +375,8 @@ class SubscriptionPlanServiceBase (HttpClientService):
             if response.code() != 200:
                 self.onResponseError(response)
             else:
-                answer = None
+                answer = [tercen.model.base.SubscriptionPlanBase.createFromJson(
+                    sch) for sch in decodeTSON(response)]
         except BaseException as e:
             self.onError(e)
         return answer
@@ -389,7 +392,8 @@ class SubscriptionPlanServiceBase (HttpClientService):
             if response.code() != 200:
                 self.onResponseError(response)
             else:
-                answer = None
+                answer = [tercen.model.base.PlanBase.createFromJson(
+                    sch) for sch in decodeTSON(response)]
         except BaseException as e:
             self.onError(e)
         return answer
@@ -575,7 +579,8 @@ class PersistentServiceBase (HttpClientService):
             if response.code() != 200:
                 self.onResponseError(response)
             else:
-                answer = None
+                answer = [tercen.model.base.PersistentObjectBase.createFromJson(
+                    sch) for sch in decodeTSON(response)]
         except BaseException as e:
             self.onError(e)
         return answer
@@ -678,7 +683,8 @@ class FolderServiceBase (HttpClientService):
             if response.code() != 200:
                 self.onResponseError(response)
             else:
-                answer = None
+                answer = [tercen.model.base.FolderDocumentBase.createFromJson(
+                    sch) for sch in decodeTSON(response)]
         except BaseException as e:
             self.onError(e)
         return answer
@@ -716,7 +722,8 @@ class TableSchemaServiceBase (HttpClientService):
             if response.code() != 200:
                 self.onResponseError(response)
             else:
-                answer = None
+                answer = [tercen.model.base.SchemaBase.createFromJson(
+                    sch) for sch in decodeTSON(response)]
         except BaseException as e:
             self.onError(e)
         return answer
@@ -922,7 +929,8 @@ class TaskServiceBase (HttpClientService):
             if response.code() != 200:
                 self.onResponseError(response)
             else:
-                answer = None
+                answer = [tercen.model.base.WorkerBase.createFromJson(
+                    sch) for sch in decodeTSON(response)]
         except BaseException as e:
             self.onError(e)
         return answer
@@ -938,7 +946,8 @@ class TaskServiceBase (HttpClientService):
             if response.code() != 200:
                 self.onResponseError(response)
             else:
-                answer = None
+                answer = [tercen.model.base.TaskBase.createFromJson(
+                    sch) for sch in decodeTSON(response)]
         except BaseException as e:
             self.onError(e)
         return answer
@@ -1442,7 +1451,8 @@ class UserServiceBase (HttpClientService):
             if response.code() != 200:
                 self.onResponseError(response)
             else:
-                answer = None
+                answer = [tercen.model.base.PairBase.createFromJson(
+                    sch) for sch in decodeTSON(response)]
         except BaseException as e:
             self.onError(e)
         return answer
@@ -1592,7 +1602,8 @@ class ProjectDocumentServiceBase (HttpClientService):
             if response.code() != 200:
                 self.onResponseError(response)
             else:
-                answer = None
+                answer = [tercen.model.base.FolderDocumentBase.createFromJson(
+                    sch) for sch in decodeTSON(response)]
         except BaseException as e:
             self.onError(e)
         return answer
@@ -1870,7 +1881,8 @@ class ProjectServiceBase (HttpClientService):
             if response.code() != 200:
                 self.onResponseError(response)
             else:
-                answer = None
+                answer = [tercen.model.base.ProjectBase.createFromJson(
+                    sch) for sch in decodeTSON(response)]
         except BaseException as e:
             self.onError(e)
         return answer
@@ -1886,7 +1898,8 @@ class ProjectServiceBase (HttpClientService):
             if response.code() != 200:
                 self.onResponseError(response)
             else:
-                answer = None
+                answer = [tercen.model.base.ProjectBase.createFromJson(
+                    sch) for sch in decodeTSON(response)]
         except BaseException as e:
             self.onError(e)
         return answer
@@ -1975,7 +1988,8 @@ class DocumentServiceBase (HttpClientService):
             if response.code() != 200:
                 self.onResponseError(response)
             else:
-                answer = None
+                answer = [tercen.model.base.DocumentBase.createFromJson(
+                    sch) for sch in decodeTSON(response)]
         except BaseException as e:
             self.onError(e)
         return answer
@@ -1992,7 +2006,8 @@ class DocumentServiceBase (HttpClientService):
             if response.code() != 200:
                 self.onResponseError(response)
             else:
-                answer = None
+                answer = [tercen.model.base.OperatorBase.createFromJson(
+                    sch) for sch in decodeTSON(response)]
         except BaseException as e:
             self.onError(e)
         return answer
@@ -2009,7 +2024,8 @@ class DocumentServiceBase (HttpClientService):
             if response.code() != 200:
                 self.onResponseError(response)
             else:
-                answer = None
+                answer = [tercen.model.base.DocumentBase.createFromJson(
+                    sch) for sch in decodeTSON(response)]
         except BaseException as e:
             self.onError(e)
         return answer
@@ -2026,7 +2042,8 @@ class DocumentServiceBase (HttpClientService):
             if response.code() != 200:
                 self.onResponseError(response)
             else:
-                answer = None
+                answer = [tercen.model.base.DocumentBase.createFromJson(
+                    sch) for sch in decodeTSON(response)]
         except BaseException as e:
             self.onError(e)
         return answer
@@ -2043,7 +2060,8 @@ class DocumentServiceBase (HttpClientService):
             if response.code() != 200:
                 self.onResponseError(response)
             else:
-                answer = None
+                answer = [tercen.model.base.DocumentBase.createFromJson(
+                    sch) for sch in decodeTSON(response)]
         except BaseException as e:
             self.onError(e)
         return answer
