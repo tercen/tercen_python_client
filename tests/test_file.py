@@ -143,9 +143,15 @@ class TestFileService(unittest.TestCase):
         project.acl.owner = 'test'
         project = self.client.projectService.create(project)
 
+        gt = ''
+        if "GITHUB_TOKEN" in os.environ:
+            gt = os.environ["GITHUB_TOKEN"]
+        
+
+
         gitTask = ImportGitDatasetTask()
         gitTask.state = InitState()
-        gitTask.gitToken = os.environ["GITHUB_TOKEN"]
+        gitTask.gitToken = gt
         gitTask.projectId = project.id
         gitTask.url = fileDoc.url
         gitTask.version = fileDoc.version
