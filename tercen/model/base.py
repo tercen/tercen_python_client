@@ -33,10 +33,14 @@ class SciObjectBase(BaseObject):
             return StringProperty(m)
         if kind == Vocabulary.BooleanProperty_CLASS:
             return BooleanProperty(m)
+        if kind == Vocabulary.GateOperatorModel_CLASS:
+            return GateOperatorModel(m)
         if kind == Vocabulary.AnnotationOperatorModel_CLASS:
             return AnnotationOperatorModel(m)
         if kind == Vocabulary.NamedFilter_CLASS:
             return NamedFilter(m)
+        if kind == Vocabulary.FilterExpr2d_CLASS:
+            return FilterExpr2d(m)
         if kind == Vocabulary.Filter_CLASS:
             return Filter(m)
         if kind == Vocabulary.FilterExpr_CLASS:
@@ -67,12 +71,12 @@ class SciObjectBase(BaseObject):
             return ApiCallProfile(m)
         if kind == Vocabulary.TableRelation_CLASS:
             return TableRelation(m)
-        if kind == Vocabulary.ReferenceRelation_CLASS:
-            return ReferenceRelation(m)
         if kind == Vocabulary.WhereRelation_CLASS:
             return WhereRelation(m)
         if kind == Vocabulary.DistinctRelation_CLASS:
             return DistinctRelation(m)
+        if kind == Vocabulary.ReferenceRelation_CLASS:
+            return ReferenceRelation(m)
         if kind == Vocabulary.InMemoryRelation_CLASS:
             return InMemoryRelation(m)
         if kind == Vocabulary.RenameRelation_CLASS:
@@ -307,6 +311,8 @@ class SciObjectBase(BaseObject):
             return Table(m)
         if kind == Vocabulary.Acl_CLASS:
             return Acl(m)
+        if kind == Vocabulary.GateNode_CLASS:
+            return GateNode(m)
         if kind == Vocabulary.TaskSummary_CLASS:
             return TaskSummary(m)
         if kind == Vocabulary.Token_CLASS:
@@ -383,12 +389,12 @@ class SciObjectBase(BaseObject):
             return ColorList(m)
         if kind == Vocabulary.SearchResult_CLASS:
             return SearchResult(m)
-        if kind == Vocabulary.PreProcessor_CLASS:
-            return PreProcessor(m)
         if kind == Vocabulary.AnnotationModel_CLASS:
             return AnnotationModel(m)
         if kind == Vocabulary.ColorElement_CLASS:
             return ColorElement(m)
+        if kind == Vocabulary.PreProcessor_CLASS:
+            return PreProcessor(m)
         if kind == Vocabulary.Properties_CLASS:
             return Properties(m)
         if kind == Vocabulary.PropertyValue_CLASS:
@@ -463,12 +469,12 @@ class IdObjectBase(SciObject):
             return IdObject(m)
         if kind == Vocabulary.TableRelation_CLASS:
             return TableRelation(m)
-        if kind == Vocabulary.ReferenceRelation_CLASS:
-            return ReferenceRelation(m)
         if kind == Vocabulary.WhereRelation_CLASS:
             return WhereRelation(m)
         if kind == Vocabulary.DistinctRelation_CLASS:
             return DistinctRelation(m)
+        if kind == Vocabulary.ReferenceRelation_CLASS:
+            return ReferenceRelation(m)
         if kind == Vocabulary.InMemoryRelation_CLASS:
             return InMemoryRelation(m)
         if kind == Vocabulary.RenameRelation_CLASS:
@@ -1346,12 +1352,12 @@ class RelationBase(IdObject):
             return Relation(m)
         if kind == Vocabulary.TableRelation_CLASS:
             return TableRelation(m)
-        if kind == Vocabulary.ReferenceRelation_CLASS:
-            return ReferenceRelation(m)
         if kind == Vocabulary.WhereRelation_CLASS:
             return WhereRelation(m)
         if kind == Vocabulary.DistinctRelation_CLASS:
             return DistinctRelation(m)
+        if kind == Vocabulary.ReferenceRelation_CLASS:
+            return ReferenceRelation(m)
         if kind == Vocabulary.InMemoryRelation_CLASS:
             return InMemoryRelation(m)
         if kind == Vocabulary.RenameRelation_CLASS:
@@ -2045,6 +2051,53 @@ class ChartHeatmap(ChartHeatmapBase):
         super().__init__(m)
 
 
+class StatisticNodeBase(BaseObject):
+    def __init__(self, m=None):
+        if m is None:
+            super().__init__(m)
+            self.name = ""
+            self.meta = list()
+        else:
+            self.fromJson(m)
+
+    def fromJson(self, m):
+        super().fromJson(m)
+        self.subKind = m.get(Vocabulary.SUBKIND)
+        if self.subKind is None and m.get(Vocabulary.KIND) != Vocabulary.StatisticNode_CLASS:
+            self.subKind = m.get(Vocabulary.KIND)
+        self.name = m[Vocabulary.name_DP]
+        if m.get(Vocabulary.meta_OP) is None:
+            self.meta = list()
+        else:
+            self.meta = list()
+            for o in m.get(Vocabulary.meta_OP):
+                self.meta.append(PairBase.createFromJson(o))
+
+    @classmethod
+    def createFromJson(cls, m):
+        kind = m.get(Vocabulary.KIND)
+        if kind == Vocabulary.StatisticNode_CLASS:
+            return StatisticNode(m)
+        raise ValueError("bad kind : " + kind +
+                         " for class StatisticNode in createFromJson")
+
+    def toJson(self):
+        m = super().toJson()
+        m[Vocabulary.KIND] = Vocabulary.StatisticNode_CLASS
+        if self.subKind is not None and self.subKind != Vocabulary.StatisticNode_CLASS:
+            m[Vocabulary.SUBKIND] = self.subKind
+        else:
+            m.pop(Vocabulary.SUBKIND, None)
+        m[Vocabulary.name_DP] = self.name
+        m[Vocabulary.meta_OP] = list(map(lambda x: x.toJson(), self.meta))
+        return m
+
+
+class StatisticNode(StatisticNodeBase):
+    def __init__(self, m=None):
+        super().__init__(m)
+
+
 class CubeQueryBase(SciObject):
     def __init__(self, m=None):
         if m is None:
@@ -2206,6 +2259,8 @@ class FilterTopExprBase(SciObject):
             return FilterTopExpr(m)
         if kind == Vocabulary.NamedFilter_CLASS:
             return NamedFilter(m)
+        if kind == Vocabulary.FilterExpr2d_CLASS:
+            return FilterExpr2d(m)
         if kind == Vocabulary.Filter_CLASS:
             return Filter(m)
         if kind == Vocabulary.FilterExpr_CLASS:
@@ -3043,6 +3098,73 @@ class CubeAxisQuery(CubeAxisQueryBase):
         super().__init__(m)
 
 
+class GateNodeBase(SciObject):
+    def __init__(self, m=None):
+        if m is None:
+            super().__init__(m)
+            self.nodeId = ""
+            self.name = ""
+            self.crosstab = Crosstab()
+            self.children = list()
+            self.statistics = list()
+        else:
+            self.fromJson(m)
+
+    def fromJson(self, m):
+        super().fromJson(m)
+        self.subKind = m.get(Vocabulary.SUBKIND)
+        if self.subKind is None and m.get(Vocabulary.KIND) != Vocabulary.GateNode_CLASS:
+            self.subKind = m.get(Vocabulary.KIND)
+        self.nodeId = m[Vocabulary.nodeId_DP]
+        self.name = m[Vocabulary.name_DP]
+        if m.get(Vocabulary.crosstab_OP) is None:
+            self.crosstab = Crosstab()
+        else:
+            self.crosstab = CrosstabBase.createFromJson(
+                m.get(Vocabulary.crosstab_OP))
+        if m.get(Vocabulary.children_OP) is None:
+            self.children = list()
+        else:
+            self.children = list()
+            for o in m.get(Vocabulary.children_OP):
+                self.children.append(GateNodeBase.createFromJson(o))
+        if m.get(Vocabulary.statistics_OP) is None:
+            self.statistics = list()
+        else:
+            self.statistics = list()
+            for o in m.get(Vocabulary.statistics_OP):
+                self.statistics.append(StatisticNodeBase.createFromJson(o))
+
+    @classmethod
+    def createFromJson(cls, m):
+        kind = m.get(Vocabulary.KIND)
+        if kind == Vocabulary.GateNode_CLASS:
+            return GateNode(m)
+        raise ValueError("bad kind : " + kind +
+                         " for class GateNode in createFromJson")
+
+    def toJson(self):
+        m = super().toJson()
+        m[Vocabulary.KIND] = Vocabulary.GateNode_CLASS
+        if self.subKind is not None and self.subKind != Vocabulary.GateNode_CLASS:
+            m[Vocabulary.SUBKIND] = self.subKind
+        else:
+            m.pop(Vocabulary.SUBKIND, None)
+        m[Vocabulary.nodeId_DP] = self.nodeId
+        m[Vocabulary.name_DP] = self.name
+        m[Vocabulary.crosstab_OP] = self.crosstab if self.crosstab is None else self.crosstab.toJson()
+        m[Vocabulary.children_OP] = list(
+            map(lambda x: x.toJson(), self.children))
+        m[Vocabulary.statistics_OP] = list(
+            map(lambda x: x.toJson(), self.statistics))
+        return m
+
+
+class GateNode(GateNodeBase):
+    def __init__(self, m=None):
+        super().__init__(m)
+
+
 class TaskSummaryBase(SciObject):
     def __init__(self, m=None):
         if m is None:
@@ -3081,43 +3203,6 @@ class TaskSummaryBase(SciObject):
 
 
 class TaskSummary(TaskSummaryBase):
-    def __init__(self, m=None):
-        super().__init__(m)
-
-
-class RunningDependentStateBase(State):
-    def __init__(self, m=None):
-        if m is not None:
-            self.fromJson(m)
-
-        else:
-            super().__init__(m)
-
-    def fromJson(self, m):
-        super().fromJson(m)
-        self.subKind = m.get(Vocabulary.SUBKIND)
-        if self.subKind is None and m.get(Vocabulary.KIND) != Vocabulary.RunningDependentState_CLASS:
-            self.subKind = m.get(Vocabulary.KIND)
-
-    @classmethod
-    def createFromJson(cls, m):
-        kind = m.get(Vocabulary.KIND)
-        if kind == Vocabulary.RunningDependentState_CLASS:
-            return RunningDependentState(m)
-        raise ValueError("bad kind : " + kind +
-                         " for class RunningDependentState in createFromJson")
-
-    def toJson(self):
-        m = super().toJson()
-        m[Vocabulary.KIND] = Vocabulary.RunningDependentState_CLASS
-        if self.subKind is not None and self.subKind != Vocabulary.RunningDependentState_CLASS:
-            m[Vocabulary.SUBKIND] = self.subKind
-        else:
-            m.pop(Vocabulary.SUBKIND, None)
-        return m
-
-
-class RunningDependentState(RunningDependentStateBase):
     def __init__(self, m=None):
         super().__init__(m)
 
@@ -3272,6 +3357,43 @@ class DistinctRelationBase(Relation):
 
 
 class DistinctRelation(DistinctRelationBase):
+    def __init__(self, m=None):
+        super().__init__(m)
+
+
+class RunningDependentStateBase(State):
+    def __init__(self, m=None):
+        if m is not None:
+            self.fromJson(m)
+
+        else:
+            super().__init__(m)
+
+    def fromJson(self, m):
+        super().fromJson(m)
+        self.subKind = m.get(Vocabulary.SUBKIND)
+        if self.subKind is None and m.get(Vocabulary.KIND) != Vocabulary.RunningDependentState_CLASS:
+            self.subKind = m.get(Vocabulary.KIND)
+
+    @classmethod
+    def createFromJson(cls, m):
+        kind = m.get(Vocabulary.KIND)
+        if kind == Vocabulary.RunningDependentState_CLASS:
+            return RunningDependentState(m)
+        raise ValueError("bad kind : " + kind +
+                         " for class RunningDependentState in createFromJson")
+
+    def toJson(self):
+        m = super().toJson()
+        m[Vocabulary.KIND] = Vocabulary.RunningDependentState_CLASS
+        if self.subKind is not None and self.subKind != Vocabulary.RunningDependentState_CLASS:
+            m[Vocabulary.SUBKIND] = self.subKind
+        else:
+            m.pop(Vocabulary.SUBKIND, None)
+        return m
+
+
+class RunningDependentState(RunningDependentStateBase):
     def __init__(self, m=None):
         super().__init__(m)
 
@@ -3747,6 +3869,8 @@ class OperatorModelBase(SciObject):
         kind = m.get(Vocabulary.KIND)
         if kind == Vocabulary.OperatorModel_CLASS:
             return OperatorModel(m)
+        if kind == Vocabulary.GateOperatorModel_CLASS:
+            return GateOperatorModel(m)
         if kind == Vocabulary.AnnotationOperatorModel_CLASS:
             return AnnotationOperatorModel(m)
         raise ValueError("bad kind : " + kind +
@@ -5042,6 +5166,7 @@ class JoinStepModelBase(StepModel):
         if m is None:
             super().__init__(m)
             self.rightPrefix = ""
+            self.joinType = ""
             self.leftFactors = list()
             self.rightFactors = list()
         else:
@@ -5053,6 +5178,7 @@ class JoinStepModelBase(StepModel):
         if self.subKind is None and m.get(Vocabulary.KIND) != Vocabulary.JoinStepModel_CLASS:
             self.subKind = m.get(Vocabulary.KIND)
         self.rightPrefix = m[Vocabulary.rightPrefix_DP]
+        self.joinType = m[Vocabulary.joinType_DP]
         if m.get(Vocabulary.leftFactors_OP) is None:
             self.leftFactors = list()
         else:
@@ -5086,6 +5212,7 @@ class JoinStepModelBase(StepModel):
         m[Vocabulary.rightFactors_OP] = list(
             map(lambda x: x.toJson(), self.rightFactors))
         m[Vocabulary.rightPrefix_DP] = self.rightPrefix
+        m[Vocabulary.joinType_DP] = self.joinType
         return m
 
 
@@ -5300,8 +5427,6 @@ class SimpleRelationBase(Relation):
             return SimpleRelation(m)
         if kind == Vocabulary.TableRelation_CLASS:
             return TableRelation(m)
-        if kind == Vocabulary.ReferenceRelation_CLASS:
-            return ReferenceRelation(m)
         raise ValueError("bad kind : " + kind +
                          " for class SimpleRelation in createFromJson")
 
@@ -5922,18 +6047,17 @@ class Factor(FactorBase):
 
 class AttributeBase(Factor):
     def __init__(self, m=None):
-        if m is None:
-            super().__init__(m)
-            self.relationId = ""
-        else:
+        if m is not None:
             self.fromJson(m)
+
+        else:
+            super().__init__(m)
 
     def fromJson(self, m):
         super().fromJson(m)
         self.subKind = m.get(Vocabulary.SUBKIND)
         if self.subKind is None and m.get(Vocabulary.KIND) != Vocabulary.Attribute_CLASS:
             self.subKind = m.get(Vocabulary.KIND)
-        self.relationId = m[Vocabulary.relationId_DP]
 
     @classmethod
     def createFromJson(cls, m):
@@ -5950,7 +6074,6 @@ class AttributeBase(Factor):
             m[Vocabulary.SUBKIND] = self.subKind
         else:
             m.pop(Vocabulary.SUBKIND, None)
-        m[Vocabulary.relationId_DP] = self.relationId
         return m
 
 
@@ -6250,7 +6373,7 @@ class ImportGitWorkflowTask(ImportGitWorkflowTaskBase):
         super().__init__(m)
 
 
-class ReferenceRelationBase(SimpleRelation):
+class ReferenceRelationBase(Relation):
     def __init__(self, m=None):
         if m is None:
             super().__init__(m)
@@ -8221,48 +8344,46 @@ class SearchResult(SearchResultBase):
         super().__init__(m)
 
 
-class PreProcessorBase(SciObject):
+class GateOperatorModelBase(OperatorModel):
     def __init__(self, m=None):
         if m is None:
             super().__init__(m)
-            self.type = ""
-            self.operatorRef = OperatorRef()
+            self.roots = list()
         else:
             self.fromJson(m)
 
     def fromJson(self, m):
         super().fromJson(m)
         self.subKind = m.get(Vocabulary.SUBKIND)
-        if self.subKind is None and m.get(Vocabulary.KIND) != Vocabulary.PreProcessor_CLASS:
+        if self.subKind is None and m.get(Vocabulary.KIND) != Vocabulary.GateOperatorModel_CLASS:
             self.subKind = m.get(Vocabulary.KIND)
-        self.type = m[Vocabulary.type_DP]
-        if m.get(Vocabulary.operatorRef_OP) is None:
-            self.operatorRef = OperatorRef()
+        if m.get(Vocabulary.roots_OP) is None:
+            self.roots = list()
         else:
-            self.operatorRef = OperatorRefBase.createFromJson(
-                m.get(Vocabulary.operatorRef_OP))
+            self.roots = list()
+            for o in m.get(Vocabulary.roots_OP):
+                self.roots.append(GateNodeBase.createFromJson(o))
 
     @classmethod
     def createFromJson(cls, m):
         kind = m.get(Vocabulary.KIND)
-        if kind == Vocabulary.PreProcessor_CLASS:
-            return PreProcessor(m)
+        if kind == Vocabulary.GateOperatorModel_CLASS:
+            return GateOperatorModel(m)
         raise ValueError("bad kind : " + kind +
-                         " for class PreProcessor in createFromJson")
+                         " for class GateOperatorModel in createFromJson")
 
     def toJson(self):
         m = super().toJson()
-        m[Vocabulary.KIND] = Vocabulary.PreProcessor_CLASS
-        if self.subKind is not None and self.subKind != Vocabulary.PreProcessor_CLASS:
+        m[Vocabulary.KIND] = Vocabulary.GateOperatorModel_CLASS
+        if self.subKind is not None and self.subKind != Vocabulary.GateOperatorModel_CLASS:
             m[Vocabulary.SUBKIND] = self.subKind
         else:
             m.pop(Vocabulary.SUBKIND, None)
-        m[Vocabulary.type_DP] = self.type
-        m[Vocabulary.operatorRef_OP] = self.operatorRef if self.operatorRef is None else self.operatorRef.toJson()
+        m[Vocabulary.roots_OP] = list(map(lambda x: x.toJson(), self.roots))
         return m
 
 
-class PreProcessor(PreProcessorBase):
+class GateOperatorModel(GateOperatorModelBase):
     def __init__(self, m=None):
         super().__init__(m)
 
@@ -8408,6 +8529,52 @@ class OutStepBase(RelationStep):
 
 
 class OutStep(OutStepBase):
+    def __init__(self, m=None):
+        super().__init__(m)
+
+
+class PreProcessorBase(SciObject):
+    def __init__(self, m=None):
+        if m is None:
+            super().__init__(m)
+            self.type = ""
+            self.operatorRef = OperatorRef()
+        else:
+            self.fromJson(m)
+
+    def fromJson(self, m):
+        super().fromJson(m)
+        self.subKind = m.get(Vocabulary.SUBKIND)
+        if self.subKind is None and m.get(Vocabulary.KIND) != Vocabulary.PreProcessor_CLASS:
+            self.subKind = m.get(Vocabulary.KIND)
+        self.type = m[Vocabulary.type_DP]
+        if m.get(Vocabulary.operatorRef_OP) is None:
+            self.operatorRef = OperatorRef()
+        else:
+            self.operatorRef = OperatorRefBase.createFromJson(
+                m.get(Vocabulary.operatorRef_OP))
+
+    @classmethod
+    def createFromJson(cls, m):
+        kind = m.get(Vocabulary.KIND)
+        if kind == Vocabulary.PreProcessor_CLASS:
+            return PreProcessor(m)
+        raise ValueError("bad kind : " + kind +
+                         " for class PreProcessor in createFromJson")
+
+    def toJson(self):
+        m = super().toJson()
+        m[Vocabulary.KIND] = Vocabulary.PreProcessor_CLASS
+        if self.subKind is not None and self.subKind != Vocabulary.PreProcessor_CLASS:
+            m[Vocabulary.SUBKIND] = self.subKind
+        else:
+            m.pop(Vocabulary.SUBKIND, None)
+        m[Vocabulary.type_DP] = self.type
+        m[Vocabulary.operatorRef_OP] = self.operatorRef if self.operatorRef is None else self.operatorRef.toJson()
+        return m
+
+
+class PreProcessor(PreProcessorBase):
     def __init__(self, m=None):
         super().__init__(m)
 
@@ -9030,6 +9197,100 @@ class Profiles(ProfilesBase):
         super().__init__(m)
 
 
+class FilterExprBase(FilterTopExpr):
+    def __init__(self, m=None):
+        if m is None:
+            super().__init__(m)
+            self.filterOp = ""
+            self.stringValue = ""
+            self.factor = Factor()
+        else:
+            self.fromJson(m)
+
+    def fromJson(self, m):
+        super().fromJson(m)
+        self.subKind = m.get(Vocabulary.SUBKIND)
+        if self.subKind is None and m.get(Vocabulary.KIND) != Vocabulary.FilterExpr_CLASS:
+            self.subKind = m.get(Vocabulary.KIND)
+        self.filterOp = m[Vocabulary.filterOp_DP]
+        self.stringValue = m[Vocabulary.stringValue_DP]
+        if m.get(Vocabulary.factor_OP) is None:
+            self.factor = Factor()
+        else:
+            self.factor = FactorBase.createFromJson(
+                m.get(Vocabulary.factor_OP))
+
+    @classmethod
+    def createFromJson(cls, m):
+        kind = m.get(Vocabulary.KIND)
+        if kind == Vocabulary.FilterExpr_CLASS:
+            return FilterExpr(m)
+        if kind == Vocabulary.FilterExpr2d_CLASS:
+            return FilterExpr2d(m)
+        raise ValueError("bad kind : " + kind +
+                         " for class FilterExpr in createFromJson")
+
+    def toJson(self):
+        m = super().toJson()
+        m[Vocabulary.KIND] = Vocabulary.FilterExpr_CLASS
+        if self.subKind is not None and self.subKind != Vocabulary.FilterExpr_CLASS:
+            m[Vocabulary.SUBKIND] = self.subKind
+        else:
+            m.pop(Vocabulary.SUBKIND, None)
+        m[Vocabulary.filterOp_DP] = self.filterOp
+        m[Vocabulary.stringValue_DP] = self.stringValue
+        m[Vocabulary.factor_OP] = self.factor if self.factor is None else self.factor.toJson()
+        return m
+
+
+class FilterExpr(FilterExprBase):
+    def __init__(self, m=None):
+        super().__init__(m)
+
+
+class FilterExpr2dBase(FilterExpr):
+    def __init__(self, m=None):
+        if m is None:
+            super().__init__(m)
+            self.factor2 = Factor()
+        else:
+            self.fromJson(m)
+
+    def fromJson(self, m):
+        super().fromJson(m)
+        self.subKind = m.get(Vocabulary.SUBKIND)
+        if self.subKind is None and m.get(Vocabulary.KIND) != Vocabulary.FilterExpr2d_CLASS:
+            self.subKind = m.get(Vocabulary.KIND)
+        if m.get(Vocabulary.factor2_OP) is None:
+            self.factor2 = Factor()
+        else:
+            self.factor2 = FactorBase.createFromJson(
+                m.get(Vocabulary.factor2_OP))
+
+    @classmethod
+    def createFromJson(cls, m):
+        kind = m.get(Vocabulary.KIND)
+        if kind == Vocabulary.FilterExpr2d_CLASS:
+            return FilterExpr2d(m)
+        raise ValueError("bad kind : " + kind +
+                         " for class FilterExpr2d in createFromJson")
+
+    def toJson(self):
+        m = super().toJson()
+        m[Vocabulary.KIND] = Vocabulary.FilterExpr2d_CLASS
+        if self.subKind is not None and self.subKind != Vocabulary.FilterExpr2d_CLASS:
+            m[Vocabulary.SUBKIND] = self.subKind
+        else:
+            m.pop(Vocabulary.SUBKIND, None)
+        m[Vocabulary.factor2_OP] = self.factor2 if self.factor2 is None else self.factor2.toJson()
+        return m
+
+
+class FilterExpr2d(FilterExpr2dBase):
+    def __init__(self, m=None):
+        super().__init__(m)
+
+
 class FactorsPropertyBase(StringProperty):
     def __init__(self, m=None):
         if m is not None:
@@ -9614,55 +9875,6 @@ class IssueMessage(IssueMessageBase):
         super().__init__(m)
 
 
-class FilterExprBase(FilterTopExpr):
-    def __init__(self, m=None):
-        if m is None:
-            super().__init__(m)
-            self.filterOp = ""
-            self.stringValue = ""
-            self.factor = Factor()
-        else:
-            self.fromJson(m)
-
-    def fromJson(self, m):
-        super().fromJson(m)
-        self.subKind = m.get(Vocabulary.SUBKIND)
-        if self.subKind is None and m.get(Vocabulary.KIND) != Vocabulary.FilterExpr_CLASS:
-            self.subKind = m.get(Vocabulary.KIND)
-        self.filterOp = m[Vocabulary.filterOp_DP]
-        self.stringValue = m[Vocabulary.stringValue_DP]
-        if m.get(Vocabulary.factor_OP) is None:
-            self.factor = Factor()
-        else:
-            self.factor = FactorBase.createFromJson(
-                m.get(Vocabulary.factor_OP))
-
-    @classmethod
-    def createFromJson(cls, m):
-        kind = m.get(Vocabulary.KIND)
-        if kind == Vocabulary.FilterExpr_CLASS:
-            return FilterExpr(m)
-        raise ValueError("bad kind : " + kind +
-                         " for class FilterExpr in createFromJson")
-
-    def toJson(self):
-        m = super().toJson()
-        m[Vocabulary.KIND] = Vocabulary.FilterExpr_CLASS
-        if self.subKind is not None and self.subKind != Vocabulary.FilterExpr_CLASS:
-            m[Vocabulary.SUBKIND] = self.subKind
-        else:
-            m.pop(Vocabulary.SUBKIND, None)
-        m[Vocabulary.filterOp_DP] = self.filterOp
-        m[Vocabulary.stringValue_DP] = self.stringValue
-        m[Vocabulary.factor_OP] = self.factor if self.factor is None else self.factor.toJson()
-        return m
-
-
-class FilterExpr(FilterExprBase):
-    def __init__(self, m=None):
-        super().__init__(m)
-
-
 class TableSchemaBase(Schema):
     def __init__(self, m=None):
         if m is not None:
@@ -10184,6 +10396,7 @@ class NamedFilterBase(Filter):
         if m is None:
             super().__init__(m)
             self.name = ""
+            self.meta = list()
         else:
             self.fromJson(m)
 
@@ -10193,6 +10406,12 @@ class NamedFilterBase(Filter):
         if self.subKind is None and m.get(Vocabulary.KIND) != Vocabulary.NamedFilter_CLASS:
             self.subKind = m.get(Vocabulary.KIND)
         self.name = m[Vocabulary.name_DP]
+        if m.get(Vocabulary.meta_OP) is None:
+            self.meta = list()
+        else:
+            self.meta = list()
+            for o in m.get(Vocabulary.meta_OP):
+                self.meta.append(PairBase.createFromJson(o))
 
     @classmethod
     def createFromJson(cls, m):
@@ -10209,6 +10428,7 @@ class NamedFilterBase(Filter):
             m[Vocabulary.SUBKIND] = self.subKind
         else:
             m.pop(Vocabulary.SUBKIND, None)
+        m[Vocabulary.meta_OP] = list(map(lambda x: x.toJson(), self.meta))
         m[Vocabulary.name_DP] = self.name
         return m
 
@@ -10267,6 +10487,7 @@ class MeltStepModelBase(StepModel):
             self.namespace = ""
             self.selectionPattern = ""
             self.factorType = ""
+            self.gatherType = ""
             self.factors = list()
         else:
             self.fromJson(m)
@@ -10279,6 +10500,7 @@ class MeltStepModelBase(StepModel):
         self.namespace = m[Vocabulary.namespace_DP]
         self.selectionPattern = m[Vocabulary.selectionPattern_DP]
         self.factorType = m[Vocabulary.factorType_DP]
+        self.gatherType = m[Vocabulary.gatherType_DP]
         if m.get(Vocabulary.factors_OP) is None:
             self.factors = list()
         else:
@@ -10306,6 +10528,7 @@ class MeltStepModelBase(StepModel):
         m[Vocabulary.namespace_DP] = self.namespace
         m[Vocabulary.selectionPattern_DP] = self.selectionPattern
         m[Vocabulary.factorType_DP] = self.factorType
+        m[Vocabulary.gatherType_DP] = self.gatherType
         return m
 
 
@@ -10508,6 +10731,7 @@ class GatherRelationBase(Relation):
             self.valueName = ""
             self.variableName = ""
             self.valueType = ""
+            self.gatherType = ""
             self.relation = Relation()
         else:
             self.fromJson(m)
@@ -10524,6 +10748,7 @@ class GatherRelationBase(Relation):
         self.valueName = m[Vocabulary.valueName_DP]
         self.variableName = m[Vocabulary.variableName_DP]
         self.valueType = m[Vocabulary.valueType_DP]
+        self.gatherType = m[Vocabulary.gatherType_DP]
         if m.get(Vocabulary.relation_OP) is None:
             self.relation = Relation()
         else:
@@ -10550,6 +10775,7 @@ class GatherRelationBase(Relation):
         m[Vocabulary.valueName_DP] = self.valueName
         m[Vocabulary.variableName_DP] = self.variableName
         m[Vocabulary.valueType_DP] = self.valueType
+        m[Vocabulary.gatherType_DP] = self.gatherType
         return m
 
 

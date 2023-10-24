@@ -787,6 +787,24 @@ class TableSchemaServiceBase (HttpClientService):
             self.onError(e)
         return answer
 
+    def selectFileContentStream(self, tableId, filename):
+        answer = None
+        try:
+            uri = URI.create("api/v1/schema" + "/" + "selectFileContentStream")
+            params = {}
+            params["tableId"] = tableId
+            params["filename"] = filename
+            geturi = self.getServiceUri(uri).replaceQueryParameters(
+                {"params": json.JSONEncoder().encode(params)})
+            response = self.getHttpClient().get(geturi.toString(), None)
+            if response.code() != 200:
+                self.onResponseError(response)
+            else:
+                answer = response.stream
+        except BaseException as e:
+            self.onError(e)
+        return answer
+
     def selectCSV(self, tableId, cnames, offset, limit, separator, quote, encoding):
         answer = None
         try:
