@@ -51,14 +51,26 @@ def dataframe_to_table(df, values_as_list=False) -> Table:
         
 
         # FIXME Not handling categorical (factor) and  boolean yet (dtype == bool)
+        numericType = False
+        strType = False
         if( dtypes[i] == "object" and isinstance(values[0], str) ):
             column.type = 'string'
+            strType = True
         elif( dtypes[i] == "float64" or dtypes[i] == "float32"):
             column.type = 'double'
+            numericType = True
         elif( dtypes[i] == "int64" or dtypes[i] == "int32"):
             column.type = 'int32'
+            numericType = True
         else:
             raise "Bad column type"
+        nanChecks = [v is np.nan for v in values]
+
+        if np.any(nanChecks):
+            if strType == True:
+                values[nanChecks] = ""
+               
+
         if values_as_list == True:
             column.values = values.tolist()
         else:

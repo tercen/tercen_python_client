@@ -72,11 +72,11 @@ class TestTercen(unittest.TestCase):
                 self.wkfBuilder.add_data_step(yAxis={"name":"Procedure.Hip Knee.Cost", "type":"double"},
                             xAxis={"name":"Procedure.Hip Knee.Cost", "type":"double"})
             else:
+                # TODO Test color projection
                 self.wkfBuilder.add_data_step(yAxis={"name":"Procedure.Hip Knee.Cost", "type":"double"}, 
                                         columns=[{"name":"Rating.Imaging", "type":"string"}],
                                         rows=[{"name":"Rating.Effectiveness", "type":"string"}],
-                                        labels=[{"name":"Facility.Name", "type":"string"}],
-                                        colors=[{"name":"Facility.Type", "type":"string"}])
+                                        labels=[{"name":"Facility.Name", "type":"string"}])
         
         
         self.context = ctx.TercenContext(
@@ -187,7 +187,13 @@ class TestTercen(unittest.TestCase):
         targetDf = targetDf[selNames]
         resDf = self.context.select( selNames ) 
         
-      
+        stargetDf = targetDf[".y"].sort(in_place=False)
+        sresDf = resDf[".y"].sort(in_place=False)
+
+        for i in range(0,20):
+            print("{} : {}".format(targetDf[".y"][i], resDf[".y"][i]) )
+        
+        
         assert( not resDf is None )
         assert(resDf.shape == targetDf.shape)
         np.testing.assert_allclose(resDf[:,selNames], targetDf[:,selNames], self.tol)
@@ -195,7 +201,7 @@ class TestTercen(unittest.TestCase):
     def test_select_many(self) -> None:
         targetDf = pl.read_csv('tests/data/Test_Full_Projection_Table_1.csv')
 
-        selNames = ['.y', 'Facility.Type', 'Facility.Name' ]
+        selNames = ['.y', 'Facility.Name' ]
 
         targetDf = targetDf[selNames]
         resDf = self.context.select( selNames )

@@ -1,5 +1,8 @@
 import unittest
-import os 
+import os, sys
+
+sys.path.append("..")
+sys.path.append(".")
 
 from tercen.client import context as ctx
 import tercen.util.builder as bld

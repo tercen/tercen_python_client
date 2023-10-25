@@ -1,2 +1,0 @@
-pandas==1.5.1
-pytson.egg==info
