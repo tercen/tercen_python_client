@@ -5,7 +5,7 @@ setup(
     version='0.8.1',
     packages=find_packages(exclude=['tests']),
     install_requires=[
-        'numpy==1.24.*',
+        'numpy==1.22.*',
         'pandas==2.1.*',
         'python-dateutil==2.8.*',
         'pytz==2023.*',
