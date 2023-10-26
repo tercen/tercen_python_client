@@ -2,14 +2,14 @@ from setuptools import setup, find_packages
 
 setup(
     name='tercen_python_client',
-    version='0.7.18',
+    version='0.8.1',
     packages=find_packages(exclude=['tests']),
     install_requires=[
         'numpy==1.24.*',
-        'pandas==1.5.*',
+        'pandas==2.1.*',
         'python-dateutil==2.8.*',
-        'pytz==2022.6',
-        'scipy==1.10.*',
+        'pytz==2023.*',
+        'scipy==1.11.*',
         'pytson @ git+https://github.com/tercen/pytson@1.7.7#egg=pytson',
         'polars==0.18.*',
         'pipreqs==0.4.*'
