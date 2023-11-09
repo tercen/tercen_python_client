@@ -21,7 +21,7 @@ class TercenContext:
         args = self.parse_args()
 
         
-        if not args["taskId"] is None:
+        if taskId is None and not args["taskId"] is None:
             taskId = args["taskId"]
 
         if not args["token"] is None:
