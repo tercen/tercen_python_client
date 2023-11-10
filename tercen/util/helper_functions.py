@@ -51,17 +51,19 @@ def dataframe_to_table(df, values_as_list=False) -> Table:
         
 
         # FIXME Not handling categorical (factor) and  boolean yet (dtype == bool)
-        numericType = False
+
         strType = False
-        if( dtypes[i] == "object" and isinstance(values[0], str) ):
+        isStr = (isinstance(values, np.ndarray) and isinstance(values[0], str) ) or \
+                (not isinstance(values, np.ndarray) and isinstance(values.iloc[0], str) )
+        if( dtypes[i] == "object" and isStr ):
             column.type = 'string'
             strType = True
         elif( dtypes[i] == "float64" or dtypes[i] == "float32"):
             column.type = 'double'
-            numericType = True
+
         elif( dtypes[i] == "int64" or dtypes[i] == "int32"):
             column.type = 'int32'
-            numericType = True
+
         else:
             raise "Bad column type"
         nanChecks = [v is np.nan for v in values]
