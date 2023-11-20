@@ -37,7 +37,7 @@ def dataframe_to_table(df, values_as_list=False) -> Table:
         
     else:
         colnames = list(df)
-        dtypes = df.dtypes
+        dtypes = df.dtypes.tolist()
 
     
     for i in range(0, len(colnames)):
@@ -53,9 +53,8 @@ def dataframe_to_table(df, values_as_list=False) -> Table:
         # FIXME Not handling categorical (factor) and  boolean yet (dtype == bool)
 
         strType = False
-        isStr = (isinstance(values, np.ndarray) and isinstance(values[0], str) ) or \
-                (not isinstance(values, np.ndarray) and isinstance(values.iloc[0], str) )
-        if( dtypes[i] == "object" and isStr ):
+
+        if( dtypes[i] == "object" and isinstance(values[0], str) ):
             column.type = 'string'
             strType = True
         elif( dtypes[i] == "float64" or dtypes[i] == "float32"):
