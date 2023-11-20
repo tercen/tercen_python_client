@@ -18,7 +18,7 @@ import tercen.util.helper_functions as utl
 class WorkflowBuilder():
     def __init__(self, username='test', password='test', serviceUri="http://127.0.0.1:5400/"):
         self.client = TercenClient(serviceUri)
-        self.session = self.client.userService.connect(     username, password)
+        self.session = self.client.userService.connect(username, password)
 
         self.user = username
 
@@ -29,6 +29,9 @@ class WorkflowBuilder():
         self.cubeSteps = []
         self.namespaceCount = 0
 
+
+        # Changes for multiple table steps and multidata step
+        self.nTableSteps = 0
 
     def __randomString(self, nChar=6):
         letters = string.ascii_uppercase
@@ -85,7 +88,7 @@ class WorkflowBuilder():
 
     # By default, if a number is not x.x, pandas converts it to int, which might not be desirable
     # Thus, int columns need to be manually specified through the int_columns parameter
-    def add_table_step(self, data, int_columns=None):
+    def add_table_step(self, data, int_columns=None, name=None):
         if data is None:
             raise "data parameter is empty"
         if isinstance( data, str ):
@@ -95,7 +98,11 @@ class WorkflowBuilder():
         else:
             raise "data must either be a file path or a pandas DataFrame"
 
-       
+        self.nTableSteps = self.nTableSteps + 1
+
+        if name == None:
+            name = "table_step_{}".format(self.nTableSteps)
+
         # However, it might be necessary to alter this behavior
         colNames = list(df)
 
@@ -112,7 +119,6 @@ class WorkflowBuilder():
         fileDoc.acl.owner = self.proj.acl.owner
         fileDoc.metadata.contentEncoding = "application/octet-stream"
 
-        
         self.fileDoc = self.client.fileService.uploadTable(fileDoc, utl.dataframe_to_table(df, values_as_list=True)[0].toJson() )
 
         task = CSVTask()
@@ -127,7 +133,7 @@ class WorkflowBuilder():
         self.csvTask = self.client.taskService.waitDone(task.id)
 
         csvSchema = self.client.tableSchemaService.get(self.csvTask.schemaId)
-        self.schemas["tableStep"]  = csvSchema
+        self.schemas[name]  = csvSchema
 
         tableStep = TableStep()
         
@@ -182,22 +188,22 @@ class WorkflowBuilder():
         # self.workflow.steps[nSteps]  =  tableStep 
 
 
-        self.steps["tableStep"] = tableStep
+        self.steps[name] = tableStep
         self.client.workflowService.update(self.workflow)
 
 
-        tableTask = CubeQueryTask()
-        tableTask.query = CubeQuery()
-        tableTask.schemaIds = [csvSchema.id]
-        tableTask.projectId = self.proj.id
-        tableTask.owner = self.proj.acl.owner
+        # tableTask = CubeQueryTask()
+        # tableTask.query = CubeQuery()
+        # tableTask.schemaIds = [csvSchema.id]
+        # tableTask.projectId = self.proj.id
+        # tableTask.owner = self.proj.acl.owner
 
-        tableTask.state = InitState()
-        tableTask = self.client.taskService.create( tableTask )
+        # tableTask.state = InitState()
+        # tableTask = self.client.taskService.create( tableTask )
         
-        # self.client.taskService.runTask(tableTask.id)
-        self.tableStepTask = tableTask
-        # self.tableStepTask = self.client.taskService.waitDone(tableTask.id)
+        # # self.client.taskService.runTask(tableTask.id)
+        # self.tableStepTask = tableTask
+        # # self.tableStepTask = self.client.taskService.waitDone(tableTask.id)
 
         # Return the index of the step
         # Return name of the step
@@ -209,7 +215,8 @@ class WorkflowBuilder():
                 yAxis:dict=None, xAxis:dict=None, linkTo:str=None, 
                 operator:dict=None) -> None:
         if linkTo is None:
-            linkTo = 'tableStep'
+            # Search for the first table step
+            linkTo = "table_step_1" 
 
         if yAxis is None:
             raise 'y-axis is mandatory'
