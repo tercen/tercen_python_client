@@ -209,6 +209,8 @@ class SciObjectBase(BaseObject):
             return GlTask(m)
         if kind == Vocabulary.CreateGitOperatorTask_CLASS:
             return CreateGitOperatorTask(m)
+        if kind == Vocabulary.GitProjectTask_CLASS:
+            return GitProjectTask(m)
         if kind == Vocabulary.TaskLogEvent_CLASS:
             return TaskLogEvent(m)
         if kind == Vocabulary.TaskProgressEvent_CLASS:
@@ -363,8 +365,6 @@ class SciObjectBase(BaseObject):
             return Pair(m)
         if kind == Vocabulary.FileMetadata_CLASS:
             return FileMetadata(m)
-        if kind == Vocabulary.AxisSettings_CLASS:
-            return AxisSettings(m)
         if kind == Vocabulary.Worker_CLASS:
             return Worker(m)
         if kind == Vocabulary.Ace_CLASS:
@@ -607,6 +607,8 @@ class IdObjectBase(SciObject):
             return GlTask(m)
         if kind == Vocabulary.CreateGitOperatorTask_CLASS:
             return CreateGitOperatorTask(m)
+        if kind == Vocabulary.GitProjectTask_CLASS:
+            return GitProjectTask(m)
         if kind == Vocabulary.TaskLogEvent_CLASS:
             return TaskLogEvent(m)
         if kind == Vocabulary.TaskProgressEvent_CLASS:
@@ -778,6 +780,8 @@ class PersistentObjectBase(IdObject):
             return GlTask(m)
         if kind == Vocabulary.CreateGitOperatorTask_CLASS:
             return CreateGitOperatorTask(m)
+        if kind == Vocabulary.GitProjectTask_CLASS:
+            return GitProjectTask(m)
         if kind == Vocabulary.TaskLogEvent_CLASS:
             return TaskLogEvent(m)
         if kind == Vocabulary.TaskProgressEvent_CLASS:
@@ -3505,6 +3509,8 @@ class TaskBase(PersistentObject):
             return GlTask(m)
         if kind == Vocabulary.CreateGitOperatorTask_CLASS:
             return CreateGitOperatorTask(m)
+        if kind == Vocabulary.GitProjectTask_CLASS:
+            return GitProjectTask(m)
         raise ValueError("bad kind : " + kind +
                          " for class Task in createFromJson")
 
@@ -6642,12 +6648,11 @@ class CpuTimeProfile(CpuTimeProfileBase):
         super().__init__(m)
 
 
-class AxisSettingsBase(SciObject):
+class AxisSettingsBase(BaseObject):
     def __init__(self, m=None):
         if m is None:
             super().__init__(m)
-            self.properties = list()
-            self.propertyValues = list()
+            self.meta = list()
         else:
             self.fromJson(m)
 
@@ -6656,18 +6661,12 @@ class AxisSettingsBase(SciObject):
         self.subKind = m.get(Vocabulary.SUBKIND)
         if self.subKind is None and m.get(Vocabulary.KIND) != Vocabulary.AxisSettings_CLASS:
             self.subKind = m.get(Vocabulary.KIND)
-        if m.get(Vocabulary.properties_OP) is None:
-            self.properties = list()
+        if m.get(Vocabulary.meta_OP) is None:
+            self.meta = list()
         else:
-            self.properties = list()
-            for o in m.get(Vocabulary.properties_OP):
-                self.properties.append(PropertyBase.createFromJson(o))
-        if m.get(Vocabulary.propertyValues_OP) is None:
-            self.propertyValues = list()
-        else:
-            self.propertyValues = list()
-            for o in m.get(Vocabulary.propertyValues_OP):
-                self.propertyValues.append(PropertyValueBase.createFromJson(o))
+            self.meta = list()
+            for o in m.get(Vocabulary.meta_OP):
+                self.meta.append(PairBase.createFromJson(o))
 
     @classmethod
     def createFromJson(cls, m):
@@ -6684,10 +6683,7 @@ class AxisSettingsBase(SciObject):
             m[Vocabulary.SUBKIND] = self.subKind
         else:
             m.pop(Vocabulary.SUBKIND, None)
-        m[Vocabulary.properties_OP] = list(
-            map(lambda x: x.toJson(), self.properties))
-        m[Vocabulary.propertyValues_OP] = list(
-            map(lambda x: x.toJson(), self.propertyValues))
+        m[Vocabulary.meta_OP] = list(map(lambda x: x.toJson(), self.meta))
         return m
 
 
@@ -11003,6 +10999,43 @@ class CompositeRelationBase(Relation):
 
 
 class CompositeRelation(CompositeRelationBase):
+    def __init__(self, m=None):
+        super().__init__(m)
+
+
+class GitProjectTaskBase(Task):
+    def __init__(self, m=None):
+        if m is not None:
+            self.fromJson(m)
+
+        else:
+            super().__init__(m)
+
+    def fromJson(self, m):
+        super().fromJson(m)
+        self.subKind = m.get(Vocabulary.SUBKIND)
+        if self.subKind is None and m.get(Vocabulary.KIND) != Vocabulary.GitProjectTask_CLASS:
+            self.subKind = m.get(Vocabulary.KIND)
+
+    @classmethod
+    def createFromJson(cls, m):
+        kind = m.get(Vocabulary.KIND)
+        if kind == Vocabulary.GitProjectTask_CLASS:
+            return GitProjectTask(m)
+        raise ValueError("bad kind : " + kind +
+                         " for class GitProjectTask in createFromJson")
+
+    def toJson(self):
+        m = super().toJson()
+        m[Vocabulary.KIND] = Vocabulary.GitProjectTask_CLASS
+        if self.subKind is not None and self.subKind != Vocabulary.GitProjectTask_CLASS:
+            m[Vocabulary.SUBKIND] = self.subKind
+        else:
+            m.pop(Vocabulary.SUBKIND, None)
+        return m
+
+
+class GitProjectTask(GitProjectTaskBase):
     def __init__(self, m=None):
         super().__init__(m)
 
