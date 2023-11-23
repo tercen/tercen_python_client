@@ -138,6 +138,7 @@ Schema_CLASS = "Schema";
 ColorElement_CLASS = "ColorElement";
 ROperator_CLASS = "ROperator";
 OutStep_CLASS = "OutStep";
+LibraryTask_CLASS = "LibraryTask";
 PreProcessor_CLASS = "PreProcessor";
 InputPort_CLASS = "InputPort";
 Properties_CLASS = "Properties";

@@ -1,0 +1,1 @@
+from tercen.model.base import *

@@ -1,7 +1,0 @@
-class Document(DocumentBase):
-    def __init__(self, m=None):
-        if m is None:
-            super().__init__(m)
-            self.isPublic = False
-        else:
-            self.fromJson(m)

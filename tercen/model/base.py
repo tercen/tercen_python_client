@@ -1,5 +1,6 @@
 import tercen.model.vocabulary as Vocabulary
 from tercen.base.BaseObject import BaseObject
+import inspect
 
 
 class SciObjectBase(BaseObject):
@@ -207,6 +208,8 @@ class SciObjectBase(BaseObject):
             return ProjectTask(m)
         if kind == Vocabulary.GlTask_CLASS:
             return GlTask(m)
+        if kind == Vocabulary.LibraryTask_CLASS:
+            return LibraryTask(m)
         if kind == Vocabulary.CreateGitOperatorTask_CLASS:
             return CreateGitOperatorTask(m)
         if kind == Vocabulary.GitProjectTask_CLASS:
@@ -449,6 +452,9 @@ class SciObject(SciObjectBase):
 
 class IdObjectBase(SciObject):
     def __init__(self, m=None):
+        import tercen.model.impl as impl
+        if ("SciObject", impl.SciObject) in inspect.getmembers(impl):
+            IdObjectBase.__bases__ = (impl.SciObject,)
         if m is None:
             super().__init__(m)
             self.id = ""
@@ -605,6 +611,8 @@ class IdObjectBase(SciObject):
             return ProjectTask(m)
         if kind == Vocabulary.GlTask_CLASS:
             return GlTask(m)
+        if kind == Vocabulary.LibraryTask_CLASS:
+            return LibraryTask(m)
         if kind == Vocabulary.CreateGitOperatorTask_CLASS:
             return CreateGitOperatorTask(m)
         if kind == Vocabulary.GitProjectTask_CLASS:
@@ -674,6 +682,9 @@ class IdObject(IdObjectBase):
 
 class PersistentObjectBase(IdObject):
     def __init__(self, m=None):
+        import tercen.model.impl as impl
+        if ("IdObject", impl.IdObject) in inspect.getmembers(impl):
+            PersistentObjectBase.__bases__ = (impl.IdObject,)
         if m is None:
             super().__init__(m)
             self.isDeleted = True
@@ -778,6 +789,8 @@ class PersistentObjectBase(IdObject):
             return ProjectTask(m)
         if kind == Vocabulary.GlTask_CLASS:
             return GlTask(m)
+        if kind == Vocabulary.LibraryTask_CLASS:
+            return LibraryTask(m)
         if kind == Vocabulary.CreateGitOperatorTask_CLASS:
             return CreateGitOperatorTask(m)
         if kind == Vocabulary.GitProjectTask_CLASS:
@@ -836,6 +849,9 @@ class PersistentObject(PersistentObjectBase):
 
 class DocumentBase(PersistentObject):
     def __init__(self, m=None):
+        import tercen.model.impl as impl
+        if ("PersistentObject", impl.PersistentObject) in inspect.getmembers(impl):
+            DocumentBase.__bases__ = (impl.PersistentObject,)
         if m is None:
             super().__init__(m)
             self.description = ""
@@ -995,6 +1011,9 @@ class Document(DocumentBase):
 
 class UserBase(Document):
     def __init__(self, m=None):
+        import tercen.model.impl as impl
+        if ("Document", impl.Document) in inspect.getmembers(impl):
+            UserBase.__bases__ = (impl.Document,)
         if m is None:
             super().__init__(m)
             self.email = ""
@@ -1070,6 +1089,9 @@ class User(UserBase):
 
 class TeamBase(User):
     def __init__(self, m=None):
+        import tercen.model.impl as impl
+        if ("User", impl.User) in inspect.getmembers(impl):
+            TeamBase.__bases__ = (impl.User,)
         if m is not None:
             self.fromJson(m)
 
@@ -1107,6 +1129,9 @@ class Team(TeamBase):
 
 class PropertyBase(SciObject):
     def __init__(self, m=None):
+        import tercen.model.impl as impl
+        if ("SciObject", impl.SciObject) in inspect.getmembers(impl):
+            PropertyBase.__bases__ = (impl.SciObject,)
         if m is None:
             super().__init__(m)
             self.name = ""
@@ -1161,6 +1186,9 @@ class Property(PropertyBase):
 
 class DoublePropertyBase(Property):
     def __init__(self, m=None):
+        import tercen.model.impl as impl
+        if ("Property", impl.Property) in inspect.getmembers(impl):
+            DoublePropertyBase.__bases__ = (impl.Property,)
         if m is None:
             super().__init__(m)
             self.defaultValue = 0.0
@@ -1200,6 +1228,9 @@ class DoubleProperty(DoublePropertyBase):
 
 class RectangleBase(SciObject):
     def __init__(self, m=None):
+        import tercen.model.impl as impl
+        if ("SciObject", impl.SciObject) in inspect.getmembers(impl):
+            RectangleBase.__bases__ = (impl.SciObject,)
         if m is None:
             super().__init__(m)
             self.extent = Point()
@@ -1249,6 +1280,9 @@ class Rectangle(RectangleBase):
 
 class StateBase(SciObject):
     def __init__(self, m=None):
+        import tercen.model.impl as impl
+        if ("SciObject", impl.SciObject) in inspect.getmembers(impl):
+            StateBase.__bases__ = (impl.SciObject,)
         if m is not None:
             self.fromJson(m)
 
@@ -1300,6 +1334,9 @@ class State(StateBase):
 
 class RunningStateBase(State):
     def __init__(self, m=None):
+        import tercen.model.impl as impl
+        if ("State", impl.State) in inspect.getmembers(impl):
+            RunningStateBase.__bases__ = (impl.State,)
         if m is not None:
             self.fromJson(m)
 
@@ -1337,6 +1374,9 @@ class RunningState(RunningStateBase):
 
 class RelationBase(IdObject):
     def __init__(self, m=None):
+        import tercen.model.impl as impl
+        if ("IdObject", impl.IdObject) in inspect.getmembers(impl):
+            RelationBase.__bases__ = (impl.IdObject,)
         if m is not None:
             self.fromJson(m)
 
@@ -1396,6 +1436,9 @@ class Relation(RelationBase):
 
 class WhereRelationBase(Relation):
     def __init__(self, m=None):
+        import tercen.model.impl as impl
+        if ("Relation", impl.Relation) in inspect.getmembers(impl):
+            WhereRelationBase.__bases__ = (impl.Relation,)
         if m is None:
             super().__init__(m)
             self.relation = Relation()
@@ -1446,6 +1489,9 @@ class WhereRelation(WhereRelationBase):
 
 class ProfileBase(SciObject):
     def __init__(self, m=None):
+        import tercen.model.impl as impl
+        if ("SciObject", impl.SciObject) in inspect.getmembers(impl):
+            ProfileBase.__bases__ = (impl.SciObject,)
         if m is None:
             super().__init__(m)
             self.name = ""
@@ -1495,6 +1541,9 @@ class Profile(ProfileBase):
 
 class StorageProfileBase(Profile):
     def __init__(self, m=None):
+        import tercen.model.impl as impl
+        if ("Profile", impl.Profile) in inspect.getmembers(impl):
+            StorageProfileBase.__bases__ = (impl.Profile,)
         if m is None:
             super().__init__(m)
             self.size = 0
@@ -1534,6 +1583,9 @@ class StorageProfile(StorageProfileBase):
 
 class ResourceSummaryBase(SciObject):
     def __init__(self, m=None):
+        import tercen.model.impl as impl
+        if ("SciObject", impl.SciObject) in inspect.getmembers(impl):
+            ResourceSummaryBase.__bases__ = (impl.SciObject,)
         if m is None:
             super().__init__(m)
             self.storage = 0.0
@@ -1582,6 +1634,9 @@ class ResourceSummary(ResourceSummaryBase):
 
 class BillingInfoBase(SciObject):
     def __init__(self, m=None):
+        import tercen.model.impl as impl
+        if ("SciObject", impl.SciObject) in inspect.getmembers(impl):
+            BillingInfoBase.__bases__ = (impl.SciObject,)
         if m is None:
             super().__init__(m)
             self.firstName = ""
@@ -1640,6 +1695,9 @@ class BillingInfo(BillingInfoBase):
 
 class EventBase(PersistentObject):
     def __init__(self, m=None):
+        import tercen.model.impl as impl
+        if ("PersistentObject", impl.PersistentObject) in inspect.getmembers(impl):
+            EventBase.__bases__ = (impl.PersistentObject,)
         if m is None:
             super().__init__(m)
             self.date = Date()
@@ -1696,6 +1754,9 @@ class Event(EventBase):
 
 class PatchRecordsBase(Event):
     def __init__(self, m=None):
+        import tercen.model.impl as impl
+        if ("Event", impl.Event) in inspect.getmembers(impl):
+            PatchRecordsBase.__bases__ = (impl.Event,)
         if m is None:
             super().__init__(m)
             self.u = ""
@@ -1758,6 +1819,9 @@ class PatchRecords(PatchRecordsBase):
 
 class GarbageObjectBase(PersistentObject):
     def __init__(self, m=None):
+        import tercen.model.impl as impl
+        if ("PersistentObject", impl.PersistentObject) in inspect.getmembers(impl):
+            GarbageObjectBase.__bases__ = (impl.PersistentObject,)
         if m is not None:
             self.fromJson(m)
 
@@ -1799,6 +1863,9 @@ class GarbageObject(GarbageObjectBase):
 
 class GarbageTasksBase(GarbageObject):
     def __init__(self, m=None):
+        import tercen.model.impl as impl
+        if ("GarbageObject", impl.GarbageObject) in inspect.getmembers(impl):
+            GarbageTasksBase.__bases__ = (impl.GarbageObject,)
         if m is None:
             super().__init__(m)
             self.workflowId = ""
@@ -1856,6 +1923,9 @@ class GarbageTasks(GarbageTasksBase):
 
 class VersionBase(SciObject):
     def __init__(self, m=None):
+        import tercen.model.impl as impl
+        if ("SciObject", impl.SciObject) in inspect.getmembers(impl):
+            VersionBase.__bases__ = (impl.SciObject,)
         if m is None:
             super().__init__(m)
             self.major = 0
@@ -1916,6 +1986,9 @@ class Version(VersionBase):
 
 class FiltersBase(SciObject):
     def __init__(self, m=None):
+        import tercen.model.impl as impl
+        if ("SciObject", impl.SciObject) in inspect.getmembers(impl):
+            FiltersBase.__bases__ = (impl.SciObject,)
         if m is None:
             super().__init__(m)
             self.removeNaN = True
@@ -1964,6 +2037,9 @@ class Filters(FiltersBase):
 
 class ChartBase(SciObject):
     def __init__(self, m=None):
+        import tercen.model.impl as impl
+        if ("SciObject", impl.SciObject) in inspect.getmembers(impl):
+            ChartBase.__bases__ = (impl.SciObject,)
         if m is None:
             super().__init__(m)
             self.name = ""
@@ -2020,6 +2096,9 @@ class Chart(ChartBase):
 
 class ChartHeatmapBase(Chart):
     def __init__(self, m=None):
+        import tercen.model.impl as impl
+        if ("Chart", impl.Chart) in inspect.getmembers(impl):
+            ChartHeatmapBase.__bases__ = (impl.Chart,)
         if m is not None:
             self.fromJson(m)
 
@@ -2104,6 +2183,9 @@ class StatisticNode(StatisticNodeBase):
 
 class CubeQueryBase(SciObject):
     def __init__(self, m=None):
+        import tercen.model.impl as impl
+        if ("SciObject", impl.SciObject) in inspect.getmembers(impl):
+            CubeQueryBase.__bases__ = (impl.SciObject,)
         if m is None:
             super().__init__(m)
             self.qtHash = ""
@@ -2197,6 +2279,9 @@ class CubeQuery(CubeQueryBase):
 
 class RLibraryBase(Document):
     def __init__(self, m=None):
+        import tercen.model.impl as impl
+        if ("Document", impl.Document) in inspect.getmembers(impl):
+            RLibraryBase.__bases__ = (impl.Document,)
         if m is None:
             super().__init__(m)
             self.rDescription = RDescription()
@@ -2244,6 +2329,9 @@ class RLibrary(RLibraryBase):
 
 class FilterTopExprBase(SciObject):
     def __init__(self, m=None):
+        import tercen.model.impl as impl
+        if ("SciObject", impl.SciObject) in inspect.getmembers(impl):
+            FilterTopExprBase.__bases__ = (impl.SciObject,)
         if m is not None:
             self.fromJson(m)
 
@@ -2289,6 +2377,9 @@ class FilterTopExpr(FilterTopExprBase):
 
 class FilterBase(FilterTopExpr):
     def __init__(self, m=None):
+        import tercen.model.impl as impl
+        if ("FilterTopExpr", impl.FilterTopExpr) in inspect.getmembers(impl):
+            FilterBase.__bases__ = (impl.FilterTopExpr,)
         if m is None:
             super().__init__(m)
             self.logical = ""
@@ -2342,6 +2433,9 @@ class Filter(FilterBase):
 
 class StepBase(IdObject):
     def __init__(self, m=None):
+        import tercen.model.impl as impl
+        if ("IdObject", impl.IdObject) in inspect.getmembers(impl):
+            StepBase.__bases__ = (impl.IdObject,)
         if m is None:
             super().__init__(m)
             self.groupId = ""
@@ -2443,6 +2537,9 @@ class Step(StepBase):
 
 class ModelStepBase(Step):
     def __init__(self, m=None):
+        import tercen.model.impl as impl
+        if ("Step", impl.Step) in inspect.getmembers(impl):
+            ModelStepBase.__bases__ = (impl.Step,)
         if m is not None:
             self.fromJson(m)
 
@@ -2504,6 +2601,9 @@ class ModelStep(ModelStepBase):
 
 class RelationStepBase(ModelStep):
     def __init__(self, m=None):
+        import tercen.model.impl as impl
+        if ("ModelStep", impl.ModelStep) in inspect.getmembers(impl):
+            RelationStepBase.__bases__ = (impl.ModelStep,)
         if m is not None:
             self.fromJson(m)
 
@@ -2561,6 +2661,9 @@ class RelationStep(RelationStepBase):
 
 class GroupStepBase(RelationStep):
     def __init__(self, m=None):
+        import tercen.model.impl as impl
+        if ("RelationStep", impl.RelationStep) in inspect.getmembers(impl):
+            GroupStepBase.__bases__ = (impl.RelationStep,)
         if m is None:
             super().__init__(m)
             self.appId = ""
@@ -2612,6 +2715,9 @@ class GroupStep(GroupStepBase):
 
 class TaskEventBase(Event):
     def __init__(self, m=None):
+        import tercen.model.impl as impl
+        if ("Event", impl.Event) in inspect.getmembers(impl):
+            TaskEventBase.__bases__ = (impl.Event,)
         if m is None:
             super().__init__(m)
             self.taskId = ""
@@ -2659,6 +2765,9 @@ class TaskEvent(TaskEventBase):
 
 class TaskLogEventBase(TaskEvent):
     def __init__(self, m=None):
+        import tercen.model.impl as impl
+        if ("TaskEvent", impl.TaskEvent) in inspect.getmembers(impl):
+            TaskLogEventBase.__bases__ = (impl.TaskEvent,)
         if m is None:
             super().__init__(m)
             self.message = ""
@@ -2698,6 +2807,9 @@ class TaskLogEvent(TaskLogEventBase):
 
 class UserSessionBase(SciObject):
     def __init__(self, m=None):
+        import tercen.model.impl as impl
+        if ("SciObject", impl.SciObject) in inspect.getmembers(impl):
+            UserSessionBase.__bases__ = (impl.SciObject,)
         if m is None:
             super().__init__(m)
             self.serverVersion = Version()
@@ -2753,6 +2865,9 @@ class UserSession(UserSessionBase):
 
 class TableBase(SciObject):
     def __init__(self, m=None):
+        import tercen.model.impl as impl
+        if ("SciObject", impl.SciObject) in inspect.getmembers(impl):
+            TableBase.__bases__ = (impl.SciObject,)
         if m is None:
             super().__init__(m)
             self.nRows = 0
@@ -2808,6 +2923,9 @@ class Table(TableBase):
 
 class OperatorBase(Document):
     def __init__(self, m=None):
+        import tercen.model.impl as impl
+        if ("Document", impl.Document) in inspect.getmembers(impl):
+            OperatorBase.__bases__ = (impl.Document,)
         if m is None:
             super().__init__(m)
             self.longDescription = ""
@@ -2868,6 +2986,9 @@ class Operator(OperatorBase):
 
 class GitOperatorBase(Operator):
     def __init__(self, m=None):
+        import tercen.model.impl as impl
+        if ("Operator", impl.Operator) in inspect.getmembers(impl):
+            GitOperatorBase.__bases__ = (impl.Operator,)
         if m is None:
             super().__init__(m)
             self.path = ""
@@ -2917,6 +3038,9 @@ class GitOperator(GitOperatorBase):
 
 class DockerOperatorBase(GitOperator):
     def __init__(self, m=None):
+        import tercen.model.impl as impl
+        if ("GitOperator", impl.GitOperator) in inspect.getmembers(impl):
+            DockerOperatorBase.__bases__ = (impl.GitOperator,)
         if m is None:
             super().__init__(m)
             self.container = ""
@@ -2956,6 +3080,9 @@ class DockerOperator(DockerOperatorBase):
 
 class AclBase(SciObject):
     def __init__(self, m=None):
+        import tercen.model.impl as impl
+        if ("SciObject", impl.SciObject) in inspect.getmembers(impl):
+            AclBase.__bases__ = (impl.SciObject,)
         if m is None:
             super().__init__(m)
             self.owner = ""
@@ -3104,6 +3231,9 @@ class CubeAxisQuery(CubeAxisQueryBase):
 
 class GateNodeBase(SciObject):
     def __init__(self, m=None):
+        import tercen.model.impl as impl
+        if ("SciObject", impl.SciObject) in inspect.getmembers(impl):
+            GateNodeBase.__bases__ = (impl.SciObject,)
         if m is None:
             super().__init__(m)
             self.nodeId = ""
@@ -3171,6 +3301,9 @@ class GateNode(GateNodeBase):
 
 class TaskSummaryBase(SciObject):
     def __init__(self, m=None):
+        import tercen.model.impl as impl
+        if ("SciObject", impl.SciObject) in inspect.getmembers(impl):
+            TaskSummaryBase.__bases__ = (impl.SciObject,)
         if m is None:
             super().__init__(m)
             self.n = 0
@@ -3213,6 +3346,9 @@ class TaskSummary(TaskSummaryBase):
 
 class PaletteBase(SciObject):
     def __init__(self, m=None):
+        import tercen.model.impl as impl
+        if ("SciObject", impl.SciObject) in inspect.getmembers(impl):
+            PaletteBase.__bases__ = (impl.SciObject,)
         if m is None:
             super().__init__(m)
             self.backcolor = 0
@@ -3267,6 +3403,9 @@ class Palette(PaletteBase):
 
 class RampPaletteBase(Palette):
     def __init__(self, m=None):
+        import tercen.model.impl as impl
+        if ("Palette", impl.Palette) in inspect.getmembers(impl):
+            RampPaletteBase.__bases__ = (impl.Palette,)
         if m is None:
             super().__init__(m)
             self.isUserDefined = True
@@ -3318,6 +3457,9 @@ class RampPalette(RampPaletteBase):
 
 class DistinctRelationBase(Relation):
     def __init__(self, m=None):
+        import tercen.model.impl as impl
+        if ("Relation", impl.Relation) in inspect.getmembers(impl):
+            DistinctRelationBase.__bases__ = (impl.Relation,)
         if m is None:
             super().__init__(m)
             self.group = list()
@@ -3367,6 +3509,9 @@ class DistinctRelation(DistinctRelationBase):
 
 class RunningDependentStateBase(State):
     def __init__(self, m=None):
+        import tercen.model.impl as impl
+        if ("State", impl.State) in inspect.getmembers(impl):
+            RunningDependentStateBase.__bases__ = (impl.State,)
         if m is not None:
             self.fromJson(m)
 
@@ -3404,6 +3549,9 @@ class RunningDependentState(RunningDependentStateBase):
 
 class TaskBase(PersistentObject):
     def __init__(self, m=None):
+        import tercen.model.impl as impl
+        if ("PersistentObject", impl.PersistentObject) in inspect.getmembers(impl):
+            TaskBase.__bases__ = (impl.PersistentObject,)
         if m is None:
             super().__init__(m)
             self.duration = 0.0
@@ -3507,6 +3655,8 @@ class TaskBase(PersistentObject):
             return ProjectTask(m)
         if kind == Vocabulary.GlTask_CLASS:
             return GlTask(m)
+        if kind == Vocabulary.LibraryTask_CLASS:
+            return LibraryTask(m)
         if kind == Vocabulary.CreateGitOperatorTask_CLASS:
             return CreateGitOperatorTask(m)
         if kind == Vocabulary.GitProjectTask_CLASS:
@@ -3544,6 +3694,9 @@ class Task(TaskBase):
 
 class ProjectTaskBase(Task):
     def __init__(self, m=None):
+        import tercen.model.impl as impl
+        if ("Task", impl.Task) in inspect.getmembers(impl):
+            ProjectTaskBase.__bases__ = (impl.Task,)
         if m is None:
             super().__init__(m)
             self.projectId = ""
@@ -3609,6 +3762,9 @@ class ProjectTask(ProjectTaskBase):
 
 class ExportWorkflowTaskBase(ProjectTask):
     def __init__(self, m=None):
+        import tercen.model.impl as impl
+        if ("ProjectTask", impl.ProjectTask) in inspect.getmembers(impl):
+            ExportWorkflowTaskBase.__bases__ = (impl.ProjectTask,)
         if m is None:
             super().__init__(m)
             self.workflowId = ""
@@ -3651,6 +3807,9 @@ class ExportWorkflowTask(ExportWorkflowTaskBase):
 
 class StartProcessBase(IdObject):
     def __init__(self, m=None):
+        import tercen.model.impl as impl
+        if ("IdObject", impl.IdObject) in inspect.getmembers(impl):
+            StartProcessBase.__bases__ = (impl.IdObject,)
         if m is None:
             super().__init__(m)
             self.executable = ""
@@ -3712,6 +3871,9 @@ class StartProcess(StartProcessBase):
 
 class TokenBase(SciObject):
     def __init__(self, m=None):
+        import tercen.model.impl as impl
+        if ("SciObject", impl.SciObject) in inspect.getmembers(impl):
+            TokenBase.__bases__ = (impl.SciObject,)
         if m is None:
             super().__init__(m)
             self.userId = ""
@@ -3805,6 +3967,9 @@ class ActivityCount(ActivityCountBase):
 
 class JoinOperatorBase(SciObject):
     def __init__(self, m=None):
+        import tercen.model.impl as impl
+        if ("SciObject", impl.SciObject) in inspect.getmembers(impl):
+            JoinOperatorBase.__bases__ = (impl.SciObject,)
         if m is None:
             super().__init__(m)
             self.joinType = ""
@@ -3858,6 +4023,9 @@ class JoinOperator(JoinOperatorBase):
 
 class OperatorModelBase(SciObject):
     def __init__(self, m=None):
+        import tercen.model.impl as impl
+        if ("SciObject", impl.SciObject) in inspect.getmembers(impl):
+            OperatorModelBase.__bases__ = (impl.SciObject,)
         if m is not None:
             self.fromJson(m)
 
@@ -3899,6 +4067,9 @@ class OperatorModel(OperatorModelBase):
 
 class FileMetadataBase(SciObject):
     def __init__(self, m=None):
+        import tercen.model.impl as impl
+        if ("SciObject", impl.SciObject) in inspect.getmembers(impl):
+            FileMetadataBase.__bases__ = (impl.SciObject,)
         if m is None:
             super().__init__(m)
             self.contentType = ""
@@ -3952,6 +4123,9 @@ class FileMetadata(FileMetadataBase):
 
 class CSVFileMetadataBase(FileMetadata):
     def __init__(self, m=None):
+        import tercen.model.impl as impl
+        if ("FileMetadata", impl.FileMetadata) in inspect.getmembers(impl):
+            CSVFileMetadataBase.__bases__ = (impl.FileMetadata,)
         if m is None:
             super().__init__(m)
             self.separator = ""
@@ -3997,6 +4171,9 @@ class CSVFileMetadata(CSVFileMetadataBase):
 
 class StepModelBase(SciObject):
     def __init__(self, m=None):
+        import tercen.model.impl as impl
+        if ("SciObject", impl.SciObject) in inspect.getmembers(impl):
+            StepModelBase.__bases__ = (impl.SciObject,)
         if m is not None:
             self.fromJson(m)
 
@@ -4046,6 +4223,9 @@ class StepModel(StepModelBase):
 
 class TableStepModelBase(StepModel):
     def __init__(self, m=None):
+        import tercen.model.impl as impl
+        if ("StepModel", impl.StepModel) in inspect.getmembers(impl):
+            TableStepModelBase.__bases__ = (impl.StepModel,)
         if m is None:
             super().__init__(m)
             self.relation = Relation()
@@ -4089,6 +4269,9 @@ class TableStepModel(TableStepModelBase):
 
 class NamespaceStepBase(RelationStep):
     def __init__(self, m=None):
+        import tercen.model.impl as impl
+        if ("RelationStep", impl.RelationStep) in inspect.getmembers(impl):
+            NamespaceStepBase.__bases__ = (impl.RelationStep,)
         if m is not None:
             self.fromJson(m)
 
@@ -4136,6 +4319,9 @@ class NamespaceStep(NamespaceStepBase):
 
 class MeltStepBase(NamespaceStep):
     def __init__(self, m=None):
+        import tercen.model.impl as impl
+        if ("NamespaceStep", impl.NamespaceStep) in inspect.getmembers(impl):
+            MeltStepBase.__bases__ = (impl.NamespaceStep,)
         if m is None:
             super().__init__(m)
             self.model = MeltStepModel()
@@ -4188,6 +4374,9 @@ class MeltStep(MeltStepBase):
 
 class CrosstabTableBase(SciObject):
     def __init__(self, m=None):
+        import tercen.model.impl as impl
+        if ("SciObject", impl.SciObject) in inspect.getmembers(impl):
+            CrosstabTableBase.__bases__ = (impl.SciObject,)
         if m is None:
             super().__init__(m)
             self.cellSize = 0.0
@@ -4253,6 +4442,9 @@ class CrosstabTable(CrosstabTableBase):
 
 class XYAxisListBase(SciObject):
     def __init__(self, m=None):
+        import tercen.model.impl as impl
+        if ("SciObject", impl.SciObject) in inspect.getmembers(impl):
+            XYAxisListBase.__bases__ = (impl.SciObject,)
         if m is None:
             super().__init__(m)
             self.rectangleSelections = list()
@@ -4307,6 +4499,9 @@ class XYAxisList(XYAxisListBase):
 
 class ColorElementBase(SciObject):
     def __init__(self, m=None):
+        import tercen.model.impl as impl
+        if ("SciObject", impl.SciObject) in inspect.getmembers(impl):
+            ColorElementBase.__bases__ = (impl.SciObject,)
         if m is None:
             super().__init__(m)
             self.color = 0
@@ -4350,6 +4545,9 @@ class ColorElement(ColorElementBase):
 
 class DoubleColorElementBase(ColorElement):
     def __init__(self, m=None):
+        import tercen.model.impl as impl
+        if ("ColorElement", impl.ColorElement) in inspect.getmembers(impl):
+            DoubleColorElementBase.__bases__ = (impl.ColorElement,)
         if m is None:
             super().__init__(m)
             self.stringValue = ""
@@ -4389,6 +4587,9 @@ class DoubleColorElement(DoubleColorElementBase):
 
 class TaskProgressEventBase(TaskEvent):
     def __init__(self, m=None):
+        import tercen.model.impl as impl
+        if ("TaskEvent", impl.TaskEvent) in inspect.getmembers(impl):
+            TaskProgressEventBase.__bases__ = (impl.TaskEvent,)
         if m is None:
             super().__init__(m)
             self.message = ""
@@ -4434,6 +4635,9 @@ class TaskProgressEvent(TaskProgressEventBase):
 
 class CrosstabBase(StepModel):
     def __init__(self, m=None):
+        import tercen.model.impl as impl
+        if ("StepModel", impl.StepModel) in inspect.getmembers(impl):
+            CrosstabBase.__bases__ = (impl.StepModel,)
         if m is None:
             super().__init__(m)
             self.taskId = ""
@@ -4508,6 +4712,9 @@ class Crosstab(CrosstabBase):
 
 class ProjectDocumentBase(Document):
     def __init__(self, m=None):
+        import tercen.model.impl as impl
+        if ("Document", impl.Document) in inspect.getmembers(impl):
+            ProjectDocumentBase.__bases__ = (impl.Document,)
         if m is None:
             super().__init__(m)
             self.projectId = ""
@@ -4568,6 +4775,9 @@ class ProjectDocument(ProjectDocumentBase):
 
 class IssueBase(ProjectDocument):
     def __init__(self, m=None):
+        import tercen.model.impl as impl
+        if ("ProjectDocument", impl.ProjectDocument) in inspect.getmembers(impl):
+            IssueBase.__bases__ = (impl.ProjectDocument,)
         if m is not None:
             self.fromJson(m)
 
@@ -4605,6 +4815,9 @@ class Issue(IssueBase):
 
 class PatchRecordBase(SciObject):
     def __init__(self, m=None):
+        import tercen.model.impl as impl
+        if ("SciObject", impl.SciObject) in inspect.getmembers(impl):
+            PatchRecordBase.__bases__ = (impl.SciObject,)
         if m is None:
             super().__init__(m)
             self.p = ""
@@ -4650,6 +4863,9 @@ class PatchRecord(PatchRecordBase):
 
 class CubeQueryTaskBase(ProjectTask):
     def __init__(self, m=None):
+        import tercen.model.impl as impl
+        if ("ProjectTask", impl.ProjectTask) in inspect.getmembers(impl):
+            CubeQueryTaskBase.__bases__ = (impl.ProjectTask,)
         if m is None:
             super().__init__(m)
             self.removeOnGC = True
@@ -4708,6 +4924,9 @@ class CubeQueryTask(CubeQueryTaskBase):
 
 class ComputationTaskBase(CubeQueryTask):
     def __init__(self, m=None):
+        import tercen.model.impl as impl
+        if ("CubeQueryTask", impl.CubeQueryTask) in inspect.getmembers(impl):
+            ComputationTaskBase.__bases__ = (impl.CubeQueryTask,)
         if m is None:
             super().__init__(m)
             self.parentTaskId = ""
@@ -4761,6 +4980,9 @@ class ComputationTask(ComputationTaskBase):
 
 class SaveComputationResultTaskBase(ComputationTask):
     def __init__(self, m=None):
+        import tercen.model.impl as impl
+        if ("ComputationTask", impl.ComputationTask) in inspect.getmembers(impl):
+            SaveComputationResultTaskBase.__bases__ = (impl.ComputationTask,)
         if m is not None:
             self.fromJson(m)
 
@@ -4800,6 +5022,10 @@ class SaveComputationResultTask(SaveComputationResultTaskBase):
 
 class RunComputationTaskBase(SaveComputationResultTask):
     def __init__(self, m=None):
+        import tercen.model.impl as impl
+        if ("SaveComputationResultTask", impl.SaveComputationResultTask) in inspect.getmembers(impl):
+            RunComputationTaskBase.__bases__ = (
+                impl.SaveComputationResultTask,)
         if m is not None:
             self.fromJson(m)
 
@@ -4837,6 +5063,9 @@ class RunComputationTask(RunComputationTaskBase):
 
 class WorkerEndpointBase(Document):
     def __init__(self, m=None):
+        import tercen.model.impl as impl
+        if ("Document", impl.Document) in inspect.getmembers(impl):
+            WorkerEndpointBase.__bases__ = (impl.Document,)
         if m is None:
             super().__init__(m)
             self.uri = ""
@@ -4876,6 +5105,9 @@ class WorkerEndpoint(WorkerEndpointBase):
 
 class ColumnSchemaMetaDataBase(SciObject):
     def __init__(self, m=None):
+        import tercen.model.impl as impl
+        if ("SciObject", impl.SciObject) in inspect.getmembers(impl):
+            ColumnSchemaMetaDataBase.__bases__ = (impl.SciObject,)
         if m is None:
             super().__init__(m)
             self.sort = list()
@@ -4936,6 +5168,9 @@ class ColumnSchemaMetaData(ColumnSchemaMetaDataBase):
 
 class PrivilegeBase(SciObject):
     def __init__(self, m=None):
+        import tercen.model.impl as impl
+        if ("SciObject", impl.SciObject) in inspect.getmembers(impl):
+            PrivilegeBase.__bases__ = (impl.SciObject,)
         if m is None:
             super().__init__(m)
             self.type = ""
@@ -4975,6 +5210,9 @@ class Privilege(PrivilegeBase):
 
 class CSVTaskBase(ProjectTask):
     def __init__(self, m=None):
+        import tercen.model.impl as impl
+        if ("ProjectTask", impl.ProjectTask) in inspect.getmembers(impl):
+            CSVTaskBase.__bases__ = (impl.ProjectTask,)
         if m is None:
             super().__init__(m)
             self.fileDocumentId = ""
@@ -5043,6 +5281,9 @@ class CSVTask(CSVTaskBase):
 
 class ActivityBase(PersistentObject):
     def __init__(self, m=None):
+        import tercen.model.impl as impl
+        if ("PersistentObject", impl.PersistentObject) in inspect.getmembers(impl):
+            ActivityBase.__bases__ = (impl.PersistentObject,)
         if m is None:
             super().__init__(m)
             self.type = ""
@@ -5115,6 +5356,9 @@ class Activity(ActivityBase):
 
 class ViesInfoBase(SciObject):
     def __init__(self, m=None):
+        import tercen.model.impl as impl
+        if ("SciObject", impl.SciObject) in inspect.getmembers(impl):
+            ViesInfoBase.__bases__ = (impl.SciObject,)
         if m is None:
             super().__init__(m)
             self.countryCode = ""
@@ -5169,6 +5413,9 @@ class ViesInfo(ViesInfoBase):
 
 class JoinStepModelBase(StepModel):
     def __init__(self, m=None):
+        import tercen.model.impl as impl
+        if ("StepModel", impl.StepModel) in inspect.getmembers(impl):
+            JoinStepModelBase.__bases__ = (impl.StepModel,)
         if m is None:
             super().__init__(m)
             self.rightPrefix = ""
@@ -5313,6 +5560,9 @@ class Ulimits(UlimitsBase):
 
 class RDescriptionBase(SciObject):
     def __init__(self, m=None):
+        import tercen.model.impl as impl
+        if ("SciObject", impl.SciObject) in inspect.getmembers(impl):
+            RDescriptionBase.__bases__ = (impl.SciObject,)
         if m is None:
             super().__init__(m)
             self.Package = ""
@@ -5376,6 +5626,9 @@ class RDescription(RDescriptionBase):
 
 class JetPaletteBase(RampPalette):
     def __init__(self, m=None):
+        import tercen.model.impl as impl
+        if ("RampPalette", impl.RampPalette) in inspect.getmembers(impl):
+            JetPaletteBase.__bases__ = (impl.RampPalette,)
         if m is not None:
             self.fromJson(m)
 
@@ -5413,6 +5666,9 @@ class JetPalette(JetPaletteBase):
 
 class SimpleRelationBase(Relation):
     def __init__(self, m=None):
+        import tercen.model.impl as impl
+        if ("Relation", impl.Relation) in inspect.getmembers(impl):
+            SimpleRelationBase.__bases__ = (impl.Relation,)
         if m is None:
             super().__init__(m)
             self.index = 0
@@ -5454,6 +5710,9 @@ class SimpleRelation(SimpleRelationBase):
 
 class TableRelationBase(SimpleRelation):
     def __init__(self, m=None):
+        import tercen.model.impl as impl
+        if ("SimpleRelation", impl.SimpleRelation) in inspect.getmembers(impl):
+            TableRelationBase.__bases__ = (impl.SimpleRelation,)
         if m is None:
             super().__init__(m)
             self.nRows = 0
@@ -5514,6 +5773,9 @@ class TableRelation(TableRelationBase):
 
 class DateBase(SciObject):
     def __init__(self, m=None):
+        import tercen.model.impl as impl
+        if ("SciObject", impl.SciObject) in inspect.getmembers(impl):
+            DateBase.__bases__ = (impl.SciObject,)
         if m is None:
             super().__init__(m)
             self.value = ""
@@ -5553,6 +5815,9 @@ class Date(DateBase):
 
 class StepStateBase(SciObject):
     def __init__(self, m=None):
+        import tercen.model.impl as impl
+        if ("SciObject", impl.SciObject) in inspect.getmembers(impl):
+            StepStateBase.__bases__ = (impl.SciObject,)
         if m is None:
             super().__init__(m)
             self.taskId = ""
@@ -5599,6 +5864,9 @@ class StepState(StepStateBase):
 
 class OperatorResultBase(SciObject):
     def __init__(self, m=None):
+        import tercen.model.impl as impl
+        if ("SciObject", impl.SciObject) in inspect.getmembers(impl):
+            OperatorResultBase.__bases__ = (impl.SciObject,)
         if m is None:
             super().__init__(m)
             self.tables = list()
@@ -5652,6 +5920,9 @@ class OperatorResult(OperatorResultBase):
 
 class RSourceLibraryBase(RLibrary):
     def __init__(self, m=None):
+        import tercen.model.impl as impl
+        if ("RLibrary", impl.RLibrary) in inspect.getmembers(impl):
+            RSourceLibraryBase.__bases__ = (impl.RLibrary,)
         if m is None:
             super().__init__(m)
             self.fileId = ""
@@ -5691,6 +5962,9 @@ class RSourceLibrary(RSourceLibraryBase):
 
 class FileDocumentBase(ProjectDocument):
     def __init__(self, m=None):
+        import tercen.model.impl as impl
+        if ("ProjectDocument", impl.ProjectDocument) in inspect.getmembers(impl):
+            FileDocumentBase.__bases__ = (impl.ProjectDocument,)
         if m is None:
             super().__init__(m)
             self.dataUri = ""
@@ -5740,6 +6014,9 @@ class FileDocument(FileDocumentBase):
 
 class AddressBase(SciObject):
     def __init__(self, m=None):
+        import tercen.model.impl as impl
+        if ("SciObject", impl.SciObject) in inspect.getmembers(impl):
+            AddressBase.__bases__ = (impl.SciObject,)
         if m is None:
             super().__init__(m)
             self.country = ""
@@ -5797,6 +6074,9 @@ class Address(AddressBase):
 
 class TaskDataEventBase(TaskEvent):
     def __init__(self, m=None):
+        import tercen.model.impl as impl
+        if ("TaskEvent", impl.TaskEvent) in inspect.getmembers(impl):
+            TaskDataEventBase.__bases__ = (impl.TaskEvent,)
         if m is None:
             super().__init__(m)
             self.bytes = None
@@ -5836,6 +6116,9 @@ class TaskDataEvent(TaskDataEventBase):
 
 class StringPropertyBase(Property):
     def __init__(self, m=None):
+        import tercen.model.impl as impl
+        if ("Property", impl.Property) in inspect.getmembers(impl):
+            StringPropertyBase.__bases__ = (impl.Property,)
         if m is None:
             super().__init__(m)
             self.defaultValue = ""
@@ -5881,6 +6164,9 @@ class StringProperty(StringPropertyBase):
 
 class XYAxisBase(SciObject):
     def __init__(self, m=None):
+        import tercen.model.impl as impl
+        if ("SciObject", impl.SciObject) in inspect.getmembers(impl):
+            XYAxisBase.__bases__ = (impl.SciObject,)
         if m is None:
             super().__init__(m)
             self.taskId = ""
@@ -5968,6 +6254,9 @@ class XYAxis(XYAxisBase):
 
 class PrincipalBase(SciObject):
     def __init__(self, m=None):
+        import tercen.model.impl as impl
+        if ("SciObject", impl.SciObject) in inspect.getmembers(impl):
+            PrincipalBase.__bases__ = (impl.SciObject,)
         if m is None:
             super().__init__(m)
             self.principalId = ""
@@ -6007,6 +6296,9 @@ class Principal(PrincipalBase):
 
 class FactorBase(SciObject):
     def __init__(self, m=None):
+        import tercen.model.impl as impl
+        if ("SciObject", impl.SciObject) in inspect.getmembers(impl):
+            FactorBase.__bases__ = (impl.SciObject,)
         if m is None:
             super().__init__(m)
             self.name = ""
@@ -6053,6 +6345,9 @@ class Factor(FactorBase):
 
 class AttributeBase(Factor):
     def __init__(self, m=None):
+        import tercen.model.impl as impl
+        if ("Factor", impl.Factor) in inspect.getmembers(impl):
+            AttributeBase.__bases__ = (impl.Factor,)
         if m is not None:
             self.fromJson(m)
 
@@ -6090,6 +6385,9 @@ class Attribute(AttributeBase):
 
 class ImportWorkflowTaskBase(ProjectTask):
     def __init__(self, m=None):
+        import tercen.model.impl as impl
+        if ("ProjectTask", impl.ProjectTask) in inspect.getmembers(impl):
+            ImportWorkflowTaskBase.__bases__ = (impl.ProjectTask,)
         if m is None:
             super().__init__(m)
             self.fileId = ""
@@ -6137,6 +6435,9 @@ class ImportWorkflowTask(ImportWorkflowTaskBase):
 
 class ProjectBase(Document):
     def __init__(self, m=None):
+        import tercen.model.impl as impl
+        if ("Document", impl.Document) in inspect.getmembers(impl):
+            ProjectBase.__bases__ = (impl.Document,)
         if m is not None:
             self.fromJson(m)
 
@@ -6174,6 +6475,9 @@ class Project(ProjectBase):
 
 class UrlBase(SciObject):
     def __init__(self, m=None):
+        import tercen.model.impl as impl
+        if ("SciObject", impl.SciObject) in inspect.getmembers(impl):
+            UrlBase.__bases__ = (impl.SciObject,)
         if m is None:
             super().__init__(m)
             self.uri = ""
@@ -6213,6 +6517,9 @@ class Url(UrlBase):
 
 class StringColorElementBase(ColorElement):
     def __init__(self, m=None):
+        import tercen.model.impl as impl
+        if ("ColorElement", impl.ColorElement) in inspect.getmembers(impl):
+            StringColorElementBase.__bases__ = (impl.ColorElement,)
         if m is None:
             super().__init__(m)
             self.stringValue = ""
@@ -6252,6 +6559,9 @@ class StringColorElement(StringColorElementBase):
 
 class EnumeratedPropertyBase(StringProperty):
     def __init__(self, m=None):
+        import tercen.model.impl as impl
+        if ("StringProperty", impl.StringProperty) in inspect.getmembers(impl):
+            EnumeratedPropertyBase.__bases__ = (impl.StringProperty,)
         if m is None:
             super().__init__(m)
             self.values = list()
@@ -6294,6 +6604,9 @@ class EnumeratedProperty(EnumeratedPropertyBase):
 
 class TestOperatorTaskBase(ProjectTask):
     def __init__(self, m=None):
+        import tercen.model.impl as impl
+        if ("ProjectTask", impl.ProjectTask) in inspect.getmembers(impl):
+            TestOperatorTaskBase.__bases__ = (impl.ProjectTask,)
         if m is None:
             super().__init__(m)
             self.operatorId = ""
@@ -6336,6 +6649,9 @@ class TestOperatorTask(TestOperatorTaskBase):
 
 class ImportGitWorkflowTaskBase(ImportWorkflowTask):
     def __init__(self, m=None):
+        import tercen.model.impl as impl
+        if ("ImportWorkflowTask", impl.ImportWorkflowTask) in inspect.getmembers(impl):
+            ImportGitWorkflowTaskBase.__bases__ = (impl.ImportWorkflowTask,)
         if m is None:
             super().__init__(m)
             self.version = ""
@@ -6381,6 +6697,9 @@ class ImportGitWorkflowTask(ImportGitWorkflowTaskBase):
 
 class ReferenceRelationBase(Relation):
     def __init__(self, m=None):
+        import tercen.model.impl as impl
+        if ("Relation", impl.Relation) in inspect.getmembers(impl):
+            ReferenceRelationBase.__bases__ = (impl.Relation,)
         if m is None:
             super().__init__(m)
             self.relation = Relation()
@@ -6424,6 +6743,9 @@ class ReferenceRelation(ReferenceRelationBase):
 
 class RProxyBase(SciObject):
     def __init__(self, m=None):
+        import tercen.model.impl as impl
+        if ("SciObject", impl.SciObject) in inspect.getmembers(impl):
+            RProxyBase.__bases__ = (impl.SciObject,)
         if m is None:
             super().__init__(m)
             self.name = ""
@@ -6466,6 +6788,9 @@ class RProxy(RProxyBase):
 
 class PairBase(SciObject):
     def __init__(self, m=None):
+        import tercen.model.impl as impl
+        if ("SciObject", impl.SciObject) in inspect.getmembers(impl):
+            PairBase.__bases__ = (impl.SciObject,)
         if m is None:
             super().__init__(m)
             self.key = ""
@@ -6508,6 +6833,9 @@ class Pair(PairBase):
 
 class InMemoryRelationBase(Relation):
     def __init__(self, m=None):
+        import tercen.model.impl as impl
+        if ("Relation", impl.Relation) in inspect.getmembers(impl):
+            InMemoryRelationBase.__bases__ = (impl.Relation,)
         if m is None:
             super().__init__(m)
             self.inMemoryTable = Table()
@@ -6551,6 +6879,9 @@ class InMemoryRelation(InMemoryRelationBase):
 
 class RunProfileBase(Profile):
     def __init__(self, m=None):
+        import tercen.model.impl as impl
+        if ("Profile", impl.Profile) in inspect.getmembers(impl):
+            RunProfileBase.__bases__ = (impl.Profile,)
         if m is None:
             super().__init__(m)
             self.memory = 0
@@ -6611,6 +6942,9 @@ class RunProfile(RunProfileBase):
 
 class CpuTimeProfileBase(Profile):
     def __init__(self, m=None):
+        import tercen.model.impl as impl
+        if ("Profile", impl.Profile) in inspect.getmembers(impl):
+            CpuTimeProfileBase.__bases__ = (impl.Profile,)
         if m is None:
             super().__init__(m)
             self.cpuTime = 0.0
@@ -6746,6 +7080,9 @@ class MappingFilter(MappingFilterBase):
 
 class ChartBarBase(Chart):
     def __init__(self, m=None):
+        import tercen.model.impl as impl
+        if ("Chart", impl.Chart) in inspect.getmembers(impl):
+            ChartBarBase.__bases__ = (impl.Chart,)
         if m is not None:
             self.fromJson(m)
 
@@ -6783,6 +7120,9 @@ class ChartBar(ChartBarBase):
 
 class FolderDocumentBase(ProjectDocument):
     def __init__(self, m=None):
+        import tercen.model.impl as impl
+        if ("ProjectDocument", impl.ProjectDocument) in inspect.getmembers(impl):
+            FolderDocumentBase.__bases__ = (impl.ProjectDocument,)
         if m is not None:
             self.fromJson(m)
 
@@ -6820,6 +7160,9 @@ class FolderDocument(FolderDocumentBase):
 
 class LockBase(PersistentObject):
     def __init__(self, m=None):
+        import tercen.model.impl as impl
+        if ("PersistentObject", impl.PersistentObject) in inspect.getmembers(impl):
+            LockBase.__bases__ = (impl.PersistentObject,)
         if m is None:
             super().__init__(m)
             self.name = ""
@@ -6859,6 +7202,9 @@ class Lock(LockBase):
 
 class WorkerBase(SciObject):
     def __init__(self, m=None):
+        import tercen.model.impl as impl
+        if ("SciObject", impl.SciObject) in inspect.getmembers(impl):
+            WorkerBase.__bases__ = (impl.SciObject,)
         if m is None:
             super().__init__(m)
             self.status = ""
@@ -6940,6 +7286,9 @@ class Worker(WorkerBase):
 
 class ImportGitDatasetTaskBase(ProjectTask):
     def __init__(self, m=None):
+        import tercen.model.impl as impl
+        if ("ProjectTask", impl.ProjectTask) in inspect.getmembers(impl):
+            ImportGitDatasetTaskBase.__bases__ = (impl.ProjectTask,)
         if m is None:
             super().__init__(m)
             self.version = ""
@@ -6991,6 +7340,9 @@ class ImportGitDatasetTask(ImportGitDatasetTaskBase):
 
 class AceBase(SciObject):
     def __init__(self, m=None):
+        import tercen.model.impl as impl
+        if ("SciObject", impl.SciObject) in inspect.getmembers(impl):
+            AceBase.__bases__ = (impl.SciObject,)
         if m is None:
             super().__init__(m)
             self.principals = list()
@@ -7045,6 +7397,9 @@ class Ace(AceBase):
 
 class InStepBase(RelationStep):
     def __init__(self, m=None):
+        import tercen.model.impl as impl
+        if ("RelationStep", impl.RelationStep) in inspect.getmembers(impl):
+            InStepBase.__bases__ = (impl.RelationStep,)
         if m is None:
             super().__init__(m)
             self.groupPortPosition = Point()
@@ -7088,6 +7443,9 @@ class InStep(InStepBase):
 
 class LabelsBase(SciObject):
     def __init__(self, m=None):
+        import tercen.model.impl as impl
+        if ("SciObject", impl.SciObject) in inspect.getmembers(impl):
+            LabelsBase.__bases__ = (impl.SciObject,)
         if m is None:
             super().__init__(m)
             self.factors = list()
@@ -7133,6 +7491,9 @@ class Labels(LabelsBase):
 
 class RenvInstalledLibraryBase(RLibrary):
     def __init__(self, m=None):
+        import tercen.model.impl as impl
+        if ("RLibrary", impl.RLibrary) in inspect.getmembers(impl):
+            RenvInstalledLibraryBase.__bases__ = (impl.RLibrary,)
         if m is None:
             super().__init__(m)
             self.path = ""
@@ -7172,6 +7533,9 @@ class RenvInstalledLibrary(RenvInstalledLibraryBase):
 
 class OperatorSettingsBase(SciObject):
     def __init__(self, m=None):
+        import tercen.model.impl as impl
+        if ("SciObject", impl.SciObject) in inspect.getmembers(impl):
+            OperatorSettingsBase.__bases__ = (impl.SciObject,)
         if m is None:
             super().__init__(m)
             self.namespace = ""
@@ -7234,6 +7598,9 @@ class OperatorSettings(OperatorSettingsBase):
 
 class SchemaBase(ProjectDocument):
     def __init__(self, m=None):
+        import tercen.model.impl as impl
+        if ("ProjectDocument", impl.ProjectDocument) in inspect.getmembers(impl):
+            SchemaBase.__bases__ = (impl.ProjectDocument,)
         if m is None:
             super().__init__(m)
             self.nRows = 0
@@ -7298,6 +7665,9 @@ class Schema(SchemaBase):
 
 class CubeQueryTableSchemaBase(Schema):
     def __init__(self, m=None):
+        import tercen.model.impl as impl
+        if ("Schema", impl.Schema) in inspect.getmembers(impl):
+            CubeQueryTableSchemaBase.__bases__ = (impl.Schema,)
         if m is None:
             super().__init__(m)
             self.queryHash = ""
@@ -7347,6 +7717,9 @@ class CubeQueryTableSchema(CubeQueryTableSchemaBase):
 
 class CategoryPaletteBase(Palette):
     def __init__(self, m=None):
+        import tercen.model.impl as impl
+        if ("Palette", impl.Palette) in inspect.getmembers(impl):
+            CategoryPaletteBase.__bases__ = (impl.Palette,)
         if m is None:
             super().__init__(m)
             self.colorList = ColorList()
@@ -7400,6 +7773,9 @@ class CategoryPalette(CategoryPaletteBase):
 
 class TableSummaryBase(SciObject):
     def __init__(self, m=None):
+        import tercen.model.impl as impl
+        if ("SciObject", impl.SciObject) in inspect.getmembers(impl):
+            TableSummaryBase.__bases__ = (impl.SciObject,)
         if m is None:
             super().__init__(m)
             self.n = 0
@@ -7448,6 +7824,9 @@ class TableSummary(TableSummaryBase):
 
 class PointBase(SciObject):
     def __init__(self, m=None):
+        import tercen.model.impl as impl
+        if ("SciObject", impl.SciObject) in inspect.getmembers(impl):
+            PointBase.__bases__ = (impl.SciObject,)
         if m is None:
             super().__init__(m)
             self.x = 0.0
@@ -7490,6 +7869,9 @@ class Point(PointBase):
 
 class ColumnSchemaBase(IdObject):
     def __init__(self, m=None):
+        import tercen.model.impl as impl
+        if ("IdObject", impl.IdObject) in inspect.getmembers(impl):
+            ColumnSchemaBase.__bases__ = (impl.IdObject,)
         if m is None:
             super().__init__(m)
             self.name = ""
@@ -7547,6 +7929,9 @@ class ColumnSchema(ColumnSchemaBase):
 
 class ColumnBase(ColumnSchema):
     def __init__(self, m=None):
+        import tercen.model.impl as impl
+        if ("ColumnSchema", impl.ColumnSchema) in inspect.getmembers(impl):
+            ColumnBase.__bases__ = (impl.ColumnSchema,)
         if m is None:
             super().__init__(m)
             self.values = None
@@ -7586,6 +7971,9 @@ class Column(ColumnBase):
 
 class SummaryBase(SciObject):
     def __init__(self, m=None):
+        import tercen.model.impl as impl
+        if ("SciObject", impl.SciObject) in inspect.getmembers(impl):
+            SummaryBase.__bases__ = (impl.SciObject,)
         if m is None:
             super().__init__(m)
             self.tableSummary = TableSummary()
@@ -7650,6 +8038,9 @@ class Summary(SummaryBase):
 
 class TaskStateEventBase(TaskEvent):
     def __init__(self, m=None):
+        import tercen.model.impl as impl
+        if ("TaskEvent", impl.TaskEvent) in inspect.getmembers(impl):
+            TaskStateEventBase.__bases__ = (impl.TaskEvent,)
         if m is None:
             super().__init__(m)
             self.state = State()
@@ -7692,6 +8083,9 @@ class TaskStateEvent(TaskStateEventBase):
 
 class WebAppOperatorBase(GitOperator):
     def __init__(self, m=None):
+        import tercen.model.impl as impl
+        if ("GitOperator", impl.GitOperator) in inspect.getmembers(impl):
+            WebAppOperatorBase.__bases__ = (impl.GitOperator,)
         if m is None:
             super().__init__(m)
             self.isViewOnly = True
@@ -7735,6 +8129,9 @@ class WebAppOperator(WebAppOperatorBase):
 
 class ShinyOperatorBase(WebAppOperator):
     def __init__(self, m=None):
+        import tercen.model.impl as impl
+        if ("WebAppOperator", impl.WebAppOperator) in inspect.getmembers(impl):
+            ShinyOperatorBase.__bases__ = (impl.WebAppOperator,)
         if m is not None:
             self.fromJson(m)
 
@@ -7772,6 +8169,9 @@ class ShinyOperator(ShinyOperatorBase):
 
 class ErrorsBase(SciObject):
     def __init__(self, m=None):
+        import tercen.model.impl as impl
+        if ("SciObject", impl.SciObject) in inspect.getmembers(impl):
+            ErrorsBase.__bases__ = (impl.SciObject,)
         if m is None:
             super().__init__(m)
             self.factors = list()
@@ -7817,6 +8217,9 @@ class Errors(ErrorsBase):
 
 class GlTaskBase(Task):
     def __init__(self, m=None):
+        import tercen.model.impl as impl
+        if ("Task", impl.Task) in inspect.getmembers(impl):
+            GlTaskBase.__bases__ = (impl.Task,)
         if m is None:
             super().__init__(m)
             self.glQuery = ""
@@ -7856,6 +8259,9 @@ class GlTask(GlTaskBase):
 
 class FailedStateBase(State):
     def __init__(self, m=None):
+        import tercen.model.impl as impl
+        if ("State", impl.State) in inspect.getmembers(impl):
+            FailedStateBase.__bases__ = (impl.State,)
         if m is None:
             super().__init__(m)
             self.error = ""
@@ -7898,6 +8304,9 @@ class FailedState(FailedStateBase):
 
 class CanceledStateBase(State):
     def __init__(self, m=None):
+        import tercen.model.impl as impl
+        if ("State", impl.State) in inspect.getmembers(impl):
+            CanceledStateBase.__bases__ = (impl.State,)
         if m is not None:
             self.fromJson(m)
 
@@ -7935,6 +8344,9 @@ class CanceledState(CanceledStateBase):
 
 class RunWorkflowTaskBase(ProjectTask):
     def __init__(self, m=None):
+        import tercen.model.impl as impl
+        if ("ProjectTask", impl.ProjectTask) in inspect.getmembers(impl):
+            RunWorkflowTaskBase.__bases__ = (impl.ProjectTask,)
         if m is None:
             super().__init__(m)
             self.workflowId = ""
@@ -7977,6 +8389,9 @@ class RunWorkflowTask(RunWorkflowTaskBase):
 
 class GraphicalFactorBase(SciObject):
     def __init__(self, m=None):
+        import tercen.model.impl as impl
+        if ("SciObject", impl.SciObject) in inspect.getmembers(impl):
+            GraphicalFactorBase.__bases__ = (impl.SciObject,)
         if m is None:
             super().__init__(m)
             self.factor = Factor()
@@ -8027,6 +8442,9 @@ class GraphicalFactor(GraphicalFactorBase):
 
 class RenameRelationBase(Relation):
     def __init__(self, m=None):
+        import tercen.model.impl as impl
+        if ("Relation", impl.Relation) in inspect.getmembers(impl):
+            RenameRelationBase.__bases__ = (impl.Relation,)
         if m is None:
             super().__init__(m)
             self.inNames = list()
@@ -8082,6 +8500,9 @@ class RenameRelation(RenameRelationBase):
 
 class ChartSizeBase(Chart):
     def __init__(self, m=None):
+        import tercen.model.impl as impl
+        if ("Chart", impl.Chart) in inspect.getmembers(impl):
+            ChartSizeBase.__bases__ = (impl.Chart,)
         if m is None:
             super().__init__(m)
             self.pointSize = 0
@@ -8125,6 +8546,9 @@ class ChartSize(ChartSizeBase):
 
 class ChartLineBase(ChartSize):
     def __init__(self, m=None):
+        import tercen.model.impl as impl
+        if ("ChartSize", impl.ChartSize) in inspect.getmembers(impl):
+            ChartLineBase.__bases__ = (impl.ChartSize,)
         if m is not None:
             self.fromJson(m)
 
@@ -8162,6 +8586,9 @@ class ChartLine(ChartLineBase):
 
 class ColorListBase(SciObject):
     def __init__(self, m=None):
+        import tercen.model.impl as impl
+        if ("SciObject", impl.SciObject) in inspect.getmembers(impl):
+            ColorListBase.__bases__ = (impl.SciObject,)
         if m is None:
             super().__init__(m)
             self.name = ""
@@ -8201,6 +8628,9 @@ class ColorList(ColorListBase):
 
 class CrossTabStepBase(NamespaceStep):
     def __init__(self, m=None):
+        import tercen.model.impl as impl
+        if ("NamespaceStep", impl.NamespaceStep) in inspect.getmembers(impl):
+            CrossTabStepBase.__bases__ = (impl.NamespaceStep,)
         if m is None:
             super().__init__(m)
             self.model = Crosstab()
@@ -8246,6 +8676,9 @@ class CrossTabStep(CrossTabStepBase):
 
 class DataStepBase(CrossTabStep):
     def __init__(self, m=None):
+        import tercen.model.impl as impl
+        if ("CrossTabStep", impl.CrossTabStep) in inspect.getmembers(impl):
+            DataStepBase.__bases__ = (impl.CrossTabStep,)
         if m is None:
             super().__init__(m)
             self.parentDataStepId = ""
@@ -8292,6 +8725,9 @@ class DataStep(DataStepBase):
 
 class SearchResultBase(SciObject):
     def __init__(self, m=None):
+        import tercen.model.impl as impl
+        if ("SciObject", impl.SciObject) in inspect.getmembers(impl):
+            SearchResultBase.__bases__ = (impl.SciObject,)
         if m is None:
             super().__init__(m)
             self.total_rows = 0
@@ -8342,6 +8778,9 @@ class SearchResult(SearchResultBase):
 
 class GateOperatorModelBase(OperatorModel):
     def __init__(self, m=None):
+        import tercen.model.impl as impl
+        if ("OperatorModel", impl.OperatorModel) in inspect.getmembers(impl):
+            GateOperatorModelBase.__bases__ = (impl.OperatorModel,)
         if m is None:
             super().__init__(m)
             self.roots = list()
@@ -8386,6 +8825,9 @@ class GateOperatorModel(GateOperatorModelBase):
 
 class AnnotationModelBase(SciObject):
     def __init__(self, m=None):
+        import tercen.model.impl as impl
+        if ("SciObject", impl.SciObject) in inspect.getmembers(impl):
+            AnnotationModelBase.__bases__ = (impl.SciObject,)
         if m is None:
             super().__init__(m)
             self.taskId = ""
@@ -8451,6 +8893,9 @@ class AnnotationModel(AnnotationModelBase):
 
 class ROperatorBase(GitOperator):
     def __init__(self, m=None):
+        import tercen.model.impl as impl
+        if ("GitOperator", impl.GitOperator) in inspect.getmembers(impl):
+            ROperatorBase.__bases__ = (impl.GitOperator,)
         if m is not None:
             self.fromJson(m)
 
@@ -8488,6 +8933,9 @@ class ROperator(ROperatorBase):
 
 class OutStepBase(RelationStep):
     def __init__(self, m=None):
+        import tercen.model.impl as impl
+        if ("RelationStep", impl.RelationStep) in inspect.getmembers(impl):
+            OutStepBase.__bases__ = (impl.RelationStep,)
         if m is None:
             super().__init__(m)
             self.groupPortPosition = Point()
@@ -8529,8 +8977,51 @@ class OutStep(OutStepBase):
         super().__init__(m)
 
 
+class LibraryTaskBase(Task):
+    def __init__(self, m=None):
+        import tercen.model.impl as impl
+        if ("Task", impl.Task) in inspect.getmembers(impl):
+            LibraryTaskBase.__bases__ = (impl.Task,)
+        if m is not None:
+            self.fromJson(m)
+
+        else:
+            super().__init__(m)
+
+    def fromJson(self, m):
+        super().fromJson(m)
+        self.subKind = m.get(Vocabulary.SUBKIND)
+        if self.subKind is None and m.get(Vocabulary.KIND) != Vocabulary.LibraryTask_CLASS:
+            self.subKind = m.get(Vocabulary.KIND)
+
+    @classmethod
+    def createFromJson(cls, m):
+        kind = m.get(Vocabulary.KIND)
+        if kind == Vocabulary.LibraryTask_CLASS:
+            return LibraryTask(m)
+        raise ValueError("bad kind : " + kind +
+                         " for class LibraryTask in createFromJson")
+
+    def toJson(self):
+        m = super().toJson()
+        m[Vocabulary.KIND] = Vocabulary.LibraryTask_CLASS
+        if self.subKind is not None and self.subKind != Vocabulary.LibraryTask_CLASS:
+            m[Vocabulary.SUBKIND] = self.subKind
+        else:
+            m.pop(Vocabulary.SUBKIND, None)
+        return m
+
+
+class LibraryTask(LibraryTaskBase):
+    def __init__(self, m=None):
+        super().__init__(m)
+
+
 class PreProcessorBase(SciObject):
     def __init__(self, m=None):
+        import tercen.model.impl as impl
+        if ("SciObject", impl.SciObject) in inspect.getmembers(impl):
+            PreProcessorBase.__bases__ = (impl.SciObject,)
         if m is None:
             super().__init__(m)
             self.type = ""
@@ -8577,6 +9068,9 @@ class PreProcessor(PreProcessorBase):
 
 class PortBase(IdObject):
     def __init__(self, m=None):
+        import tercen.model.impl as impl
+        if ("IdObject", impl.IdObject) in inspect.getmembers(impl):
+            PortBase.__bases__ = (impl.IdObject,)
         if m is None:
             super().__init__(m)
             self.linkType = ""
@@ -8623,6 +9117,9 @@ class Port(PortBase):
 
 class InputPortBase(Port):
     def __init__(self, m=None):
+        import tercen.model.impl as impl
+        if ("Port", impl.Port) in inspect.getmembers(impl):
+            InputPortBase.__bases__ = (impl.Port,)
         if m is not None:
             self.fromJson(m)
 
@@ -8660,6 +9157,9 @@ class InputPort(InputPortBase):
 
 class PropertiesBase(SciObject):
     def __init__(self, m=None):
+        import tercen.model.impl as impl
+        if ("SciObject", impl.SciObject) in inspect.getmembers(impl):
+            PropertiesBase.__bases__ = (impl.SciObject,)
         if m is None:
             super().__init__(m)
             self.properties = list()
@@ -8714,6 +9214,9 @@ class Properties(PropertiesBase):
 
 class PropertyValueBase(SciObject):
     def __init__(self, m=None):
+        import tercen.model.impl as impl
+        if ("SciObject", impl.SciObject) in inspect.getmembers(impl):
+            PropertyValueBase.__bases__ = (impl.SciObject,)
         if m is None:
             super().__init__(m)
             self.name = ""
@@ -8756,6 +9259,9 @@ class PropertyValue(PropertyValueBase):
 
 class DoneStateBase(State):
     def __init__(self, m=None):
+        import tercen.model.impl as impl
+        if ("State", impl.State) in inspect.getmembers(impl):
+            DoneStateBase.__bases__ = (impl.State,)
         if m is not None:
             self.fromJson(m)
 
@@ -8793,6 +9299,9 @@ class DoneState(DoneStateBase):
 
 class AclContextBase(SciObject):
     def __init__(self, m=None):
+        import tercen.model.impl as impl
+        if ("SciObject", impl.SciObject) in inspect.getmembers(impl):
+            AclContextBase.__bases__ = (impl.SciObject,)
         if m is None:
             super().__init__(m)
             self.username = ""
@@ -8835,6 +9344,9 @@ class AclContext(AclContextBase):
 
 class DockerWebAppOperatorBase(WebAppOperator):
     def __init__(self, m=None):
+        import tercen.model.impl as impl
+        if ("WebAppOperator", impl.WebAppOperator) in inspect.getmembers(impl):
+            DockerWebAppOperatorBase.__bases__ = (impl.WebAppOperator,)
         if m is None:
             super().__init__(m)
             self.container = ""
@@ -8874,6 +9386,9 @@ class DockerWebAppOperator(DockerWebAppOperatorBase):
 
 class OperatorUnitTestBase(SciObject):
     def __init__(self, m=None):
+        import tercen.model.impl as impl
+        if ("SciObject", impl.SciObject) in inspect.getmembers(impl):
+            OperatorUnitTestBase.__bases__ = (impl.SciObject,)
         if m is None:
             super().__init__(m)
             self.name = ""
@@ -8988,6 +9503,9 @@ class OperatorUnitTest(OperatorUnitTestBase):
 
 class TableStepBase(RelationStep):
     def __init__(self, m=None):
+        import tercen.model.impl as impl
+        if ("RelationStep", impl.RelationStep) in inspect.getmembers(impl):
+            TableStepBase.__bases__ = (impl.RelationStep,)
         if m is None:
             super().__init__(m)
             self.model = TableStepModel()
@@ -9031,6 +9549,9 @@ class TableStep(TableStepBase):
 
 class RunWebAppTaskBase(ProjectTask):
     def __init__(self, m=None):
+        import tercen.model.impl as impl
+        if ("ProjectTask", impl.ProjectTask) in inspect.getmembers(impl):
+            RunWebAppTaskBase.__bases__ = (impl.ProjectTask,)
         if m is None:
             super().__init__(m)
             self.operatorId = ""
@@ -9079,6 +9600,9 @@ class RunWebAppTask(RunWebAppTaskBase):
 
 class UnionRelationBase(Relation):
     def __init__(self, m=None):
+        import tercen.model.impl as impl
+        if ("Relation", impl.Relation) in inspect.getmembers(impl):
+            UnionRelationBase.__bases__ = (impl.Relation,)
         if m is None:
             super().__init__(m)
             self.relations = list()
@@ -9124,6 +9648,9 @@ class UnionRelation(UnionRelationBase):
 
 class ProfilesBase(SciObject):
     def __init__(self, m=None):
+        import tercen.model.impl as impl
+        if ("SciObject", impl.SciObject) in inspect.getmembers(impl):
+            ProfilesBase.__bases__ = (impl.SciObject,)
         if m is None:
             super().__init__(m)
             self.apiProfile = ApiCallProfile()
@@ -9195,6 +9722,9 @@ class Profiles(ProfilesBase):
 
 class FilterExprBase(FilterTopExpr):
     def __init__(self, m=None):
+        import tercen.model.impl as impl
+        if ("FilterTopExpr", impl.FilterTopExpr) in inspect.getmembers(impl):
+            FilterExprBase.__bases__ = (impl.FilterTopExpr,)
         if m is None:
             super().__init__(m)
             self.filterOp = ""
@@ -9246,6 +9776,9 @@ class FilterExpr(FilterExprBase):
 
 class FilterExpr2dBase(FilterExpr):
     def __init__(self, m=None):
+        import tercen.model.impl as impl
+        if ("FilterExpr", impl.FilterExpr) in inspect.getmembers(impl):
+            FilterExpr2dBase.__bases__ = (impl.FilterExpr,)
         if m is None:
             super().__init__(m)
             self.factor2 = Factor()
@@ -9289,6 +9822,9 @@ class FilterExpr2d(FilterExpr2dBase):
 
 class FactorsPropertyBase(StringProperty):
     def __init__(self, m=None):
+        import tercen.model.impl as impl
+        if ("StringProperty", impl.StringProperty) in inspect.getmembers(impl):
+            FactorsPropertyBase.__bases__ = (impl.StringProperty,)
         if m is not None:
             self.fromJson(m)
 
@@ -9326,6 +9862,9 @@ class FactorsProperty(FactorsPropertyBase):
 
 class OperatorRefBase(SciObject):
     def __init__(self, m=None):
+        import tercen.model.impl as impl
+        if ("SciObject", impl.SciObject) in inspect.getmembers(impl):
+            OperatorRefBase.__bases__ = (impl.SciObject,)
         if m is None:
             super().__init__(m)
             self.name = ""
@@ -9389,6 +9928,9 @@ class OperatorRef(OperatorRefBase):
 
 class JoinStepBase(NamespaceStep):
     def __init__(self, m=None):
+        import tercen.model.impl as impl
+        if ("NamespaceStep", impl.NamespaceStep) in inspect.getmembers(impl):
+            JoinStepBase.__bases__ = (impl.NamespaceStep,)
         if m is None:
             super().__init__(m)
             self.model = JoinStepModel()
@@ -9441,6 +9983,9 @@ class JoinStep(JoinStepBase):
 
 class WizardStepBase(NamespaceStep):
     def __init__(self, m=None):
+        import tercen.model.impl as impl
+        if ("NamespaceStep", impl.NamespaceStep) in inspect.getmembers(impl):
+            WizardStepBase.__bases__ = (impl.NamespaceStep,)
         if m is None:
             super().__init__(m)
             self.model = WizardStepModel()
@@ -9484,6 +10029,9 @@ class WizardStep(WizardStepBase):
 
 class WizardStepModelBase(StepModel):
     def __init__(self, m=None):
+        import tercen.model.impl as impl
+        if ("StepModel", impl.StepModel) in inspect.getmembers(impl):
+            WizardStepModelBase.__bases__ = (impl.StepModel,)
         if m is None:
             super().__init__(m)
             self.namespace = ""
@@ -9573,6 +10121,9 @@ class WizardStepModel(WizardStepModelBase):
 
 class InitStateBase(State):
     def __init__(self, m=None):
+        import tercen.model.impl as impl
+        if ("State", impl.State) in inspect.getmembers(impl):
+            InitStateBase.__bases__ = (impl.State,)
         if m is not None:
             self.fromJson(m)
 
@@ -9610,6 +10161,9 @@ class InitState(InitStateBase):
 
 class PendingStateBase(State):
     def __init__(self, m=None):
+        import tercen.model.impl as impl
+        if ("State", impl.State) in inspect.getmembers(impl):
+            PendingStateBase.__bases__ = (impl.State,)
         if m is not None:
             self.fromJson(m)
 
@@ -9647,6 +10201,9 @@ class PendingState(PendingStateBase):
 
 class ChartPointBase(ChartSize):
     def __init__(self, m=None):
+        import tercen.model.impl as impl
+        if ("ChartSize", impl.ChartSize) in inspect.getmembers(impl):
+            ChartPointBase.__bases__ = (impl.ChartSize,)
         if m is not None:
             self.fromJson(m)
 
@@ -9684,6 +10241,9 @@ class ChartPoint(ChartPointBase):
 
 class ColumnPairBase(SciObject):
     def __init__(self, m=None):
+        import tercen.model.impl as impl
+        if ("SciObject", impl.SciObject) in inspect.getmembers(impl):
+            ColumnPairBase.__bases__ = (impl.SciObject,)
         if m is None:
             super().__init__(m)
             self.lColumns = list()
@@ -9732,6 +10292,9 @@ class ColumnPair(ColumnPairBase):
 
 class CreateGitOperatorTaskBase(Task):
     def __init__(self, m=None):
+        import tercen.model.impl as impl
+        if ("Task", impl.Task) in inspect.getmembers(impl):
+            CreateGitOperatorTaskBase.__bases__ = (impl.Task,)
         if m is None:
             super().__init__(m)
             self.version = ""
@@ -9786,6 +10349,9 @@ class CreateGitOperatorTask(CreateGitOperatorTaskBase):
 
 class TaxIdBase(SciObject):
     def __init__(self, m=None):
+        import tercen.model.impl as impl
+        if ("SciObject", impl.SciObject) in inspect.getmembers(impl):
+            TaxIdBase.__bases__ = (impl.SciObject,)
         if m is None:
             super().__init__(m)
             self.type = ""
@@ -9831,6 +10397,9 @@ class TaxId(TaxIdBase):
 
 class IssueMessageBase(ProjectDocument):
     def __init__(self, m=None):
+        import tercen.model.impl as impl
+        if ("ProjectDocument", impl.ProjectDocument) in inspect.getmembers(impl):
+            IssueMessageBase.__bases__ = (impl.ProjectDocument,)
         if m is None:
             super().__init__(m)
             self.issueId = ""
@@ -9873,6 +10442,9 @@ class IssueMessage(IssueMessageBase):
 
 class TableSchemaBase(Schema):
     def __init__(self, m=None):
+        import tercen.model.impl as impl
+        if ("Schema", impl.Schema) in inspect.getmembers(impl):
+            TableSchemaBase.__bases__ = (impl.Schema,)
         if m is not None:
             self.fromJson(m)
 
@@ -9910,6 +10482,9 @@ class TableSchema(TableSchemaBase):
 
 class PlanBase(SciObject):
     def __init__(self, m=None):
+        import tercen.model.impl as impl
+        if ("SciObject", impl.SciObject) in inspect.getmembers(impl):
+            PlanBase.__bases__ = (impl.SciObject,)
         if m is None:
             super().__init__(m)
             self.name = ""
@@ -9964,6 +10539,9 @@ class Plan(PlanBase):
 
 class CSVParserParamBase(SciObject):
     def __init__(self, m=None):
+        import tercen.model.impl as impl
+        if ("SciObject", impl.SciObject) in inspect.getmembers(impl):
+            CSVParserParamBase.__bases__ = (impl.SciObject,)
         if m is None:
             super().__init__(m)
             self.separator = ""
@@ -10018,6 +10596,9 @@ class CSVParserParam(CSVParserParamBase):
 
 class ExportTableTaskBase(ProjectTask):
     def __init__(self, m=None):
+        import tercen.model.impl as impl
+        if ("ProjectTask", impl.ProjectTask) in inspect.getmembers(impl):
+            ExportTableTaskBase.__bases__ = (impl.ProjectTask,)
         if m is None:
             super().__init__(m)
             self.exportName = ""
@@ -10084,6 +10665,9 @@ class ExportTableTask(ExportTableTaskBase):
 
 class GenericEventBase(Event):
     def __init__(self, m=None):
+        import tercen.model.impl as impl
+        if ("Event", impl.Event) in inspect.getmembers(impl):
+            GenericEventBase.__bases__ = (impl.Event,)
         if m is None:
             super().__init__(m)
             self.type = ""
@@ -10126,6 +10710,9 @@ class GenericEvent(GenericEventBase):
 
 class OutputPortBase(Port):
     def __init__(self, m=None):
+        import tercen.model.impl as impl
+        if ("Port", impl.Port) in inspect.getmembers(impl):
+            OutputPortBase.__bases__ = (impl.Port,)
         if m is not None:
             self.fromJson(m)
 
@@ -10163,6 +10750,9 @@ class OutputPort(OutputPortBase):
 
 class LinkBase(IdObject):
     def __init__(self, m=None):
+        import tercen.model.impl as impl
+        if ("IdObject", impl.IdObject) in inspect.getmembers(impl):
+            LinkBase.__bases__ = (impl.IdObject,)
         if m is None:
             super().__init__(m)
             self.inputId = ""
@@ -10205,6 +10795,9 @@ class Link(LinkBase):
 
 class AppDesignBase(SciObject):
     def __init__(self, m=None):
+        import tercen.model.impl as impl
+        if ("SciObject", impl.SciObject) in inspect.getmembers(impl):
+            AppDesignBase.__bases__ = (impl.SciObject,)
         if m is None:
             super().__init__(m)
             self.namespace = ""
@@ -10271,6 +10864,9 @@ class AppDesign(AppDesignBase):
 
 class GarbageTasks2Base(GarbageObject):
     def __init__(self, m=None):
+        import tercen.model.impl as impl
+        if ("GarbageObject", impl.GarbageObject) in inspect.getmembers(impl):
+            GarbageTasks2Base.__bases__ = (impl.GarbageObject,)
         if m is None:
             super().__init__(m)
             self.date = ""
@@ -10331,6 +10927,9 @@ class GarbageTasks2(GarbageTasks2Base):
 
 class WorkflowBase(ProjectDocument):
     def __init__(self, m=None):
+        import tercen.model.impl as impl
+        if ("ProjectDocument", impl.ProjectDocument) in inspect.getmembers(impl):
+            WorkflowBase.__bases__ = (impl.ProjectDocument,)
         if m is None:
             super().__init__(m)
             self.links = list()
@@ -10389,6 +10988,9 @@ class Workflow(WorkflowBase):
 
 class NamedFilterBase(Filter):
     def __init__(self, m=None):
+        import tercen.model.impl as impl
+        if ("Filter", impl.Filter) in inspect.getmembers(impl):
+            NamedFilterBase.__bases__ = (impl.Filter,)
         if m is None:
             super().__init__(m)
             self.name = ""
@@ -10436,6 +11038,9 @@ class NamedFilter(NamedFilterBase):
 
 class TableProfileBase(Profile):
     def __init__(self, m=None):
+        import tercen.model.impl as impl
+        if ("Profile", impl.Profile) in inspect.getmembers(impl):
+            TableProfileBase.__bases__ = (impl.Profile,)
         if m is None:
             super().__init__(m)
             self.nRows = 0
@@ -10478,6 +11083,9 @@ class TableProfile(TableProfileBase):
 
 class MeltStepModelBase(StepModel):
     def __init__(self, m=None):
+        import tercen.model.impl as impl
+        if ("StepModel", impl.StepModel) in inspect.getmembers(impl):
+            MeltStepModelBase.__bases__ = (impl.StepModel,)
         if m is None:
             super().__init__(m)
             self.namespace = ""
@@ -10535,6 +11143,9 @@ class MeltStepModel(MeltStepModelBase):
 
 class ExportModelBase(StepModel):
     def __init__(self, m=None):
+        import tercen.model.impl as impl
+        if ("StepModel", impl.StepModel) in inspect.getmembers(impl):
+            ExportModelBase.__bases__ = (impl.StepModel,)
         if m is not None:
             self.fromJson(m)
 
@@ -10572,6 +11183,9 @@ class ExportModel(ExportModelBase):
 
 class AnnotationOperatorModelBase(OperatorModel):
     def __init__(self, m=None):
+        import tercen.model.impl as impl
+        if ("OperatorModel", impl.OperatorModel) in inspect.getmembers(impl):
+            AnnotationOperatorModelBase.__bases__ = (impl.OperatorModel,)
         if m is None:
             super().__init__(m)
             self.filters = Filters()
@@ -10625,6 +11239,9 @@ class AnnotationOperatorModel(AnnotationOperatorModelBase):
 
 class AxisBase(SciObject):
     def __init__(self, m=None):
+        import tercen.model.impl as impl
+        if ("SciObject", impl.SciObject) in inspect.getmembers(impl):
+            AxisBase.__bases__ = (impl.SciObject,)
         if m is None:
             super().__init__(m)
             self.axisExtent = Point()
@@ -10682,6 +11299,9 @@ class Axis(AxisBase):
 
 class BooleanPropertyBase(Property):
     def __init__(self, m=None):
+        import tercen.model.impl as impl
+        if ("Property", impl.Property) in inspect.getmembers(impl):
+            BooleanPropertyBase.__bases__ = (impl.Property,)
         if m is None:
             super().__init__(m)
             self.defaultValue = True
@@ -10721,6 +11341,9 @@ class BooleanProperty(BooleanPropertyBase):
 
 class GatherRelationBase(Relation):
     def __init__(self, m=None):
+        import tercen.model.impl as impl
+        if ("Relation", impl.Relation) in inspect.getmembers(impl):
+            GatherRelationBase.__bases__ = (impl.Relation,)
         if m is None:
             super().__init__(m)
             self.names = list()
@@ -10782,6 +11405,9 @@ class GatherRelation(GatherRelationBase):
 
 class ExportStepBase(ModelStep):
     def __init__(self, m=None):
+        import tercen.model.impl as impl
+        if ("ModelStep", impl.ModelStep) in inspect.getmembers(impl):
+            ExportStepBase.__bases__ = (impl.ModelStep,)
         if m is None:
             super().__init__(m)
             self.model = ExportModel()
@@ -10825,6 +11451,9 @@ class ExportStep(ExportStepBase):
 
 class ViewStepBase(Step):
     def __init__(self, m=None):
+        import tercen.model.impl as impl
+        if ("Step", impl.Step) in inspect.getmembers(impl):
+            ViewStepBase.__bases__ = (impl.Step,)
         if m is not None:
             self.fromJson(m)
 
@@ -10862,6 +11491,9 @@ class ViewStep(ViewStepBase):
 
 class ApiCallProfileBase(Profile):
     def __init__(self, m=None):
+        import tercen.model.impl as impl
+        if ("Profile", impl.Profile) in inspect.getmembers(impl):
+            ApiCallProfileBase.__bases__ = (impl.Profile,)
         if m is None:
             super().__init__(m)
             self.nCalls = 0
@@ -10901,6 +11533,9 @@ class ApiCallProfile(ApiCallProfileBase):
 
 class ColorsBase(SciObject):
     def __init__(self, m=None):
+        import tercen.model.impl as impl
+        if ("SciObject", impl.SciObject) in inspect.getmembers(impl):
+            ColorsBase.__bases__ = (impl.SciObject,)
         if m is None:
             super().__init__(m)
             self.factors = list()
@@ -10953,6 +11588,9 @@ class Colors(ColorsBase):
 
 class CompositeRelationBase(Relation):
     def __init__(self, m=None):
+        import tercen.model.impl as impl
+        if ("Relation", impl.Relation) in inspect.getmembers(impl):
+            CompositeRelationBase.__bases__ = (impl.Relation,)
         if m is None:
             super().__init__(m)
             self.joinOperators = list()
@@ -11005,6 +11643,9 @@ class CompositeRelation(CompositeRelationBase):
 
 class GitProjectTaskBase(Task):
     def __init__(self, m=None):
+        import tercen.model.impl as impl
+        if ("Task", impl.Task) in inspect.getmembers(impl):
+            GitProjectTaskBase.__bases__ = (impl.Task,)
         if m is not None:
             self.fromJson(m)
 
@@ -11042,6 +11683,9 @@ class GitProjectTask(GitProjectTaskBase):
 
 class ComputedTableSchemaBase(Schema):
     def __init__(self, m=None):
+        import tercen.model.impl as impl
+        if ("Schema", impl.Schema) in inspect.getmembers(impl):
+            ComputedTableSchemaBase.__bases__ = (impl.Schema,)
         if m is None:
             super().__init__(m)
             self.query = CubeQuery()
@@ -11085,6 +11729,9 @@ class ComputedTableSchema(ComputedTableSchemaBase):
 
 class TablePropertiesBase(SciObject):
     def __init__(self, m=None):
+        import tercen.model.impl as impl
+        if ("SciObject", impl.SciObject) in inspect.getmembers(impl):
+            TablePropertiesBase.__bases__ = (impl.SciObject,)
         if m is None:
             super().__init__(m)
             self.name = ""
@@ -11133,6 +11780,9 @@ class TableProperties(TablePropertiesBase):
 
 class MappingFactorBase(Factor):
     def __init__(self, m=None):
+        import tercen.model.impl as impl
+        if ("Factor", impl.Factor) in inspect.getmembers(impl):
+            MappingFactorBase.__bases__ = (impl.Factor,)
         if m is None:
             super().__init__(m)
             self.isSingle = True
@@ -11190,6 +11840,9 @@ class MappingFactor(MappingFactorBase):
 
 class SubscriptionPlanBase(Document):
     def __init__(self, m=None):
+        import tercen.model.impl as impl
+        if ("Document", impl.Document) in inspect.getmembers(impl):
+            SubscriptionPlanBase.__bases__ = (impl.Document,)
         if m is None:
             super().__init__(m)
             self.providerKey = ""
@@ -11247,6 +11900,9 @@ class SubscriptionPlan(SubscriptionPlanBase):
 
 class FormulaPropertyBase(StringProperty):
     def __init__(self, m=None):
+        import tercen.model.impl as impl
+        if ("StringProperty", impl.StringProperty) in inspect.getmembers(impl):
+            FormulaPropertyBase.__bases__ = (impl.StringProperty,)
         if m is not None:
             self.fromJson(m)
 
@@ -11284,6 +11940,9 @@ class FormulaProperty(FormulaPropertyBase):
 
 class UserSecretBase(PersistentObject):
     def __init__(self, m=None):
+        import tercen.model.impl as impl
+        if ("PersistentObject", impl.PersistentObject) in inspect.getmembers(impl):
+            UserSecretBase.__bases__ = (impl.PersistentObject,)
         if m is None:
             super().__init__(m)
             self.userId = ""
@@ -11329,6 +11988,9 @@ class UserSecret(UserSecretBase):
 
 class GroupByRelationBase(Relation):
     def __init__(self, m=None):
+        import tercen.model.impl as impl
+        if ("Relation", impl.Relation) in inspect.getmembers(impl):
+            GroupByRelationBase.__bases__ = (impl.Relation,)
         if m is None:
             super().__init__(m)
             self.group = list()
