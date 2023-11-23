@@ -3,8 +3,7 @@ import os
 
 from tercen.client import context as ctx
 import tercen.util.builder as bld
-import tercen.util.helper_functions as utl
-import pandas as pd
+
 import polars as pl
 import numpy as np
 import numpy.testing as npt

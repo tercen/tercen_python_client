@@ -1,6 +1,6 @@
 import unittest, os
 from tercen.client.factory import TercenClient
-from tercen.model.base import Project
+from tercen.model.impl import Project
 
 class TestUserService(unittest.TestCase):
 
@@ -34,6 +34,7 @@ class TestUserService(unittest.TestCase):
         session = self.client.userService.connect(self.username, self.passw)
 
     def test_create_project(self):
+        self.client.fileService.__class__
         obj = Project()
         obj.name = 'python_project'
         obj.acl.owner = 'test'
@@ -55,9 +56,11 @@ class TestUserService(unittest.TestCase):
         obj = Project()
         obj.name = 'python_project_find'
         obj.acl.owner = 'test'
+        #obj.isPublic = False
+        obj.isDeleted = False
         obj = self.client.projectService.create(obj)
-        start_key = [obj.acl.owner, False, "2035"]
-        end_key = [obj.acl.owner, False, ""]
+        start_key = [obj.acl.owner, True, "9999"]
+        end_key = [obj.acl.owner, True, ""]
         projects = self.client.projectService.findByTeamAndIsPublicAndLastModifiedDate(start_key, end_key)
         pp = [p for p in projects if p.id == obj.id]
         self.assertEqual(len(pp), 1)

@@ -1,11 +1,12 @@
 import unittest, os
 from tercen.client.factory import TercenClient
-from tercen.model.base import FileDocument, Project
+
 
 import pandas as pd
 import numpy as np
 import tercen.util.helper_functions as utl
-from tercen.model.base import Project, FileDocument, CSVTask, InitState, Table, ImportGitDatasetTask
+from tercen.model.impl import Project, FileDocument, CSVTask, InitState, \
+            FileDocument, Project, ImportGitDatasetTask
 
 class TestFileService(unittest.TestCase):
 

@@ -9,8 +9,9 @@ import tempfile, string, random
 import pytson as ptson
 
 import uuid, os, hashlib, base64
-from tercen.model.base import Table, Column, InMemoryRelation, Relation, SchemaBase, SimpleRelation
-from tercen.model.base import CompositeRelation, JoinOperator, ColumnPair
+from tercen.model.impl import Table, Column, InMemoryRelation, Relation, \
+                        SimpleRelation, Schema, \
+                        CompositeRelation, JoinOperator, ColumnPair
 
 # import tercen.util.pytmp as ptmp
 
@@ -222,6 +223,7 @@ def bytes_to_dataframe( tableBytes, df_engine="polars" ) -> pd.DataFrame:
 
 
 def as_relation(obj) -> Relation:
+    
     if issubclass(obj.__class__, Relation):
         return obj
 
@@ -229,7 +231,7 @@ def as_relation(obj) -> Relation:
         tbl = dataframe_to_table(obj)[0]
     elif issubclass(obj.__class__, Table):
         tbl = obj
-    elif issubclass(obj.__class__, SchemaBase):
+    elif issubclass(obj.__class__, Schema):
         rel = SimpleRelation()
         rel.id = obj.id
         return rel

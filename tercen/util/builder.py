@@ -5,7 +5,7 @@ sys.path.insert(0, os.path.abspath('../'))
 import pandas as pd
 
 from tercen.client.factory import TercenClient
-from tercen.model.base import *
+from tercen.model.impl import *
 
 import numpy as np
 
@@ -435,7 +435,7 @@ class WorkflowBuilder():
         
         return gFac
 
-    def __add_row_col_projection(self, cols:list=None, schema:SchemaBase=None):
+    def __add_row_col_projection(self, cols:list=None, schema:Schema=None):
         ctTbl = CrosstabTable()
         ctTbl.cellSize = 140
         ctTbl.offset = 0

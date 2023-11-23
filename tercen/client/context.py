@@ -4,9 +4,10 @@ import multiprocessing, sys
 
 
 import random, string
-from tercen.model.base import OperatorResult, FileDocument, ComputationTask, InitState
-from tercen.model.base import RunComputationTask, FailedState, Pair, TaskLogEvent, TaskProgressEvent, SimpleRelation, Relation
-from tercen.model.base import JoinOperator, InMemoryRelation, CompositeRelation, WhereRelation, RenameRelation, UnionRelation, TableBase
+from tercen.model.impl import OperatorResult, FileDocument, ComputationTask, InitState,\
+                    RunComputationTask, FailedState, Pair, TaskLogEvent, TaskProgressEvent, \
+                    SimpleRelation, Relation, JoinOperator, InMemoryRelation, \
+                     CompositeRelation, WhereRelation, RenameRelation, UnionRelation
 from tercen.client.factory import TercenClient
 from tercen.util import helper_functions as utl
 from tercen.http.HttpClientService import encodeTSON, decodeTSON

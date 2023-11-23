@@ -9,7 +9,7 @@ import json
 import pytson as ptson
 import tercen.util.helper_functions as utl
 from tercen.client.factory import TercenClient
-from tercen.model.base import Project, FileDocument, CSVTask, InitState, DoneState, CubeAxisQuery, CubeQuery, Factor
+from tercen.model.impl import Project, FileDocument, CSVTask, InitState, DoneState, CubeAxisQuery, CubeQuery, Factor
 
 
 

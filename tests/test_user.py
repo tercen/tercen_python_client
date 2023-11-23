@@ -1,6 +1,6 @@
 import unittest, os
 from tercen.client.factory import TercenClient
-from tercen.model.base import Team
+from tercen.model.impl import Team
 
 
 class TestUserService(unittest.TestCase):

@@ -1,6 +1,6 @@
 import unittest, os
 from tercen.client.factory import TercenClient
-from tercen.model.base import Operator, Document
+from tercen.model.impl import Operator, Document
 
 class TestUserService(unittest.TestCase):
 
@@ -41,7 +41,10 @@ class TestUserService(unittest.TestCase):
         assert(len(lib) > 0)
 
         for op in lib:
-            assert( isinstance(op, Operator  )) 
+            op.__class__.__bases__[0].__bases__[0].__bases__[0].__bases__[0]
+            if not issubclass(op.__class__, Operator  ):
+                print('z')
+            assert( issubclass(op.__class__, Operator  )) 
 
     def test_dataset_library(self):
         #Parameters are seemingly ignored
