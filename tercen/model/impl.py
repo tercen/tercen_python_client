@@ -1,7 +1,6 @@
-from tercen.base.BaseObject import BaseObject
 from tercen.model.base import *
 
-class SciObject(BaseObject):
+class SciObject(SciObjectBase):
     def __init__(self, m=None):
         super().__init__(m)
 
@@ -101,7 +100,7 @@ class ChartHeatmap(ChartHeatmapBase):
     def __init__(self, m=None):
         super().__init__(m)
 
-class StatisticNode(BaseObject):
+class StatisticNode(StatisticNodeBase):
     def __init__(self, m=None):
         super().__init__(m)
 
@@ -169,7 +168,7 @@ class Acl(AclBase):
     def __init__(self, m=None):
         super().__init__(m)
 
-class CubeAxisQuery(BaseObject):
+class CubeAxisQuery(CubeAxisQueryBase):
     def __init__(self, m=None):
         super().__init__(m)
 
@@ -217,7 +216,7 @@ class Token(TokenBase):
     def __init__(self, m=None):
         super().__init__(m)
 
-class ActivityCount(BaseObject):
+class ActivityCount(ActivityCountBase):
     def __init__(self, m=None):
         super().__init__(m)
 
@@ -333,7 +332,7 @@ class JoinStepModel(JoinStepModelBase):
     def __init__(self, m=None):
         super().__init__(m)
 
-class Ulimits(BaseObject):
+class Ulimits(UlimitsBase):
     def __init__(self, m=None):
         super().__init__(m)
 
@@ -453,11 +452,11 @@ class CpuTimeProfile(CpuTimeProfileBase):
     def __init__(self, m=None):
         super().__init__(m)
 
-class AxisSettings(BaseObject):
+class AxisSettings(AxisSettingsBase):
     def __init__(self, m=None):
         super().__init__(m)
 
-class MappingFilter(BaseObject):
+class MappingFilter(MappingFilterBase):
     def __init__(self, m=None):
         super().__init__(m)
 

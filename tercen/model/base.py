@@ -1,9 +1,9 @@
 import tercen.model.vocabulary as Vocabulary
+from tercen.base.BaseObject import BaseObject
 
 
-class SciObjectBase:
+class SciObjectBase(BaseObject):
     def __init__(self, m=None):
-        import tercen.model.impl as impl
         if m is not None:
             self.fromJson(m)
 
@@ -11,7 +11,6 @@ class SciObjectBase:
             super().__init__(m)
 
     def fromJson(self, m):
-        import tercen.model.impl as impl
         super().fromJson(m)
         self.subKind = m.get(Vocabulary.SUBKIND)
         if self.subKind is None and m.get(Vocabulary.KIND) != Vocabulary.SciObject_CLASS:
@@ -446,7 +445,7 @@ class SciObjectBase:
         return m
 
 
-class IdObjectBase:
+class IdObjectBase(BaseObject):
     def __init__(self, m=None):
         import tercen.model.impl as impl
         IdObjectBase.__bases__ = (impl.SciObject,)
@@ -458,6 +457,7 @@ class IdObjectBase:
 
     def fromJson(self, m):
         import tercen.model.impl as impl
+        IdObjectBase.__bases__ = (impl.SciObject,)
         super().fromJson(m)
         self.subKind = m.get(Vocabulary.SUBKIND)
         if self.subKind is None and m.get(Vocabulary.KIND) != Vocabulary.IdObject_CLASS:
@@ -672,7 +672,7 @@ class IdObjectBase:
         return m
 
 
-class PersistentObjectBase:
+class PersistentObjectBase(BaseObject):
     def __init__(self, m=None):
         import tercen.model.impl as impl
         PersistentObjectBase.__bases__ = (impl.IdObject,)
@@ -685,6 +685,7 @@ class PersistentObjectBase:
 
     def fromJson(self, m):
         import tercen.model.impl as impl
+        PersistentObjectBase.__bases__ = (impl.IdObject,)
         super().fromJson(m)
         self.subKind = m.get(Vocabulary.SUBKIND)
         if self.subKind is None and m.get(Vocabulary.KIND) != Vocabulary.PersistentObject_CLASS:
@@ -831,7 +832,7 @@ class PersistentObjectBase:
         return m
 
 
-class DocumentBase:
+class DocumentBase(BaseObject):
     def __init__(self, m=None):
         import tercen.model.impl as impl
         DocumentBase.__bases__ = (impl.PersistentObject,)
@@ -855,6 +856,7 @@ class DocumentBase:
 
     def fromJson(self, m):
         import tercen.model.impl as impl
+        DocumentBase.__bases__ = (impl.PersistentObject,)
         super().fromJson(m)
         self.subKind = m.get(Vocabulary.SUBKIND)
         if self.subKind is None and m.get(Vocabulary.KIND) != Vocabulary.Document_CLASS:
@@ -985,7 +987,7 @@ class DocumentBase:
         return m
 
 
-class UserBase:
+class UserBase(BaseObject):
     def __init__(self, m=None):
         import tercen.model.impl as impl
         UserBase.__bases__ = (impl.Document,)
@@ -1005,6 +1007,7 @@ class UserBase:
 
     def fromJson(self, m):
         import tercen.model.impl as impl
+        UserBase.__bases__ = (impl.Document,)
         super().fromJson(m)
         self.subKind = m.get(Vocabulary.SUBKIND)
         if self.subKind is None and m.get(Vocabulary.KIND) != Vocabulary.User_CLASS:
@@ -1059,7 +1062,7 @@ class UserBase:
         return m
 
 
-class TeamBase:
+class TeamBase(BaseObject):
     def __init__(self, m=None):
         import tercen.model.impl as impl
         TeamBase.__bases__ = (impl.User,)
@@ -1071,6 +1074,7 @@ class TeamBase:
 
     def fromJson(self, m):
         import tercen.model.impl as impl
+        TeamBase.__bases__ = (impl.User,)
         super().fromJson(m)
         self.subKind = m.get(Vocabulary.SUBKIND)
         if self.subKind is None and m.get(Vocabulary.KIND) != Vocabulary.Team_CLASS:
@@ -1095,7 +1099,7 @@ class TeamBase:
         return m
 
 
-class PropertyBase:
+class PropertyBase(BaseObject):
     def __init__(self, m=None):
         import tercen.model.impl as impl
         PropertyBase.__bases__ = (impl.SciObject,)
@@ -1108,6 +1112,7 @@ class PropertyBase:
 
     def fromJson(self, m):
         import tercen.model.impl as impl
+        PropertyBase.__bases__ = (impl.SciObject,)
         super().fromJson(m)
         self.subKind = m.get(Vocabulary.SUBKIND)
         if self.subKind is None and m.get(Vocabulary.KIND) != Vocabulary.Property_CLASS:
@@ -1148,7 +1153,7 @@ class PropertyBase:
         return m
 
 
-class DoublePropertyBase:
+class DoublePropertyBase(BaseObject):
     def __init__(self, m=None):
         import tercen.model.impl as impl
         DoublePropertyBase.__bases__ = (impl.Property,)
@@ -1160,6 +1165,7 @@ class DoublePropertyBase:
 
     def fromJson(self, m):
         import tercen.model.impl as impl
+        DoublePropertyBase.__bases__ = (impl.Property,)
         super().fromJson(m)
         self.subKind = m.get(Vocabulary.SUBKIND)
         if self.subKind is None and m.get(Vocabulary.KIND) != Vocabulary.DoubleProperty_CLASS:
@@ -1186,7 +1192,7 @@ class DoublePropertyBase:
         return m
 
 
-class RectangleBase:
+class RectangleBase(BaseObject):
     def __init__(self, m=None):
         import tercen.model.impl as impl
         RectangleBase.__bases__ = (impl.SciObject,)
@@ -1199,6 +1205,7 @@ class RectangleBase:
 
     def fromJson(self, m):
         import tercen.model.impl as impl
+        RectangleBase.__bases__ = (impl.SciObject,)
         super().fromJson(m)
         self.subKind = m.get(Vocabulary.SUBKIND)
         if self.subKind is None and m.get(Vocabulary.KIND) != Vocabulary.Rectangle_CLASS:
@@ -1234,7 +1241,7 @@ class RectangleBase:
         return m
 
 
-class StateBase:
+class StateBase(BaseObject):
     def __init__(self, m=None):
         import tercen.model.impl as impl
         StateBase.__bases__ = (impl.SciObject,)
@@ -1246,6 +1253,7 @@ class StateBase:
 
     def fromJson(self, m):
         import tercen.model.impl as impl
+        StateBase.__bases__ = (impl.SciObject,)
         super().fromJson(m)
         self.subKind = m.get(Vocabulary.SUBKIND)
         if self.subKind is None and m.get(Vocabulary.KIND) != Vocabulary.State_CLASS:
@@ -1284,7 +1292,7 @@ class StateBase:
         return m
 
 
-class RunningStateBase:
+class RunningStateBase(BaseObject):
     def __init__(self, m=None):
         import tercen.model.impl as impl
         RunningStateBase.__bases__ = (impl.State,)
@@ -1296,6 +1304,7 @@ class RunningStateBase:
 
     def fromJson(self, m):
         import tercen.model.impl as impl
+        RunningStateBase.__bases__ = (impl.State,)
         super().fromJson(m)
         self.subKind = m.get(Vocabulary.SUBKIND)
         if self.subKind is None and m.get(Vocabulary.KIND) != Vocabulary.RunningState_CLASS:
@@ -1320,7 +1329,7 @@ class RunningStateBase:
         return m
 
 
-class RelationBase:
+class RelationBase(BaseObject):
     def __init__(self, m=None):
         import tercen.model.impl as impl
         RelationBase.__bases__ = (impl.IdObject,)
@@ -1332,6 +1341,7 @@ class RelationBase:
 
     def fromJson(self, m):
         import tercen.model.impl as impl
+        RelationBase.__bases__ = (impl.IdObject,)
         super().fromJson(m)
         self.subKind = m.get(Vocabulary.SUBKIND)
         if self.subKind is None and m.get(Vocabulary.KIND) != Vocabulary.Relation_CLASS:
@@ -1378,7 +1388,7 @@ class RelationBase:
         return m
 
 
-class WhereRelationBase:
+class WhereRelationBase(BaseObject):
     def __init__(self, m=None):
         import tercen.model.impl as impl
         WhereRelationBase.__bases__ = (impl.Relation,)
@@ -1391,6 +1401,7 @@ class WhereRelationBase:
 
     def fromJson(self, m):
         import tercen.model.impl as impl
+        WhereRelationBase.__bases__ = (impl.Relation,)
         super().fromJson(m)
         self.subKind = m.get(Vocabulary.SUBKIND)
         if self.subKind is None and m.get(Vocabulary.KIND) != Vocabulary.WhereRelation_CLASS:
@@ -1427,7 +1438,7 @@ class WhereRelationBase:
         return m
 
 
-class ProfileBase:
+class ProfileBase(BaseObject):
     def __init__(self, m=None):
         import tercen.model.impl as impl
         ProfileBase.__bases__ = (impl.SciObject,)
@@ -1439,6 +1450,7 @@ class ProfileBase:
 
     def fromJson(self, m):
         import tercen.model.impl as impl
+        ProfileBase.__bases__ = (impl.SciObject,)
         super().fromJson(m)
         self.subKind = m.get(Vocabulary.SUBKIND)
         if self.subKind is None and m.get(Vocabulary.KIND) != Vocabulary.Profile_CLASS:
@@ -1475,7 +1487,7 @@ class ProfileBase:
         return m
 
 
-class StorageProfileBase:
+class StorageProfileBase(BaseObject):
     def __init__(self, m=None):
         import tercen.model.impl as impl
         StorageProfileBase.__bases__ = (impl.Profile,)
@@ -1487,6 +1499,7 @@ class StorageProfileBase:
 
     def fromJson(self, m):
         import tercen.model.impl as impl
+        StorageProfileBase.__bases__ = (impl.Profile,)
         super().fromJson(m)
         self.subKind = m.get(Vocabulary.SUBKIND)
         if self.subKind is None and m.get(Vocabulary.KIND) != Vocabulary.StorageProfile_CLASS:
@@ -1513,7 +1526,7 @@ class StorageProfileBase:
         return m
 
 
-class ResourceSummaryBase:
+class ResourceSummaryBase(BaseObject):
     def __init__(self, m=None):
         import tercen.model.impl as impl
         ResourceSummaryBase.__bases__ = (impl.SciObject,)
@@ -1528,6 +1541,7 @@ class ResourceSummaryBase:
 
     def fromJson(self, m):
         import tercen.model.impl as impl
+        ResourceSummaryBase.__bases__ = (impl.SciObject,)
         super().fromJson(m)
         self.subKind = m.get(Vocabulary.SUBKIND)
         if self.subKind is None and m.get(Vocabulary.KIND) != Vocabulary.ResourceSummary_CLASS:
@@ -1560,7 +1574,7 @@ class ResourceSummaryBase:
         return m
 
 
-class BillingInfoBase:
+class BillingInfoBase(BaseObject):
     def __init__(self, m=None):
         import tercen.model.impl as impl
         BillingInfoBase.__bases__ = (impl.SciObject,)
@@ -1576,6 +1590,7 @@ class BillingInfoBase:
 
     def fromJson(self, m):
         import tercen.model.impl as impl
+        BillingInfoBase.__bases__ = (impl.SciObject,)
         super().fromJson(m)
         self.subKind = m.get(Vocabulary.SUBKIND)
         if self.subKind is None and m.get(Vocabulary.KIND) != Vocabulary.BillingInfo_CLASS:
@@ -1617,7 +1632,7 @@ class BillingInfoBase:
         return m
 
 
-class EventBase:
+class EventBase(BaseObject):
     def __init__(self, m=None):
         import tercen.model.impl as impl
         EventBase.__bases__ = (impl.PersistentObject,)
@@ -1629,6 +1644,7 @@ class EventBase:
 
     def fromJson(self, m):
         import tercen.model.impl as impl
+        EventBase.__bases__ = (impl.PersistentObject,)
         super().fromJson(m)
         self.subKind = m.get(Vocabulary.SUBKIND)
         if self.subKind is None and m.get(Vocabulary.KIND) != Vocabulary.Event_CLASS:
@@ -1672,7 +1688,7 @@ class EventBase:
         return m
 
 
-class PatchRecordsBase:
+class PatchRecordsBase(BaseObject):
     def __init__(self, m=None):
         import tercen.model.impl as impl
         PatchRecordsBase.__bases__ = (impl.Event,)
@@ -1690,6 +1706,7 @@ class PatchRecordsBase:
 
     def fromJson(self, m):
         import tercen.model.impl as impl
+        PatchRecordsBase.__bases__ = (impl.Event,)
         super().fromJson(m)
         self.subKind = m.get(Vocabulary.SUBKIND)
         if self.subKind is None and m.get(Vocabulary.KIND) != Vocabulary.PatchRecords_CLASS:
@@ -1733,7 +1750,7 @@ class PatchRecordsBase:
         return m
 
 
-class GarbageObjectBase:
+class GarbageObjectBase(BaseObject):
     def __init__(self, m=None):
         import tercen.model.impl as impl
         GarbageObjectBase.__bases__ = (impl.PersistentObject,)
@@ -1745,6 +1762,7 @@ class GarbageObjectBase:
 
     def fromJson(self, m):
         import tercen.model.impl as impl
+        GarbageObjectBase.__bases__ = (impl.PersistentObject,)
         super().fromJson(m)
         self.subKind = m.get(Vocabulary.SUBKIND)
         if self.subKind is None and m.get(Vocabulary.KIND) != Vocabulary.GarbageObject_CLASS:
@@ -1773,7 +1791,7 @@ class GarbageObjectBase:
         return m
 
 
-class GarbageTasksBase:
+class GarbageTasksBase(BaseObject):
     def __init__(self, m=None):
         import tercen.model.impl as impl
         GarbageTasksBase.__bases__ = (impl.GarbageObject,)
@@ -1788,6 +1806,7 @@ class GarbageTasksBase:
 
     def fromJson(self, m):
         import tercen.model.impl as impl
+        GarbageTasksBase.__bases__ = (impl.GarbageObject,)
         super().fromJson(m)
         self.subKind = m.get(Vocabulary.SUBKIND)
         if self.subKind is None and m.get(Vocabulary.KIND) != Vocabulary.GarbageTasks_CLASS:
@@ -1829,7 +1848,7 @@ class GarbageTasksBase:
         return m
 
 
-class VersionBase:
+class VersionBase(BaseObject):
     def __init__(self, m=None):
         import tercen.model.impl as impl
         VersionBase.__bases__ = (impl.SciObject,)
@@ -1847,6 +1866,7 @@ class VersionBase:
 
     def fromJson(self, m):
         import tercen.model.impl as impl
+        VersionBase.__bases__ = (impl.SciObject,)
         super().fromJson(m)
         self.subKind = m.get(Vocabulary.SUBKIND)
         if self.subKind is None and m.get(Vocabulary.KIND) != Vocabulary.Version_CLASS:
@@ -1888,7 +1908,7 @@ class VersionBase:
         return m
 
 
-class FiltersBase:
+class FiltersBase(BaseObject):
     def __init__(self, m=None):
         import tercen.model.impl as impl
         FiltersBase.__bases__ = (impl.SciObject,)
@@ -1901,6 +1921,7 @@ class FiltersBase:
 
     def fromJson(self, m):
         import tercen.model.impl as impl
+        FiltersBase.__bases__ = (impl.SciObject,)
         super().fromJson(m)
         self.subKind = m.get(Vocabulary.SUBKIND)
         if self.subKind is None and m.get(Vocabulary.KIND) != Vocabulary.Filters_CLASS:
@@ -1935,7 +1956,7 @@ class FiltersBase:
         return m
 
 
-class ChartBase:
+class ChartBase(BaseObject):
     def __init__(self, m=None):
         import tercen.model.impl as impl
         ChartBase.__bases__ = (impl.SciObject,)
@@ -1948,6 +1969,7 @@ class ChartBase:
 
     def fromJson(self, m):
         import tercen.model.impl as impl
+        ChartBase.__bases__ = (impl.SciObject,)
         super().fromJson(m)
         self.subKind = m.get(Vocabulary.SUBKIND)
         if self.subKind is None and m.get(Vocabulary.KIND) != Vocabulary.Chart_CLASS:
@@ -1990,7 +2012,7 @@ class ChartBase:
         return m
 
 
-class ChartHeatmapBase:
+class ChartHeatmapBase(BaseObject):
     def __init__(self, m=None):
         import tercen.model.impl as impl
         ChartHeatmapBase.__bases__ = (impl.Chart,)
@@ -2002,6 +2024,7 @@ class ChartHeatmapBase:
 
     def fromJson(self, m):
         import tercen.model.impl as impl
+        ChartHeatmapBase.__bases__ = (impl.Chart,)
         super().fromJson(m)
         self.subKind = m.get(Vocabulary.SUBKIND)
         if self.subKind is None and m.get(Vocabulary.KIND) != Vocabulary.ChartHeatmap_CLASS:
@@ -2026,9 +2049,8 @@ class ChartHeatmapBase:
         return m
 
 
-class StatisticNodeBase:
+class StatisticNodeBase(BaseObject):
     def __init__(self, m=None):
-        import tercen.model.impl as impl
         if m is None:
             super().__init__(m)
             self.name = ""
@@ -2037,7 +2059,6 @@ class StatisticNodeBase:
             self.fromJson(m)
 
     def fromJson(self, m):
-        import tercen.model.impl as impl
         super().fromJson(m)
         self.subKind = m.get(Vocabulary.SUBKIND)
         if self.subKind is None and m.get(Vocabulary.KIND) != Vocabulary.StatisticNode_CLASS:
@@ -2071,7 +2092,7 @@ class StatisticNodeBase:
         return m
 
 
-class CubeQueryBase:
+class CubeQueryBase(BaseObject):
     def __init__(self, m=None):
         import tercen.model.impl as impl
         CubeQueryBase.__bases__ = (impl.SciObject,)
@@ -2091,6 +2112,7 @@ class CubeQueryBase:
 
     def fromJson(self, m):
         import tercen.model.impl as impl
+        CubeQueryBase.__bases__ = (impl.SciObject,)
         super().fromJson(m)
         self.subKind = m.get(Vocabulary.SUBKIND)
         if self.subKind is None and m.get(Vocabulary.KIND) != Vocabulary.CubeQuery_CLASS:
@@ -2163,7 +2185,7 @@ class CubeQueryBase:
         return m
 
 
-class RLibraryBase:
+class RLibraryBase(BaseObject):
     def __init__(self, m=None):
         import tercen.model.impl as impl
         RLibraryBase.__bases__ = (impl.Document,)
@@ -2175,6 +2197,7 @@ class RLibraryBase:
 
     def fromJson(self, m):
         import tercen.model.impl as impl
+        RLibraryBase.__bases__ = (impl.Document,)
         super().fromJson(m)
         self.subKind = m.get(Vocabulary.SUBKIND)
         if self.subKind is None and m.get(Vocabulary.KIND) != Vocabulary.RLibrary_CLASS:
@@ -2209,7 +2232,7 @@ class RLibraryBase:
         return m
 
 
-class FilterTopExprBase:
+class FilterTopExprBase(BaseObject):
     def __init__(self, m=None):
         import tercen.model.impl as impl
         FilterTopExprBase.__bases__ = (impl.SciObject,)
@@ -2221,6 +2244,7 @@ class FilterTopExprBase:
 
     def fromJson(self, m):
         import tercen.model.impl as impl
+        FilterTopExprBase.__bases__ = (impl.SciObject,)
         super().fromJson(m)
         self.subKind = m.get(Vocabulary.SUBKIND)
         if self.subKind is None and m.get(Vocabulary.KIND) != Vocabulary.FilterTopExpr_CLASS:
@@ -2253,7 +2277,7 @@ class FilterTopExprBase:
         return m
 
 
-class FilterBase:
+class FilterBase(BaseObject):
     def __init__(self, m=None):
         import tercen.model.impl as impl
         FilterBase.__bases__ = (impl.FilterTopExpr,)
@@ -2267,6 +2291,7 @@ class FilterBase:
 
     def fromJson(self, m):
         import tercen.model.impl as impl
+        FilterBase.__bases__ = (impl.FilterTopExpr,)
         super().fromJson(m)
         self.subKind = m.get(Vocabulary.SUBKIND)
         if self.subKind is None and m.get(Vocabulary.KIND) != Vocabulary.Filter_CLASS:
@@ -2305,7 +2330,7 @@ class FilterBase:
         return m
 
 
-class StepBase:
+class StepBase(BaseObject):
     def __init__(self, m=None):
         import tercen.model.impl as impl
         StepBase.__bases__ = (impl.IdObject,)
@@ -2322,6 +2347,7 @@ class StepBase:
 
     def fromJson(self, m):
         import tercen.model.impl as impl
+        StepBase.__bases__ = (impl.IdObject,)
         super().fromJson(m)
         self.subKind = m.get(Vocabulary.SUBKIND)
         if self.subKind is None and m.get(Vocabulary.KIND) != Vocabulary.Step_CLASS:
@@ -2405,7 +2431,7 @@ class StepBase:
         return m
 
 
-class ModelStepBase:
+class ModelStepBase(BaseObject):
     def __init__(self, m=None):
         import tercen.model.impl as impl
         ModelStepBase.__bases__ = (impl.Step,)
@@ -2417,6 +2443,7 @@ class ModelStepBase:
 
     def fromJson(self, m):
         import tercen.model.impl as impl
+        ModelStepBase.__bases__ = (impl.Step,)
         super().fromJson(m)
         self.subKind = m.get(Vocabulary.SUBKIND)
         if self.subKind is None and m.get(Vocabulary.KIND) != Vocabulary.ModelStep_CLASS:
@@ -2465,7 +2492,7 @@ class ModelStepBase:
         return m
 
 
-class RelationStepBase:
+class RelationStepBase(BaseObject):
     def __init__(self, m=None):
         import tercen.model.impl as impl
         RelationStepBase.__bases__ = (impl.ModelStep,)
@@ -2477,6 +2504,7 @@ class RelationStepBase:
 
     def fromJson(self, m):
         import tercen.model.impl as impl
+        RelationStepBase.__bases__ = (impl.ModelStep,)
         super().fromJson(m)
         self.subKind = m.get(Vocabulary.SUBKIND)
         if self.subKind is None and m.get(Vocabulary.KIND) != Vocabulary.RelationStep_CLASS:
@@ -2521,7 +2549,7 @@ class RelationStepBase:
         return m
 
 
-class GroupStepBase:
+class GroupStepBase(BaseObject):
     def __init__(self, m=None):
         import tercen.model.impl as impl
         GroupStepBase.__bases__ = (impl.RelationStep,)
@@ -2536,6 +2564,7 @@ class GroupStepBase:
 
     def fromJson(self, m):
         import tercen.model.impl as impl
+        GroupStepBase.__bases__ = (impl.RelationStep,)
         super().fromJson(m)
         self.subKind = m.get(Vocabulary.SUBKIND)
         if self.subKind is None and m.get(Vocabulary.KIND) != Vocabulary.GroupStep_CLASS:
@@ -2571,7 +2600,7 @@ class GroupStepBase:
         return m
 
 
-class TaskEventBase:
+class TaskEventBase(BaseObject):
     def __init__(self, m=None):
         import tercen.model.impl as impl
         TaskEventBase.__bases__ = (impl.Event,)
@@ -2583,6 +2612,7 @@ class TaskEventBase:
 
     def fromJson(self, m):
         import tercen.model.impl as impl
+        TaskEventBase.__bases__ = (impl.Event,)
         super().fromJson(m)
         self.subKind = m.get(Vocabulary.SUBKIND)
         if self.subKind is None and m.get(Vocabulary.KIND) != Vocabulary.TaskEvent_CLASS:
@@ -2617,7 +2647,7 @@ class TaskEventBase:
         return m
 
 
-class TaskLogEventBase:
+class TaskLogEventBase(BaseObject):
     def __init__(self, m=None):
         import tercen.model.impl as impl
         TaskLogEventBase.__bases__ = (impl.TaskEvent,)
@@ -2629,6 +2659,7 @@ class TaskLogEventBase:
 
     def fromJson(self, m):
         import tercen.model.impl as impl
+        TaskLogEventBase.__bases__ = (impl.TaskEvent,)
         super().fromJson(m)
         self.subKind = m.get(Vocabulary.SUBKIND)
         if self.subKind is None and m.get(Vocabulary.KIND) != Vocabulary.TaskLogEvent_CLASS:
@@ -2655,7 +2686,7 @@ class TaskLogEventBase:
         return m
 
 
-class UserSessionBase:
+class UserSessionBase(BaseObject):
     def __init__(self, m=None):
         import tercen.model.impl as impl
         UserSessionBase.__bases__ = (impl.SciObject,)
@@ -2669,6 +2700,7 @@ class UserSessionBase:
 
     def fromJson(self, m):
         import tercen.model.impl as impl
+        UserSessionBase.__bases__ = (impl.SciObject,)
         super().fromJson(m)
         self.subKind = m.get(Vocabulary.SUBKIND)
         if self.subKind is None and m.get(Vocabulary.KIND) != Vocabulary.UserSession_CLASS:
@@ -2709,7 +2741,7 @@ class UserSessionBase:
         return m
 
 
-class TableBase:
+class TableBase(BaseObject):
     def __init__(self, m=None):
         import tercen.model.impl as impl
         TableBase.__bases__ = (impl.SciObject,)
@@ -2723,6 +2755,7 @@ class TableBase:
 
     def fromJson(self, m):
         import tercen.model.impl as impl
+        TableBase.__bases__ = (impl.SciObject,)
         super().fromJson(m)
         self.subKind = m.get(Vocabulary.SUBKIND)
         if self.subKind is None and m.get(Vocabulary.KIND) != Vocabulary.Table_CLASS:
@@ -2763,7 +2796,7 @@ class TableBase:
         return m
 
 
-class OperatorBase:
+class OperatorBase(BaseObject):
     def __init__(self, m=None):
         import tercen.model.impl as impl
         OperatorBase.__bases__ = (impl.Document,)
@@ -2776,6 +2809,7 @@ class OperatorBase:
 
     def fromJson(self, m):
         import tercen.model.impl as impl
+        OperatorBase.__bases__ = (impl.Document,)
         super().fromJson(m)
         self.subKind = m.get(Vocabulary.SUBKIND)
         if self.subKind is None and m.get(Vocabulary.KIND) != Vocabulary.Operator_CLASS:
@@ -2822,7 +2856,7 @@ class OperatorBase:
         return m
 
 
-class GitOperatorBase:
+class GitOperatorBase(BaseObject):
     def __init__(self, m=None):
         import tercen.model.impl as impl
         GitOperatorBase.__bases__ = (impl.Operator,)
@@ -2834,6 +2868,7 @@ class GitOperatorBase:
 
     def fromJson(self, m):
         import tercen.model.impl as impl
+        GitOperatorBase.__bases__ = (impl.Operator,)
         super().fromJson(m)
         self.subKind = m.get(Vocabulary.SUBKIND)
         if self.subKind is None and m.get(Vocabulary.KIND) != Vocabulary.GitOperator_CLASS:
@@ -2870,7 +2905,7 @@ class GitOperatorBase:
         return m
 
 
-class DockerOperatorBase:
+class DockerOperatorBase(BaseObject):
     def __init__(self, m=None):
         import tercen.model.impl as impl
         DockerOperatorBase.__bases__ = (impl.GitOperator,)
@@ -2882,6 +2917,7 @@ class DockerOperatorBase:
 
     def fromJson(self, m):
         import tercen.model.impl as impl
+        DockerOperatorBase.__bases__ = (impl.GitOperator,)
         super().fromJson(m)
         self.subKind = m.get(Vocabulary.SUBKIND)
         if self.subKind is None and m.get(Vocabulary.KIND) != Vocabulary.DockerOperator_CLASS:
@@ -2908,7 +2944,7 @@ class DockerOperatorBase:
         return m
 
 
-class AclBase:
+class AclBase(BaseObject):
     def __init__(self, m=None):
         import tercen.model.impl as impl
         AclBase.__bases__ = (impl.SciObject,)
@@ -2921,6 +2957,7 @@ class AclBase:
 
     def fromJson(self, m):
         import tercen.model.impl as impl
+        AclBase.__bases__ = (impl.SciObject,)
         super().fromJson(m)
         self.subKind = m.get(Vocabulary.SUBKIND)
         if self.subKind is None and m.get(Vocabulary.KIND) != Vocabulary.Acl_CLASS:
@@ -2954,9 +2991,8 @@ class AclBase:
         return m
 
 
-class CubeAxisQueryBase:
+class CubeAxisQueryBase(BaseObject):
     def __init__(self, m=None):
-        import tercen.model.impl as impl
         if m is None:
             super().__init__(m)
             self.pointSize = 0
@@ -2973,7 +3009,6 @@ class CubeAxisQueryBase:
             self.fromJson(m)
 
     def fromJson(self, m):
-        import tercen.model.impl as impl
         super().fromJson(m)
         self.subKind = m.get(Vocabulary.SUBKIND)
         if self.subKind is None and m.get(Vocabulary.KIND) != Vocabulary.CubeAxisQuery_CLASS:
@@ -3053,7 +3088,7 @@ class CubeAxisQueryBase:
         return m
 
 
-class GateNodeBase:
+class GateNodeBase(BaseObject):
     def __init__(self, m=None):
         import tercen.model.impl as impl
         GateNodeBase.__bases__ = (impl.SciObject,)
@@ -3069,6 +3104,7 @@ class GateNodeBase:
 
     def fromJson(self, m):
         import tercen.model.impl as impl
+        GateNodeBase.__bases__ = (impl.SciObject,)
         super().fromJson(m)
         self.subKind = m.get(Vocabulary.SUBKIND)
         if self.subKind is None and m.get(Vocabulary.KIND) != Vocabulary.GateNode_CLASS:
@@ -3119,7 +3155,7 @@ class GateNodeBase:
         return m
 
 
-class TaskSummaryBase:
+class TaskSummaryBase(BaseObject):
     def __init__(self, m=None):
         import tercen.model.impl as impl
         TaskSummaryBase.__bases__ = (impl.SciObject,)
@@ -3132,6 +3168,7 @@ class TaskSummaryBase:
 
     def fromJson(self, m):
         import tercen.model.impl as impl
+        TaskSummaryBase.__bases__ = (impl.SciObject,)
         super().fromJson(m)
         self.subKind = m.get(Vocabulary.SUBKIND)
         if self.subKind is None and m.get(Vocabulary.KIND) != Vocabulary.TaskSummary_CLASS:
@@ -3160,7 +3197,7 @@ class TaskSummaryBase:
         return m
 
 
-class PaletteBase:
+class PaletteBase(BaseObject):
     def __init__(self, m=None):
         import tercen.model.impl as impl
         PaletteBase.__bases__ = (impl.SciObject,)
@@ -3173,6 +3210,7 @@ class PaletteBase:
 
     def fromJson(self, m):
         import tercen.model.impl as impl
+        PaletteBase.__bases__ = (impl.SciObject,)
         super().fromJson(m)
         self.subKind = m.get(Vocabulary.SUBKIND)
         if self.subKind is None and m.get(Vocabulary.KIND) != Vocabulary.Palette_CLASS:
@@ -3213,7 +3251,7 @@ class PaletteBase:
         return m
 
 
-class RampPaletteBase:
+class RampPaletteBase(BaseObject):
     def __init__(self, m=None):
         import tercen.model.impl as impl
         RampPaletteBase.__bases__ = (impl.Palette,)
@@ -3226,6 +3264,7 @@ class RampPaletteBase:
 
     def fromJson(self, m):
         import tercen.model.impl as impl
+        RampPaletteBase.__bases__ = (impl.Palette,)
         super().fromJson(m)
         self.subKind = m.get(Vocabulary.SUBKIND)
         if self.subKind is None and m.get(Vocabulary.KIND) != Vocabulary.RampPalette_CLASS:
@@ -3263,7 +3302,7 @@ class RampPaletteBase:
         return m
 
 
-class DistinctRelationBase:
+class DistinctRelationBase(BaseObject):
     def __init__(self, m=None):
         import tercen.model.impl as impl
         DistinctRelationBase.__bases__ = (impl.Relation,)
@@ -3276,6 +3315,7 @@ class DistinctRelationBase:
 
     def fromJson(self, m):
         import tercen.model.impl as impl
+        DistinctRelationBase.__bases__ = (impl.Relation,)
         super().fromJson(m)
         self.subKind = m.get(Vocabulary.SUBKIND)
         if self.subKind is None and m.get(Vocabulary.KIND) != Vocabulary.DistinctRelation_CLASS:
@@ -3311,7 +3351,7 @@ class DistinctRelationBase:
         return m
 
 
-class RunningDependentStateBase:
+class RunningDependentStateBase(BaseObject):
     def __init__(self, m=None):
         import tercen.model.impl as impl
         RunningDependentStateBase.__bases__ = (impl.State,)
@@ -3323,6 +3363,7 @@ class RunningDependentStateBase:
 
     def fromJson(self, m):
         import tercen.model.impl as impl
+        RunningDependentStateBase.__bases__ = (impl.State,)
         super().fromJson(m)
         self.subKind = m.get(Vocabulary.SUBKIND)
         if self.subKind is None and m.get(Vocabulary.KIND) != Vocabulary.RunningDependentState_CLASS:
@@ -3347,7 +3388,7 @@ class RunningDependentStateBase:
         return m
 
 
-class TaskBase:
+class TaskBase(BaseObject):
     def __init__(self, m=None):
         import tercen.model.impl as impl
         TaskBase.__bases__ = (impl.PersistentObject,)
@@ -3370,6 +3411,7 @@ class TaskBase:
 
     def fromJson(self, m):
         import tercen.model.impl as impl
+        TaskBase.__bases__ = (impl.PersistentObject,)
         super().fromJson(m)
         self.subKind = m.get(Vocabulary.SUBKIND)
         if self.subKind is None and m.get(Vocabulary.KIND) != Vocabulary.Task_CLASS:
@@ -3488,7 +3530,7 @@ class TaskBase:
         return m
 
 
-class ProjectTaskBase:
+class ProjectTaskBase(BaseObject):
     def __init__(self, m=None):
         import tercen.model.impl as impl
         ProjectTaskBase.__bases__ = (impl.Task,)
@@ -3500,6 +3542,7 @@ class ProjectTaskBase:
 
     def fromJson(self, m):
         import tercen.model.impl as impl
+        ProjectTaskBase.__bases__ = (impl.Task,)
         super().fromJson(m)
         self.subKind = m.get(Vocabulary.SUBKIND)
         if self.subKind is None and m.get(Vocabulary.KIND) != Vocabulary.ProjectTask_CLASS:
@@ -3552,7 +3595,7 @@ class ProjectTaskBase:
         return m
 
 
-class ExportWorkflowTaskBase:
+class ExportWorkflowTaskBase(BaseObject):
     def __init__(self, m=None):
         import tercen.model.impl as impl
         ExportWorkflowTaskBase.__bases__ = (impl.ProjectTask,)
@@ -3565,6 +3608,7 @@ class ExportWorkflowTaskBase:
 
     def fromJson(self, m):
         import tercen.model.impl as impl
+        ExportWorkflowTaskBase.__bases__ = (impl.ProjectTask,)
         super().fromJson(m)
         self.subKind = m.get(Vocabulary.SUBKIND)
         if self.subKind is None and m.get(Vocabulary.KIND) != Vocabulary.ExportWorkflowTask_CLASS:
@@ -3593,7 +3637,7 @@ class ExportWorkflowTaskBase:
         return m
 
 
-class StartProcessBase:
+class StartProcessBase(BaseObject):
     def __init__(self, m=None):
         import tercen.model.impl as impl
         StartProcessBase.__bases__ = (impl.IdObject,)
@@ -3610,6 +3654,7 @@ class StartProcessBase:
 
     def fromJson(self, m):
         import tercen.model.impl as impl
+        StartProcessBase.__bases__ = (impl.IdObject,)
         super().fromJson(m)
         self.subKind = m.get(Vocabulary.SUBKIND)
         if self.subKind is None and m.get(Vocabulary.KIND) != Vocabulary.StartProcess_CLASS:
@@ -3653,7 +3698,7 @@ class StartProcessBase:
         return m
 
 
-class TokenBase:
+class TokenBase(BaseObject):
     def __init__(self, m=None):
         import tercen.model.impl as impl
         TokenBase.__bases__ = (impl.SciObject,)
@@ -3668,6 +3713,7 @@ class TokenBase:
 
     def fromJson(self, m):
         import tercen.model.impl as impl
+        TokenBase.__bases__ = (impl.SciObject,)
         super().fromJson(m)
         self.subKind = m.get(Vocabulary.SUBKIND)
         if self.subKind is None and m.get(Vocabulary.KIND) != Vocabulary.Token_CLASS:
@@ -3703,9 +3749,8 @@ class TokenBase:
         return m
 
 
-class ActivityCountBase:
+class ActivityCountBase(BaseObject):
     def __init__(self, m=None):
-        import tercen.model.impl as impl
         if m is None:
             super().__init__(m)
             self.objectId = ""
@@ -3714,7 +3759,6 @@ class ActivityCountBase:
             self.fromJson(m)
 
     def fromJson(self, m):
-        import tercen.model.impl as impl
         super().fromJson(m)
         self.subKind = m.get(Vocabulary.SUBKIND)
         if self.subKind is None and m.get(Vocabulary.KIND) != Vocabulary.ActivityCount_CLASS:
@@ -3743,7 +3787,7 @@ class ActivityCountBase:
         return m
 
 
-class JoinOperatorBase:
+class JoinOperatorBase(BaseObject):
     def __init__(self, m=None):
         import tercen.model.impl as impl
         JoinOperatorBase.__bases__ = (impl.SciObject,)
@@ -3757,6 +3801,7 @@ class JoinOperatorBase:
 
     def fromJson(self, m):
         import tercen.model.impl as impl
+        JoinOperatorBase.__bases__ = (impl.SciObject,)
         super().fromJson(m)
         self.subKind = m.get(Vocabulary.SUBKIND)
         if self.subKind is None and m.get(Vocabulary.KIND) != Vocabulary.JoinOperator_CLASS:
@@ -3795,7 +3840,7 @@ class JoinOperatorBase:
         return m
 
 
-class OperatorModelBase:
+class OperatorModelBase(BaseObject):
     def __init__(self, m=None):
         import tercen.model.impl as impl
         OperatorModelBase.__bases__ = (impl.SciObject,)
@@ -3807,6 +3852,7 @@ class OperatorModelBase:
 
     def fromJson(self, m):
         import tercen.model.impl as impl
+        OperatorModelBase.__bases__ = (impl.SciObject,)
         super().fromJson(m)
         self.subKind = m.get(Vocabulary.SUBKIND)
         if self.subKind is None and m.get(Vocabulary.KIND) != Vocabulary.OperatorModel_CLASS:
@@ -3835,7 +3881,7 @@ class OperatorModelBase:
         return m
 
 
-class FileMetadataBase:
+class FileMetadataBase(BaseObject):
     def __init__(self, m=None):
         import tercen.model.impl as impl
         FileMetadataBase.__bases__ = (impl.SciObject,)
@@ -3851,6 +3897,7 @@ class FileMetadataBase:
 
     def fromJson(self, m):
         import tercen.model.impl as impl
+        FileMetadataBase.__bases__ = (impl.SciObject,)
         super().fromJson(m)
         self.subKind = m.get(Vocabulary.SUBKIND)
         if self.subKind is None and m.get(Vocabulary.KIND) != Vocabulary.FileMetadata_CLASS:
@@ -3887,7 +3934,7 @@ class FileMetadataBase:
         return m
 
 
-class CSVFileMetadataBase:
+class CSVFileMetadataBase(BaseObject):
     def __init__(self, m=None):
         import tercen.model.impl as impl
         CSVFileMetadataBase.__bases__ = (impl.FileMetadata,)
@@ -3901,6 +3948,7 @@ class CSVFileMetadataBase:
 
     def fromJson(self, m):
         import tercen.model.impl as impl
+        CSVFileMetadataBase.__bases__ = (impl.FileMetadata,)
         super().fromJson(m)
         self.subKind = m.get(Vocabulary.SUBKIND)
         if self.subKind is None and m.get(Vocabulary.KIND) != Vocabulary.CSVFileMetadata_CLASS:
@@ -3931,7 +3979,7 @@ class CSVFileMetadataBase:
         return m
 
 
-class StepModelBase:
+class StepModelBase(BaseObject):
     def __init__(self, m=None):
         import tercen.model.impl as impl
         StepModelBase.__bases__ = (impl.SciObject,)
@@ -3943,6 +3991,7 @@ class StepModelBase:
 
     def fromJson(self, m):
         import tercen.model.impl as impl
+        StepModelBase.__bases__ = (impl.SciObject,)
         super().fromJson(m)
         self.subKind = m.get(Vocabulary.SUBKIND)
         if self.subKind is None and m.get(Vocabulary.KIND) != Vocabulary.StepModel_CLASS:
@@ -3979,7 +4028,7 @@ class StepModelBase:
         return m
 
 
-class TableStepModelBase:
+class TableStepModelBase(BaseObject):
     def __init__(self, m=None):
         import tercen.model.impl as impl
         TableStepModelBase.__bases__ = (impl.StepModel,)
@@ -3991,6 +4040,7 @@ class TableStepModelBase:
 
     def fromJson(self, m):
         import tercen.model.impl as impl
+        TableStepModelBase.__bases__ = (impl.StepModel,)
         super().fromJson(m)
         self.subKind = m.get(Vocabulary.SUBKIND)
         if self.subKind is None and m.get(Vocabulary.KIND) != Vocabulary.TableStepModel_CLASS:
@@ -4021,7 +4071,7 @@ class TableStepModelBase:
         return m
 
 
-class NamespaceStepBase:
+class NamespaceStepBase(BaseObject):
     def __init__(self, m=None):
         import tercen.model.impl as impl
         NamespaceStepBase.__bases__ = (impl.RelationStep,)
@@ -4033,6 +4083,7 @@ class NamespaceStepBase:
 
     def fromJson(self, m):
         import tercen.model.impl as impl
+        NamespaceStepBase.__bases__ = (impl.RelationStep,)
         super().fromJson(m)
         self.subKind = m.get(Vocabulary.SUBKIND)
         if self.subKind is None and m.get(Vocabulary.KIND) != Vocabulary.NamespaceStep_CLASS:
@@ -4067,7 +4118,7 @@ class NamespaceStepBase:
         return m
 
 
-class MeltStepBase:
+class MeltStepBase(BaseObject):
     def __init__(self, m=None):
         import tercen.model.impl as impl
         MeltStepBase.__bases__ = (impl.NamespaceStep,)
@@ -4080,6 +4131,7 @@ class MeltStepBase:
 
     def fromJson(self, m):
         import tercen.model.impl as impl
+        MeltStepBase.__bases__ = (impl.NamespaceStep,)
         super().fromJson(m)
         self.subKind = m.get(Vocabulary.SUBKIND)
         if self.subKind is None and m.get(Vocabulary.KIND) != Vocabulary.MeltStep_CLASS:
@@ -4118,7 +4170,7 @@ class MeltStepBase:
         return m
 
 
-class CrosstabTableBase:
+class CrosstabTableBase(BaseObject):
     def __init__(self, m=None):
         import tercen.model.impl as impl
         CrosstabTableBase.__bases__ = (impl.SciObject,)
@@ -4134,6 +4186,7 @@ class CrosstabTableBase:
 
     def fromJson(self, m):
         import tercen.model.impl as impl
+        CrosstabTableBase.__bases__ = (impl.SciObject,)
         super().fromJson(m)
         self.subKind = m.get(Vocabulary.SUBKIND)
         if self.subKind is None and m.get(Vocabulary.KIND) != Vocabulary.CrosstabTable_CLASS:
@@ -4182,7 +4235,7 @@ class CrosstabTableBase:
         return m
 
 
-class XYAxisListBase:
+class XYAxisListBase(BaseObject):
     def __init__(self, m=None):
         import tercen.model.impl as impl
         XYAxisListBase.__bases__ = (impl.SciObject,)
@@ -4195,6 +4248,7 @@ class XYAxisListBase:
 
     def fromJson(self, m):
         import tercen.model.impl as impl
+        XYAxisListBase.__bases__ = (impl.SciObject,)
         super().fromJson(m)
         self.subKind = m.get(Vocabulary.SUBKIND)
         if self.subKind is None and m.get(Vocabulary.KIND) != Vocabulary.XYAxisList_CLASS:
@@ -4235,7 +4289,7 @@ class XYAxisListBase:
         return m
 
 
-class ColorElementBase:
+class ColorElementBase(BaseObject):
     def __init__(self, m=None):
         import tercen.model.impl as impl
         ColorElementBase.__bases__ = (impl.SciObject,)
@@ -4247,6 +4301,7 @@ class ColorElementBase:
 
     def fromJson(self, m):
         import tercen.model.impl as impl
+        ColorElementBase.__bases__ = (impl.SciObject,)
         super().fromJson(m)
         self.subKind = m.get(Vocabulary.SUBKIND)
         if self.subKind is None and m.get(Vocabulary.KIND) != Vocabulary.ColorElement_CLASS:
@@ -4277,7 +4332,7 @@ class ColorElementBase:
         return m
 
 
-class DoubleColorElementBase:
+class DoubleColorElementBase(BaseObject):
     def __init__(self, m=None):
         import tercen.model.impl as impl
         DoubleColorElementBase.__bases__ = (impl.ColorElement,)
@@ -4289,6 +4344,7 @@ class DoubleColorElementBase:
 
     def fromJson(self, m):
         import tercen.model.impl as impl
+        DoubleColorElementBase.__bases__ = (impl.ColorElement,)
         super().fromJson(m)
         self.subKind = m.get(Vocabulary.SUBKIND)
         if self.subKind is None and m.get(Vocabulary.KIND) != Vocabulary.DoubleColorElement_CLASS:
@@ -4315,7 +4371,7 @@ class DoubleColorElementBase:
         return m
 
 
-class TaskProgressEventBase:
+class TaskProgressEventBase(BaseObject):
     def __init__(self, m=None):
         import tercen.model.impl as impl
         TaskProgressEventBase.__bases__ = (impl.TaskEvent,)
@@ -4329,6 +4385,7 @@ class TaskProgressEventBase:
 
     def fromJson(self, m):
         import tercen.model.impl as impl
+        TaskProgressEventBase.__bases__ = (impl.TaskEvent,)
         super().fromJson(m)
         self.subKind = m.get(Vocabulary.SUBKIND)
         if self.subKind is None and m.get(Vocabulary.KIND) != Vocabulary.TaskProgressEvent_CLASS:
@@ -4359,7 +4416,7 @@ class TaskProgressEventBase:
         return m
 
 
-class CrosstabBase:
+class CrosstabBase(BaseObject):
     def __init__(self, m=None):
         import tercen.model.impl as impl
         CrosstabBase.__bases__ = (impl.StepModel,)
@@ -4376,6 +4433,7 @@ class CrosstabBase:
 
     def fromJson(self, m):
         import tercen.model.impl as impl
+        CrosstabBase.__bases__ = (impl.StepModel,)
         super().fromJson(m)
         self.subKind = m.get(Vocabulary.SUBKIND)
         if self.subKind is None and m.get(Vocabulary.KIND) != Vocabulary.Crosstab_CLASS:
@@ -4432,7 +4490,7 @@ class CrosstabBase:
         return m
 
 
-class ProjectDocumentBase:
+class ProjectDocumentBase(BaseObject):
     def __init__(self, m=None):
         import tercen.model.impl as impl
         ProjectDocumentBase.__bases__ = (impl.Document,)
@@ -4445,6 +4503,7 @@ class ProjectDocumentBase:
 
     def fromJson(self, m):
         import tercen.model.impl as impl
+        ProjectDocumentBase.__bases__ = (impl.Document,)
         super().fromJson(m)
         self.subKind = m.get(Vocabulary.SUBKIND)
         if self.subKind is None and m.get(Vocabulary.KIND) != Vocabulary.ProjectDocument_CLASS:
@@ -4491,7 +4550,7 @@ class ProjectDocumentBase:
         return m
 
 
-class IssueBase:
+class IssueBase(BaseObject):
     def __init__(self, m=None):
         import tercen.model.impl as impl
         IssueBase.__bases__ = (impl.ProjectDocument,)
@@ -4503,6 +4562,7 @@ class IssueBase:
 
     def fromJson(self, m):
         import tercen.model.impl as impl
+        IssueBase.__bases__ = (impl.ProjectDocument,)
         super().fromJson(m)
         self.subKind = m.get(Vocabulary.SUBKIND)
         if self.subKind is None and m.get(Vocabulary.KIND) != Vocabulary.Issue_CLASS:
@@ -4527,7 +4587,7 @@ class IssueBase:
         return m
 
 
-class PatchRecordBase:
+class PatchRecordBase(BaseObject):
     def __init__(self, m=None):
         import tercen.model.impl as impl
         PatchRecordBase.__bases__ = (impl.SciObject,)
@@ -4541,6 +4601,7 @@ class PatchRecordBase:
 
     def fromJson(self, m):
         import tercen.model.impl as impl
+        PatchRecordBase.__bases__ = (impl.SciObject,)
         super().fromJson(m)
         self.subKind = m.get(Vocabulary.SUBKIND)
         if self.subKind is None and m.get(Vocabulary.KIND) != Vocabulary.PatchRecord_CLASS:
@@ -4571,7 +4632,7 @@ class PatchRecordBase:
         return m
 
 
-class CubeQueryTaskBase:
+class CubeQueryTaskBase(BaseObject):
     def __init__(self, m=None):
         import tercen.model.impl as impl
         CubeQueryTaskBase.__bases__ = (impl.ProjectTask,)
@@ -4585,6 +4646,7 @@ class CubeQueryTaskBase:
 
     def fromJson(self, m):
         import tercen.model.impl as impl
+        CubeQueryTaskBase.__bases__ = (impl.ProjectTask,)
         super().fromJson(m)
         self.subKind = m.get(Vocabulary.SUBKIND)
         if self.subKind is None and m.get(Vocabulary.KIND) != Vocabulary.CubeQueryTask_CLASS:
@@ -4628,7 +4690,7 @@ class CubeQueryTaskBase:
         return m
 
 
-class ComputationTaskBase:
+class ComputationTaskBase(BaseObject):
     def __init__(self, m=None):
         import tercen.model.impl as impl
         ComputationTaskBase.__bases__ = (impl.CubeQueryTask,)
@@ -4642,6 +4704,7 @@ class ComputationTaskBase:
 
     def fromJson(self, m):
         import tercen.model.impl as impl
+        ComputationTaskBase.__bases__ = (impl.CubeQueryTask,)
         super().fromJson(m)
         self.subKind = m.get(Vocabulary.SUBKIND)
         if self.subKind is None and m.get(Vocabulary.KIND) != Vocabulary.ComputationTask_CLASS:
@@ -4680,7 +4743,7 @@ class ComputationTaskBase:
         return m
 
 
-class SaveComputationResultTaskBase:
+class SaveComputationResultTaskBase(BaseObject):
     def __init__(self, m=None):
         import tercen.model.impl as impl
         SaveComputationResultTaskBase.__bases__ = (impl.ComputationTask,)
@@ -4692,6 +4755,7 @@ class SaveComputationResultTaskBase:
 
     def fromJson(self, m):
         import tercen.model.impl as impl
+        SaveComputationResultTaskBase.__bases__ = (impl.ComputationTask,)
         super().fromJson(m)
         self.subKind = m.get(Vocabulary.SUBKIND)
         if self.subKind is None and m.get(Vocabulary.KIND) != Vocabulary.SaveComputationResultTask_CLASS:
@@ -4718,7 +4782,7 @@ class SaveComputationResultTaskBase:
         return m
 
 
-class RunComputationTaskBase:
+class RunComputationTaskBase(BaseObject):
     def __init__(self, m=None):
         import tercen.model.impl as impl
         RunComputationTaskBase.__bases__ = (impl.SaveComputationResultTask,)
@@ -4730,6 +4794,7 @@ class RunComputationTaskBase:
 
     def fromJson(self, m):
         import tercen.model.impl as impl
+        RunComputationTaskBase.__bases__ = (impl.SaveComputationResultTask,)
         super().fromJson(m)
         self.subKind = m.get(Vocabulary.SUBKIND)
         if self.subKind is None and m.get(Vocabulary.KIND) != Vocabulary.RunComputationTask_CLASS:
@@ -4754,7 +4819,7 @@ class RunComputationTaskBase:
         return m
 
 
-class WorkerEndpointBase:
+class WorkerEndpointBase(BaseObject):
     def __init__(self, m=None):
         import tercen.model.impl as impl
         WorkerEndpointBase.__bases__ = (impl.Document,)
@@ -4766,6 +4831,7 @@ class WorkerEndpointBase:
 
     def fromJson(self, m):
         import tercen.model.impl as impl
+        WorkerEndpointBase.__bases__ = (impl.Document,)
         super().fromJson(m)
         self.subKind = m.get(Vocabulary.SUBKIND)
         if self.subKind is None and m.get(Vocabulary.KIND) != Vocabulary.WorkerEndpoint_CLASS:
@@ -4792,7 +4858,7 @@ class WorkerEndpointBase:
         return m
 
 
-class ColumnSchemaMetaDataBase:
+class ColumnSchemaMetaDataBase(BaseObject):
     def __init__(self, m=None):
         import tercen.model.impl as impl
         ColumnSchemaMetaDataBase.__bases__ = (impl.SciObject,)
@@ -4807,6 +4873,7 @@ class ColumnSchemaMetaDataBase:
 
     def fromJson(self, m):
         import tercen.model.impl as impl
+        ColumnSchemaMetaDataBase.__bases__ = (impl.SciObject,)
         super().fromJson(m)
         self.subKind = m.get(Vocabulary.SUBKIND)
         if self.subKind is None and m.get(Vocabulary.KIND) != Vocabulary.ColumnSchemaMetaData_CLASS:
@@ -4851,7 +4918,7 @@ class ColumnSchemaMetaDataBase:
         return m
 
 
-class PrivilegeBase:
+class PrivilegeBase(BaseObject):
     def __init__(self, m=None):
         import tercen.model.impl as impl
         PrivilegeBase.__bases__ = (impl.SciObject,)
@@ -4863,6 +4930,7 @@ class PrivilegeBase:
 
     def fromJson(self, m):
         import tercen.model.impl as impl
+        PrivilegeBase.__bases__ = (impl.SciObject,)
         super().fromJson(m)
         self.subKind = m.get(Vocabulary.SUBKIND)
         if self.subKind is None and m.get(Vocabulary.KIND) != Vocabulary.Privilege_CLASS:
@@ -4889,7 +4957,7 @@ class PrivilegeBase:
         return m
 
 
-class CSVTaskBase:
+class CSVTaskBase(BaseObject):
     def __init__(self, m=None):
         import tercen.model.impl as impl
         CSVTaskBase.__bases__ = (impl.ProjectTask,)
@@ -4907,6 +4975,7 @@ class CSVTaskBase:
 
     def fromJson(self, m):
         import tercen.model.impl as impl
+        CSVTaskBase.__bases__ = (impl.ProjectTask,)
         super().fromJson(m)
         self.subKind = m.get(Vocabulary.SUBKIND)
         if self.subKind is None and m.get(Vocabulary.KIND) != Vocabulary.CSVTask_CLASS:
@@ -4956,7 +5025,7 @@ class CSVTaskBase:
         return m
 
 
-class ActivityBase:
+class ActivityBase(BaseObject):
     def __init__(self, m=None):
         import tercen.model.impl as impl
         ActivityBase.__bases__ = (impl.PersistentObject,)
@@ -4976,6 +5045,7 @@ class ActivityBase:
 
     def fromJson(self, m):
         import tercen.model.impl as impl
+        ActivityBase.__bases__ = (impl.PersistentObject,)
         super().fromJson(m)
         self.subKind = m.get(Vocabulary.SUBKIND)
         if self.subKind is None and m.get(Vocabulary.KIND) != Vocabulary.Activity_CLASS:
@@ -5027,7 +5097,7 @@ class ActivityBase:
         return m
 
 
-class ViesInfoBase:
+class ViesInfoBase(BaseObject):
     def __init__(self, m=None):
         import tercen.model.impl as impl
         ViesInfoBase.__bases__ = (impl.SciObject,)
@@ -5044,6 +5114,7 @@ class ViesInfoBase:
 
     def fromJson(self, m):
         import tercen.model.impl as impl
+        ViesInfoBase.__bases__ = (impl.SciObject,)
         super().fromJson(m)
         self.subKind = m.get(Vocabulary.SUBKIND)
         if self.subKind is None and m.get(Vocabulary.KIND) != Vocabulary.ViesInfo_CLASS:
@@ -5080,7 +5151,7 @@ class ViesInfoBase:
         return m
 
 
-class JoinStepModelBase:
+class JoinStepModelBase(BaseObject):
     def __init__(self, m=None):
         import tercen.model.impl as impl
         JoinStepModelBase.__bases__ = (impl.StepModel,)
@@ -5095,6 +5166,7 @@ class JoinStepModelBase:
 
     def fromJson(self, m):
         import tercen.model.impl as impl
+        JoinStepModelBase.__bases__ = (impl.StepModel,)
         super().fromJson(m)
         self.subKind = m.get(Vocabulary.SUBKIND)
         if self.subKind is None and m.get(Vocabulary.KIND) != Vocabulary.JoinStepModel_CLASS:
@@ -5139,9 +5211,8 @@ class JoinStepModelBase:
         return m
 
 
-class UlimitsBase:
+class UlimitsBase(BaseObject):
     def __init__(self, m=None):
-        import tercen.model.impl as impl
         if m is None:
             super().__init__(m)
             self.core_file_size = 0
@@ -5164,7 +5235,6 @@ class UlimitsBase:
             self.fromJson(m)
 
     def fromJson(self, m):
-        import tercen.model.impl as impl
         super().fromJson(m)
         self.subKind = m.get(Vocabulary.SUBKIND)
         if self.subKind is None and m.get(Vocabulary.KIND) != Vocabulary.Ulimits_CLASS:
@@ -5221,7 +5291,7 @@ class UlimitsBase:
         return m
 
 
-class RDescriptionBase:
+class RDescriptionBase(BaseObject):
     def __init__(self, m=None):
         import tercen.model.impl as impl
         RDescriptionBase.__bases__ = (impl.SciObject,)
@@ -5241,6 +5311,7 @@ class RDescriptionBase:
 
     def fromJson(self, m):
         import tercen.model.impl as impl
+        RDescriptionBase.__bases__ = (impl.SciObject,)
         super().fromJson(m)
         self.subKind = m.get(Vocabulary.SUBKIND)
         if self.subKind is None and m.get(Vocabulary.KIND) != Vocabulary.RDescription_CLASS:
@@ -5283,7 +5354,7 @@ class RDescriptionBase:
         return m
 
 
-class JetPaletteBase:
+class JetPaletteBase(BaseObject):
     def __init__(self, m=None):
         import tercen.model.impl as impl
         JetPaletteBase.__bases__ = (impl.RampPalette,)
@@ -5295,6 +5366,7 @@ class JetPaletteBase:
 
     def fromJson(self, m):
         import tercen.model.impl as impl
+        JetPaletteBase.__bases__ = (impl.RampPalette,)
         super().fromJson(m)
         self.subKind = m.get(Vocabulary.SUBKIND)
         if self.subKind is None and m.get(Vocabulary.KIND) != Vocabulary.JetPalette_CLASS:
@@ -5319,7 +5391,7 @@ class JetPaletteBase:
         return m
 
 
-class SimpleRelationBase:
+class SimpleRelationBase(BaseObject):
     def __init__(self, m=None):
         import tercen.model.impl as impl
         SimpleRelationBase.__bases__ = (impl.Relation,)
@@ -5331,6 +5403,7 @@ class SimpleRelationBase:
 
     def fromJson(self, m):
         import tercen.model.impl as impl
+        SimpleRelationBase.__bases__ = (impl.Relation,)
         super().fromJson(m)
         self.subKind = m.get(Vocabulary.SUBKIND)
         if self.subKind is None and m.get(Vocabulary.KIND) != Vocabulary.SimpleRelation_CLASS:
@@ -5359,7 +5432,7 @@ class SimpleRelationBase:
         return m
 
 
-class TableRelationBase:
+class TableRelationBase(BaseObject):
     def __init__(self, m=None):
         import tercen.model.impl as impl
         TableRelationBase.__bases__ = (impl.SimpleRelation,)
@@ -5374,6 +5447,7 @@ class TableRelationBase:
 
     def fromJson(self, m):
         import tercen.model.impl as impl
+        TableRelationBase.__bases__ = (impl.SimpleRelation,)
         super().fromJson(m)
         self.subKind = m.get(Vocabulary.SUBKIND)
         if self.subKind is None and m.get(Vocabulary.KIND) != Vocabulary.TableRelation_CLASS:
@@ -5418,7 +5492,7 @@ class TableRelationBase:
         return m
 
 
-class DateBase:
+class DateBase(BaseObject):
     def __init__(self, m=None):
         import tercen.model.impl as impl
         DateBase.__bases__ = (impl.SciObject,)
@@ -5430,6 +5504,7 @@ class DateBase:
 
     def fromJson(self, m):
         import tercen.model.impl as impl
+        DateBase.__bases__ = (impl.SciObject,)
         super().fromJson(m)
         self.subKind = m.get(Vocabulary.SUBKIND)
         if self.subKind is None and m.get(Vocabulary.KIND) != Vocabulary.Date_CLASS:
@@ -5456,7 +5531,7 @@ class DateBase:
         return m
 
 
-class StepStateBase:
+class StepStateBase(BaseObject):
     def __init__(self, m=None):
         import tercen.model.impl as impl
         StepStateBase.__bases__ = (impl.SciObject,)
@@ -5469,6 +5544,7 @@ class StepStateBase:
 
     def fromJson(self, m):
         import tercen.model.impl as impl
+        StepStateBase.__bases__ = (impl.SciObject,)
         super().fromJson(m)
         self.subKind = m.get(Vocabulary.SUBKIND)
         if self.subKind is None and m.get(Vocabulary.KIND) != Vocabulary.StepState_CLASS:
@@ -5501,7 +5577,7 @@ class StepStateBase:
         return m
 
 
-class OperatorResultBase:
+class OperatorResultBase(BaseObject):
     def __init__(self, m=None):
         import tercen.model.impl as impl
         OperatorResultBase.__bases__ = (impl.SciObject,)
@@ -5514,6 +5590,7 @@ class OperatorResultBase:
 
     def fromJson(self, m):
         import tercen.model.impl as impl
+        OperatorResultBase.__bases__ = (impl.SciObject,)
         super().fromJson(m)
         self.subKind = m.get(Vocabulary.SUBKIND)
         if self.subKind is None and m.get(Vocabulary.KIND) != Vocabulary.OperatorResult_CLASS:
@@ -5553,7 +5630,7 @@ class OperatorResultBase:
         return m
 
 
-class RSourceLibraryBase:
+class RSourceLibraryBase(BaseObject):
     def __init__(self, m=None):
         import tercen.model.impl as impl
         RSourceLibraryBase.__bases__ = (impl.RLibrary,)
@@ -5565,6 +5642,7 @@ class RSourceLibraryBase:
 
     def fromJson(self, m):
         import tercen.model.impl as impl
+        RSourceLibraryBase.__bases__ = (impl.RLibrary,)
         super().fromJson(m)
         self.subKind = m.get(Vocabulary.SUBKIND)
         if self.subKind is None and m.get(Vocabulary.KIND) != Vocabulary.RSourceLibrary_CLASS:
@@ -5591,7 +5669,7 @@ class RSourceLibraryBase:
         return m
 
 
-class FileDocumentBase:
+class FileDocumentBase(BaseObject):
     def __init__(self, m=None):
         import tercen.model.impl as impl
         FileDocumentBase.__bases__ = (impl.ProjectDocument,)
@@ -5605,6 +5683,7 @@ class FileDocumentBase:
 
     def fromJson(self, m):
         import tercen.model.impl as impl
+        FileDocumentBase.__bases__ = (impl.ProjectDocument,)
         super().fromJson(m)
         self.subKind = m.get(Vocabulary.SUBKIND)
         if self.subKind is None and m.get(Vocabulary.KIND) != Vocabulary.FileDocument_CLASS:
@@ -5639,7 +5718,7 @@ class FileDocumentBase:
         return m
 
 
-class AddressBase:
+class AddressBase(BaseObject):
     def __init__(self, m=None):
         import tercen.model.impl as impl
         AddressBase.__bases__ = (impl.SciObject,)
@@ -5657,6 +5736,7 @@ class AddressBase:
 
     def fromJson(self, m):
         import tercen.model.impl as impl
+        AddressBase.__bases__ = (impl.SciObject,)
         super().fromJson(m)
         self.subKind = m.get(Vocabulary.SUBKIND)
         if self.subKind is None and m.get(Vocabulary.KIND) != Vocabulary.Address_CLASS:
@@ -5695,7 +5775,7 @@ class AddressBase:
         return m
 
 
-class TaskDataEventBase:
+class TaskDataEventBase(BaseObject):
     def __init__(self, m=None):
         import tercen.model.impl as impl
         TaskDataEventBase.__bases__ = (impl.TaskEvent,)
@@ -5707,6 +5787,7 @@ class TaskDataEventBase:
 
     def fromJson(self, m):
         import tercen.model.impl as impl
+        TaskDataEventBase.__bases__ = (impl.TaskEvent,)
         super().fromJson(m)
         self.subKind = m.get(Vocabulary.SUBKIND)
         if self.subKind is None and m.get(Vocabulary.KIND) != Vocabulary.TaskDataEvent_CLASS:
@@ -5733,7 +5814,7 @@ class TaskDataEventBase:
         return m
 
 
-class StringPropertyBase:
+class StringPropertyBase(BaseObject):
     def __init__(self, m=None):
         import tercen.model.impl as impl
         StringPropertyBase.__bases__ = (impl.Property,)
@@ -5745,6 +5826,7 @@ class StringPropertyBase:
 
     def fromJson(self, m):
         import tercen.model.impl as impl
+        StringPropertyBase.__bases__ = (impl.Property,)
         super().fromJson(m)
         self.subKind = m.get(Vocabulary.SUBKIND)
         if self.subKind is None and m.get(Vocabulary.KIND) != Vocabulary.StringProperty_CLASS:
@@ -5777,7 +5859,7 @@ class StringPropertyBase:
         return m
 
 
-class XYAxisBase:
+class XYAxisBase(BaseObject):
     def __init__(self, m=None):
         import tercen.model.impl as impl
         XYAxisBase.__bases__ = (impl.SciObject,)
@@ -5796,6 +5878,7 @@ class XYAxisBase:
 
     def fromJson(self, m):
         import tercen.model.impl as impl
+        XYAxisBase.__bases__ = (impl.SciObject,)
         super().fromJson(m)
         self.subKind = m.get(Vocabulary.SUBKIND)
         if self.subKind is None and m.get(Vocabulary.KIND) != Vocabulary.XYAxis_CLASS:
@@ -5863,7 +5946,7 @@ class XYAxisBase:
         return m
 
 
-class PrincipalBase:
+class PrincipalBase(BaseObject):
     def __init__(self, m=None):
         import tercen.model.impl as impl
         PrincipalBase.__bases__ = (impl.SciObject,)
@@ -5875,6 +5958,7 @@ class PrincipalBase:
 
     def fromJson(self, m):
         import tercen.model.impl as impl
+        PrincipalBase.__bases__ = (impl.SciObject,)
         super().fromJson(m)
         self.subKind = m.get(Vocabulary.SUBKIND)
         if self.subKind is None and m.get(Vocabulary.KIND) != Vocabulary.Principal_CLASS:
@@ -5901,7 +5985,7 @@ class PrincipalBase:
         return m
 
 
-class FactorBase:
+class FactorBase(BaseObject):
     def __init__(self, m=None):
         import tercen.model.impl as impl
         FactorBase.__bases__ = (impl.SciObject,)
@@ -5914,6 +5998,7 @@ class FactorBase:
 
     def fromJson(self, m):
         import tercen.model.impl as impl
+        FactorBase.__bases__ = (impl.SciObject,)
         super().fromJson(m)
         self.subKind = m.get(Vocabulary.SUBKIND)
         if self.subKind is None and m.get(Vocabulary.KIND) != Vocabulary.Factor_CLASS:
@@ -5946,7 +6031,7 @@ class FactorBase:
         return m
 
 
-class AttributeBase:
+class AttributeBase(BaseObject):
     def __init__(self, m=None):
         import tercen.model.impl as impl
         AttributeBase.__bases__ = (impl.Factor,)
@@ -5958,6 +6043,7 @@ class AttributeBase:
 
     def fromJson(self, m):
         import tercen.model.impl as impl
+        AttributeBase.__bases__ = (impl.Factor,)
         super().fromJson(m)
         self.subKind = m.get(Vocabulary.SUBKIND)
         if self.subKind is None and m.get(Vocabulary.KIND) != Vocabulary.Attribute_CLASS:
@@ -5982,7 +6068,7 @@ class AttributeBase:
         return m
 
 
-class ImportWorkflowTaskBase:
+class ImportWorkflowTaskBase(BaseObject):
     def __init__(self, m=None):
         import tercen.model.impl as impl
         ImportWorkflowTaskBase.__bases__ = (impl.ProjectTask,)
@@ -5996,6 +6082,7 @@ class ImportWorkflowTaskBase:
 
     def fromJson(self, m):
         import tercen.model.impl as impl
+        ImportWorkflowTaskBase.__bases__ = (impl.ProjectTask,)
         super().fromJson(m)
         self.subKind = m.get(Vocabulary.SUBKIND)
         if self.subKind is None and m.get(Vocabulary.KIND) != Vocabulary.ImportWorkflowTask_CLASS:
@@ -6028,7 +6115,7 @@ class ImportWorkflowTaskBase:
         return m
 
 
-class ProjectBase:
+class ProjectBase(BaseObject):
     def __init__(self, m=None):
         import tercen.model.impl as impl
         ProjectBase.__bases__ = (impl.Document,)
@@ -6040,6 +6127,7 @@ class ProjectBase:
 
     def fromJson(self, m):
         import tercen.model.impl as impl
+        ProjectBase.__bases__ = (impl.Document,)
         super().fromJson(m)
         self.subKind = m.get(Vocabulary.SUBKIND)
         if self.subKind is None and m.get(Vocabulary.KIND) != Vocabulary.Project_CLASS:
@@ -6064,7 +6152,7 @@ class ProjectBase:
         return m
 
 
-class UrlBase:
+class UrlBase(BaseObject):
     def __init__(self, m=None):
         import tercen.model.impl as impl
         UrlBase.__bases__ = (impl.SciObject,)
@@ -6076,6 +6164,7 @@ class UrlBase:
 
     def fromJson(self, m):
         import tercen.model.impl as impl
+        UrlBase.__bases__ = (impl.SciObject,)
         super().fromJson(m)
         self.subKind = m.get(Vocabulary.SUBKIND)
         if self.subKind is None and m.get(Vocabulary.KIND) != Vocabulary.Url_CLASS:
@@ -6102,7 +6191,7 @@ class UrlBase:
         return m
 
 
-class StringColorElementBase:
+class StringColorElementBase(BaseObject):
     def __init__(self, m=None):
         import tercen.model.impl as impl
         StringColorElementBase.__bases__ = (impl.ColorElement,)
@@ -6114,6 +6203,7 @@ class StringColorElementBase:
 
     def fromJson(self, m):
         import tercen.model.impl as impl
+        StringColorElementBase.__bases__ = (impl.ColorElement,)
         super().fromJson(m)
         self.subKind = m.get(Vocabulary.SUBKIND)
         if self.subKind is None and m.get(Vocabulary.KIND) != Vocabulary.StringColorElement_CLASS:
@@ -6140,7 +6230,7 @@ class StringColorElementBase:
         return m
 
 
-class EnumeratedPropertyBase:
+class EnumeratedPropertyBase(BaseObject):
     def __init__(self, m=None):
         import tercen.model.impl as impl
         EnumeratedPropertyBase.__bases__ = (impl.StringProperty,)
@@ -6152,6 +6242,7 @@ class EnumeratedPropertyBase:
 
     def fromJson(self, m):
         import tercen.model.impl as impl
+        EnumeratedPropertyBase.__bases__ = (impl.StringProperty,)
         super().fromJson(m)
         self.subKind = m.get(Vocabulary.SUBKIND)
         if self.subKind is None and m.get(Vocabulary.KIND) != Vocabulary.EnumeratedProperty_CLASS:
@@ -6181,7 +6272,7 @@ class EnumeratedPropertyBase:
         return m
 
 
-class TestOperatorTaskBase:
+class TestOperatorTaskBase(BaseObject):
     def __init__(self, m=None):
         import tercen.model.impl as impl
         TestOperatorTaskBase.__bases__ = (impl.ProjectTask,)
@@ -6194,6 +6285,7 @@ class TestOperatorTaskBase:
 
     def fromJson(self, m):
         import tercen.model.impl as impl
+        TestOperatorTaskBase.__bases__ = (impl.ProjectTask,)
         super().fromJson(m)
         self.subKind = m.get(Vocabulary.SUBKIND)
         if self.subKind is None and m.get(Vocabulary.KIND) != Vocabulary.TestOperatorTask_CLASS:
@@ -6222,7 +6314,7 @@ class TestOperatorTaskBase:
         return m
 
 
-class ImportGitWorkflowTaskBase:
+class ImportGitWorkflowTaskBase(BaseObject):
     def __init__(self, m=None):
         import tercen.model.impl as impl
         ImportGitWorkflowTaskBase.__bases__ = (impl.ImportWorkflowTask,)
@@ -6235,6 +6327,7 @@ class ImportGitWorkflowTaskBase:
 
     def fromJson(self, m):
         import tercen.model.impl as impl
+        ImportGitWorkflowTaskBase.__bases__ = (impl.ImportWorkflowTask,)
         super().fromJson(m)
         self.subKind = m.get(Vocabulary.SUBKIND)
         if self.subKind is None and m.get(Vocabulary.KIND) != Vocabulary.ImportGitWorkflowTask_CLASS:
@@ -6266,7 +6359,7 @@ class ImportGitWorkflowTaskBase:
         return m
 
 
-class ReferenceRelationBase:
+class ReferenceRelationBase(BaseObject):
     def __init__(self, m=None):
         import tercen.model.impl as impl
         ReferenceRelationBase.__bases__ = (impl.Relation,)
@@ -6278,6 +6371,7 @@ class ReferenceRelationBase:
 
     def fromJson(self, m):
         import tercen.model.impl as impl
+        ReferenceRelationBase.__bases__ = (impl.Relation,)
         super().fromJson(m)
         self.subKind = m.get(Vocabulary.SUBKIND)
         if self.subKind is None and m.get(Vocabulary.KIND) != Vocabulary.ReferenceRelation_CLASS:
@@ -6308,7 +6402,7 @@ class ReferenceRelationBase:
         return m
 
 
-class RProxyBase:
+class RProxyBase(BaseObject):
     def __init__(self, m=None):
         import tercen.model.impl as impl
         RProxyBase.__bases__ = (impl.SciObject,)
@@ -6321,6 +6415,7 @@ class RProxyBase:
 
     def fromJson(self, m):
         import tercen.model.impl as impl
+        RProxyBase.__bases__ = (impl.SciObject,)
         super().fromJson(m)
         self.subKind = m.get(Vocabulary.SUBKIND)
         if self.subKind is None and m.get(Vocabulary.KIND) != Vocabulary.RProxy_CLASS:
@@ -6349,7 +6444,7 @@ class RProxyBase:
         return m
 
 
-class PairBase:
+class PairBase(BaseObject):
     def __init__(self, m=None):
         import tercen.model.impl as impl
         PairBase.__bases__ = (impl.SciObject,)
@@ -6362,6 +6457,7 @@ class PairBase:
 
     def fromJson(self, m):
         import tercen.model.impl as impl
+        PairBase.__bases__ = (impl.SciObject,)
         super().fromJson(m)
         self.subKind = m.get(Vocabulary.SUBKIND)
         if self.subKind is None and m.get(Vocabulary.KIND) != Vocabulary.Pair_CLASS:
@@ -6390,7 +6486,7 @@ class PairBase:
         return m
 
 
-class InMemoryRelationBase:
+class InMemoryRelationBase(BaseObject):
     def __init__(self, m=None):
         import tercen.model.impl as impl
         InMemoryRelationBase.__bases__ = (impl.Relation,)
@@ -6402,6 +6498,7 @@ class InMemoryRelationBase:
 
     def fromJson(self, m):
         import tercen.model.impl as impl
+        InMemoryRelationBase.__bases__ = (impl.Relation,)
         super().fromJson(m)
         self.subKind = m.get(Vocabulary.SUBKIND)
         if self.subKind is None and m.get(Vocabulary.KIND) != Vocabulary.InMemoryRelation_CLASS:
@@ -6432,7 +6529,7 @@ class InMemoryRelationBase:
         return m
 
 
-class RunProfileBase:
+class RunProfileBase(BaseObject):
     def __init__(self, m=None):
         import tercen.model.impl as impl
         RunProfileBase.__bases__ = (impl.Profile,)
@@ -6451,6 +6548,7 @@ class RunProfileBase:
 
     def fromJson(self, m):
         import tercen.model.impl as impl
+        RunProfileBase.__bases__ = (impl.Profile,)
         super().fromJson(m)
         self.subKind = m.get(Vocabulary.SUBKIND)
         if self.subKind is None and m.get(Vocabulary.KIND) != Vocabulary.RunProfile_CLASS:
@@ -6491,7 +6589,7 @@ class RunProfileBase:
         return m
 
 
-class CpuTimeProfileBase:
+class CpuTimeProfileBase(BaseObject):
     def __init__(self, m=None):
         import tercen.model.impl as impl
         CpuTimeProfileBase.__bases__ = (impl.Profile,)
@@ -6503,6 +6601,7 @@ class CpuTimeProfileBase:
 
     def fromJson(self, m):
         import tercen.model.impl as impl
+        CpuTimeProfileBase.__bases__ = (impl.Profile,)
         super().fromJson(m)
         self.subKind = m.get(Vocabulary.SUBKIND)
         if self.subKind is None and m.get(Vocabulary.KIND) != Vocabulary.CpuTimeProfile_CLASS:
@@ -6529,9 +6628,8 @@ class CpuTimeProfileBase:
         return m
 
 
-class AxisSettingsBase:
+class AxisSettingsBase(BaseObject):
     def __init__(self, m=None):
-        import tercen.model.impl as impl
         if m is None:
             super().__init__(m)
             self.meta = list()
@@ -6539,7 +6637,6 @@ class AxisSettingsBase:
             self.fromJson(m)
 
     def fromJson(self, m):
-        import tercen.model.impl as impl
         super().fromJson(m)
         self.subKind = m.get(Vocabulary.SUBKIND)
         if self.subKind is None and m.get(Vocabulary.KIND) != Vocabulary.AxisSettings_CLASS:
@@ -6571,9 +6668,8 @@ class AxisSettingsBase:
         return m
 
 
-class MappingFilterBase:
+class MappingFilterBase(BaseObject):
     def __init__(self, m=None):
-        import tercen.model.impl as impl
         if m is None:
             super().__init__(m)
             self.name = ""
@@ -6584,7 +6680,6 @@ class MappingFilterBase:
             self.fromJson(m)
 
     def fromJson(self, m):
-        import tercen.model.impl as impl
         super().fromJson(m)
         self.subKind = m.get(Vocabulary.SUBKIND)
         if self.subKind is None and m.get(Vocabulary.KIND) != Vocabulary.MappingFilter_CLASS:
@@ -6621,7 +6716,7 @@ class MappingFilterBase:
         return m
 
 
-class ChartBarBase:
+class ChartBarBase(BaseObject):
     def __init__(self, m=None):
         import tercen.model.impl as impl
         ChartBarBase.__bases__ = (impl.Chart,)
@@ -6633,6 +6728,7 @@ class ChartBarBase:
 
     def fromJson(self, m):
         import tercen.model.impl as impl
+        ChartBarBase.__bases__ = (impl.Chart,)
         super().fromJson(m)
         self.subKind = m.get(Vocabulary.SUBKIND)
         if self.subKind is None and m.get(Vocabulary.KIND) != Vocabulary.ChartBar_CLASS:
@@ -6657,7 +6753,7 @@ class ChartBarBase:
         return m
 
 
-class FolderDocumentBase:
+class FolderDocumentBase(BaseObject):
     def __init__(self, m=None):
         import tercen.model.impl as impl
         FolderDocumentBase.__bases__ = (impl.ProjectDocument,)
@@ -6669,6 +6765,7 @@ class FolderDocumentBase:
 
     def fromJson(self, m):
         import tercen.model.impl as impl
+        FolderDocumentBase.__bases__ = (impl.ProjectDocument,)
         super().fromJson(m)
         self.subKind = m.get(Vocabulary.SUBKIND)
         if self.subKind is None and m.get(Vocabulary.KIND) != Vocabulary.FolderDocument_CLASS:
@@ -6693,7 +6790,7 @@ class FolderDocumentBase:
         return m
 
 
-class LockBase:
+class LockBase(BaseObject):
     def __init__(self, m=None):
         import tercen.model.impl as impl
         LockBase.__bases__ = (impl.PersistentObject,)
@@ -6705,6 +6802,7 @@ class LockBase:
 
     def fromJson(self, m):
         import tercen.model.impl as impl
+        LockBase.__bases__ = (impl.PersistentObject,)
         super().fromJson(m)
         self.subKind = m.get(Vocabulary.SUBKIND)
         if self.subKind is None and m.get(Vocabulary.KIND) != Vocabulary.Lock_CLASS:
@@ -6731,7 +6829,7 @@ class LockBase:
         return m
 
 
-class WorkerBase:
+class WorkerBase(BaseObject):
     def __init__(self, m=None):
         import tercen.model.impl as impl
         WorkerBase.__bases__ = (impl.SciObject,)
@@ -6755,6 +6853,7 @@ class WorkerBase:
 
     def fromJson(self, m):
         import tercen.model.impl as impl
+        WorkerBase.__bases__ = (impl.SciObject,)
         super().fromJson(m)
         self.subKind = m.get(Vocabulary.SUBKIND)
         if self.subKind is None and m.get(Vocabulary.KIND) != Vocabulary.Worker_CLASS:
@@ -6811,7 +6910,7 @@ class WorkerBase:
         return m
 
 
-class ImportGitDatasetTaskBase:
+class ImportGitDatasetTaskBase(BaseObject):
     def __init__(self, m=None):
         import tercen.model.impl as impl
         ImportGitDatasetTaskBase.__bases__ = (impl.ProjectTask,)
@@ -6826,6 +6925,7 @@ class ImportGitDatasetTaskBase:
 
     def fromJson(self, m):
         import tercen.model.impl as impl
+        ImportGitDatasetTaskBase.__bases__ = (impl.ProjectTask,)
         super().fromJson(m)
         self.subKind = m.get(Vocabulary.SUBKIND)
         if self.subKind is None and m.get(Vocabulary.KIND) != Vocabulary.ImportGitDatasetTask_CLASS:
@@ -6861,7 +6961,7 @@ class ImportGitDatasetTaskBase:
         return m
 
 
-class AceBase:
+class AceBase(BaseObject):
     def __init__(self, m=None):
         import tercen.model.impl as impl
         AceBase.__bases__ = (impl.SciObject,)
@@ -6874,6 +6974,7 @@ class AceBase:
 
     def fromJson(self, m):
         import tercen.model.impl as impl
+        AceBase.__bases__ = (impl.SciObject,)
         super().fromJson(m)
         self.subKind = m.get(Vocabulary.SUBKIND)
         if self.subKind is None and m.get(Vocabulary.KIND) != Vocabulary.Ace_CLASS:
@@ -6914,7 +7015,7 @@ class AceBase:
         return m
 
 
-class InStepBase:
+class InStepBase(BaseObject):
     def __init__(self, m=None):
         import tercen.model.impl as impl
         InStepBase.__bases__ = (impl.RelationStep,)
@@ -6926,6 +7027,7 @@ class InStepBase:
 
     def fromJson(self, m):
         import tercen.model.impl as impl
+        InStepBase.__bases__ = (impl.RelationStep,)
         super().fromJson(m)
         self.subKind = m.get(Vocabulary.SUBKIND)
         if self.subKind is None and m.get(Vocabulary.KIND) != Vocabulary.InStep_CLASS:
@@ -6956,7 +7058,7 @@ class InStepBase:
         return m
 
 
-class LabelsBase:
+class LabelsBase(BaseObject):
     def __init__(self, m=None):
         import tercen.model.impl as impl
         LabelsBase.__bases__ = (impl.SciObject,)
@@ -6968,6 +7070,7 @@ class LabelsBase:
 
     def fromJson(self, m):
         import tercen.model.impl as impl
+        LabelsBase.__bases__ = (impl.SciObject,)
         super().fromJson(m)
         self.subKind = m.get(Vocabulary.SUBKIND)
         if self.subKind is None and m.get(Vocabulary.KIND) != Vocabulary.Labels_CLASS:
@@ -7000,7 +7103,7 @@ class LabelsBase:
         return m
 
 
-class RenvInstalledLibraryBase:
+class RenvInstalledLibraryBase(BaseObject):
     def __init__(self, m=None):
         import tercen.model.impl as impl
         RenvInstalledLibraryBase.__bases__ = (impl.RLibrary,)
@@ -7012,6 +7115,7 @@ class RenvInstalledLibraryBase:
 
     def fromJson(self, m):
         import tercen.model.impl as impl
+        RenvInstalledLibraryBase.__bases__ = (impl.RLibrary,)
         super().fromJson(m)
         self.subKind = m.get(Vocabulary.SUBKIND)
         if self.subKind is None and m.get(Vocabulary.KIND) != Vocabulary.RenvInstalledLibrary_CLASS:
@@ -7038,7 +7142,7 @@ class RenvInstalledLibraryBase:
         return m
 
 
-class OperatorSettingsBase:
+class OperatorSettingsBase(BaseObject):
     def __init__(self, m=None):
         import tercen.model.impl as impl
         OperatorSettingsBase.__bases__ = (impl.SciObject,)
@@ -7053,6 +7157,7 @@ class OperatorSettingsBase:
 
     def fromJson(self, m):
         import tercen.model.impl as impl
+        OperatorSettingsBase.__bases__ = (impl.SciObject,)
         super().fromJson(m)
         self.subKind = m.get(Vocabulary.SUBKIND)
         if self.subKind is None and m.get(Vocabulary.KIND) != Vocabulary.OperatorSettings_CLASS:
@@ -7099,7 +7204,7 @@ class OperatorSettingsBase:
         return m
 
 
-class SchemaBase:
+class SchemaBase(BaseObject):
     def __init__(self, m=None):
         import tercen.model.impl as impl
         SchemaBase.__bases__ = (impl.ProjectDocument,)
@@ -7114,6 +7219,7 @@ class SchemaBase:
 
     def fromJson(self, m):
         import tercen.model.impl as impl
+        SchemaBase.__bases__ = (impl.ProjectDocument,)
         super().fromJson(m)
         self.subKind = m.get(Vocabulary.SUBKIND)
         if self.subKind is None and m.get(Vocabulary.KIND) != Vocabulary.Schema_CLASS:
@@ -7162,7 +7268,7 @@ class SchemaBase:
         return m
 
 
-class CubeQueryTableSchemaBase:
+class CubeQueryTableSchemaBase(BaseObject):
     def __init__(self, m=None):
         import tercen.model.impl as impl
         CubeQueryTableSchemaBase.__bases__ = (impl.Schema,)
@@ -7176,6 +7282,7 @@ class CubeQueryTableSchemaBase:
 
     def fromJson(self, m):
         import tercen.model.impl as impl
+        CubeQueryTableSchemaBase.__bases__ = (impl.Schema,)
         super().fromJson(m)
         self.subKind = m.get(Vocabulary.SUBKIND)
         if self.subKind is None and m.get(Vocabulary.KIND) != Vocabulary.CubeQueryTableSchema_CLASS:
@@ -7210,7 +7317,7 @@ class CubeQueryTableSchemaBase:
         return m
 
 
-class CategoryPaletteBase:
+class CategoryPaletteBase(BaseObject):
     def __init__(self, m=None):
         import tercen.model.impl as impl
         CategoryPaletteBase.__bases__ = (impl.Palette,)
@@ -7223,6 +7330,7 @@ class CategoryPaletteBase:
 
     def fromJson(self, m):
         import tercen.model.impl as impl
+        CategoryPaletteBase.__bases__ = (impl.Palette,)
         super().fromJson(m)
         self.subKind = m.get(Vocabulary.SUBKIND)
         if self.subKind is None and m.get(Vocabulary.KIND) != Vocabulary.CategoryPalette_CLASS:
@@ -7262,7 +7370,7 @@ class CategoryPaletteBase:
         return m
 
 
-class TableSummaryBase:
+class TableSummaryBase(BaseObject):
     def __init__(self, m=None):
         import tercen.model.impl as impl
         TableSummaryBase.__bases__ = (impl.SciObject,)
@@ -7277,6 +7385,7 @@ class TableSummaryBase:
 
     def fromJson(self, m):
         import tercen.model.impl as impl
+        TableSummaryBase.__bases__ = (impl.SciObject,)
         super().fromJson(m)
         self.subKind = m.get(Vocabulary.SUBKIND)
         if self.subKind is None and m.get(Vocabulary.KIND) != Vocabulary.TableSummary_CLASS:
@@ -7309,7 +7418,7 @@ class TableSummaryBase:
         return m
 
 
-class PointBase:
+class PointBase(BaseObject):
     def __init__(self, m=None):
         import tercen.model.impl as impl
         PointBase.__bases__ = (impl.SciObject,)
@@ -7322,6 +7431,7 @@ class PointBase:
 
     def fromJson(self, m):
         import tercen.model.impl as impl
+        PointBase.__bases__ = (impl.SciObject,)
         super().fromJson(m)
         self.subKind = m.get(Vocabulary.SUBKIND)
         if self.subKind is None and m.get(Vocabulary.KIND) != Vocabulary.Point_CLASS:
@@ -7350,7 +7460,7 @@ class PointBase:
         return m
 
 
-class ColumnSchemaBase:
+class ColumnSchemaBase(BaseObject):
     def __init__(self, m=None):
         import tercen.model.impl as impl
         ColumnSchemaBase.__bases__ = (impl.IdObject,)
@@ -7366,6 +7476,7 @@ class ColumnSchemaBase:
 
     def fromJson(self, m):
         import tercen.model.impl as impl
+        ColumnSchemaBase.__bases__ = (impl.IdObject,)
         super().fromJson(m)
         self.subKind = m.get(Vocabulary.SUBKIND)
         if self.subKind is None and m.get(Vocabulary.KIND) != Vocabulary.ColumnSchema_CLASS:
@@ -7406,7 +7517,7 @@ class ColumnSchemaBase:
         return m
 
 
-class ColumnBase:
+class ColumnBase(BaseObject):
     def __init__(self, m=None):
         import tercen.model.impl as impl
         ColumnBase.__bases__ = (impl.ColumnSchema,)
@@ -7418,6 +7529,7 @@ class ColumnBase:
 
     def fromJson(self, m):
         import tercen.model.impl as impl
+        ColumnBase.__bases__ = (impl.ColumnSchema,)
         super().fromJson(m)
         self.subKind = m.get(Vocabulary.SUBKIND)
         if self.subKind is None and m.get(Vocabulary.KIND) != Vocabulary.Column_CLASS:
@@ -7444,7 +7556,7 @@ class ColumnBase:
         return m
 
 
-class SummaryBase:
+class SummaryBase(BaseObject):
     def __init__(self, m=None):
         import tercen.model.impl as impl
         SummaryBase.__bases__ = (impl.SciObject,)
@@ -7459,6 +7571,7 @@ class SummaryBase:
 
     def fromJson(self, m):
         import tercen.model.impl as impl
+        SummaryBase.__bases__ = (impl.SciObject,)
         super().fromJson(m)
         self.subKind = m.get(Vocabulary.SUBKIND)
         if self.subKind is None and m.get(Vocabulary.KIND) != Vocabulary.Summary_CLASS:
@@ -7507,7 +7620,7 @@ class SummaryBase:
         return m
 
 
-class TaskStateEventBase:
+class TaskStateEventBase(BaseObject):
     def __init__(self, m=None):
         import tercen.model.impl as impl
         TaskStateEventBase.__bases__ = (impl.TaskEvent,)
@@ -7519,6 +7632,7 @@ class TaskStateEventBase:
 
     def fromJson(self, m):
         import tercen.model.impl as impl
+        TaskStateEventBase.__bases__ = (impl.TaskEvent,)
         super().fromJson(m)
         self.subKind = m.get(Vocabulary.SUBKIND)
         if self.subKind is None and m.get(Vocabulary.KIND) != Vocabulary.TaskStateEvent_CLASS:
@@ -7548,7 +7662,7 @@ class TaskStateEventBase:
         return m
 
 
-class WebAppOperatorBase:
+class WebAppOperatorBase(BaseObject):
     def __init__(self, m=None):
         import tercen.model.impl as impl
         WebAppOperatorBase.__bases__ = (impl.GitOperator,)
@@ -7560,6 +7674,7 @@ class WebAppOperatorBase:
 
     def fromJson(self, m):
         import tercen.model.impl as impl
+        WebAppOperatorBase.__bases__ = (impl.GitOperator,)
         super().fromJson(m)
         self.subKind = m.get(Vocabulary.SUBKIND)
         if self.subKind is None and m.get(Vocabulary.KIND) != Vocabulary.WebAppOperator_CLASS:
@@ -7590,7 +7705,7 @@ class WebAppOperatorBase:
         return m
 
 
-class ShinyOperatorBase:
+class ShinyOperatorBase(BaseObject):
     def __init__(self, m=None):
         import tercen.model.impl as impl
         ShinyOperatorBase.__bases__ = (impl.WebAppOperator,)
@@ -7602,6 +7717,7 @@ class ShinyOperatorBase:
 
     def fromJson(self, m):
         import tercen.model.impl as impl
+        ShinyOperatorBase.__bases__ = (impl.WebAppOperator,)
         super().fromJson(m)
         self.subKind = m.get(Vocabulary.SUBKIND)
         if self.subKind is None and m.get(Vocabulary.KIND) != Vocabulary.ShinyOperator_CLASS:
@@ -7626,7 +7742,7 @@ class ShinyOperatorBase:
         return m
 
 
-class ErrorsBase:
+class ErrorsBase(BaseObject):
     def __init__(self, m=None):
         import tercen.model.impl as impl
         ErrorsBase.__bases__ = (impl.SciObject,)
@@ -7638,6 +7754,7 @@ class ErrorsBase:
 
     def fromJson(self, m):
         import tercen.model.impl as impl
+        ErrorsBase.__bases__ = (impl.SciObject,)
         super().fromJson(m)
         self.subKind = m.get(Vocabulary.SUBKIND)
         if self.subKind is None and m.get(Vocabulary.KIND) != Vocabulary.Errors_CLASS:
@@ -7670,7 +7787,7 @@ class ErrorsBase:
         return m
 
 
-class GlTaskBase:
+class GlTaskBase(BaseObject):
     def __init__(self, m=None):
         import tercen.model.impl as impl
         GlTaskBase.__bases__ = (impl.Task,)
@@ -7682,6 +7799,7 @@ class GlTaskBase:
 
     def fromJson(self, m):
         import tercen.model.impl as impl
+        GlTaskBase.__bases__ = (impl.Task,)
         super().fromJson(m)
         self.subKind = m.get(Vocabulary.SUBKIND)
         if self.subKind is None and m.get(Vocabulary.KIND) != Vocabulary.GlTask_CLASS:
@@ -7708,7 +7826,7 @@ class GlTaskBase:
         return m
 
 
-class FailedStateBase:
+class FailedStateBase(BaseObject):
     def __init__(self, m=None):
         import tercen.model.impl as impl
         FailedStateBase.__bases__ = (impl.State,)
@@ -7721,6 +7839,7 @@ class FailedStateBase:
 
     def fromJson(self, m):
         import tercen.model.impl as impl
+        FailedStateBase.__bases__ = (impl.State,)
         super().fromJson(m)
         self.subKind = m.get(Vocabulary.SUBKIND)
         if self.subKind is None and m.get(Vocabulary.KIND) != Vocabulary.FailedState_CLASS:
@@ -7749,7 +7868,7 @@ class FailedStateBase:
         return m
 
 
-class CanceledStateBase:
+class CanceledStateBase(BaseObject):
     def __init__(self, m=None):
         import tercen.model.impl as impl
         CanceledStateBase.__bases__ = (impl.State,)
@@ -7761,6 +7880,7 @@ class CanceledStateBase:
 
     def fromJson(self, m):
         import tercen.model.impl as impl
+        CanceledStateBase.__bases__ = (impl.State,)
         super().fromJson(m)
         self.subKind = m.get(Vocabulary.SUBKIND)
         if self.subKind is None and m.get(Vocabulary.KIND) != Vocabulary.CanceledState_CLASS:
@@ -7785,7 +7905,7 @@ class CanceledStateBase:
         return m
 
 
-class RunWorkflowTaskBase:
+class RunWorkflowTaskBase(BaseObject):
     def __init__(self, m=None):
         import tercen.model.impl as impl
         RunWorkflowTaskBase.__bases__ = (impl.ProjectTask,)
@@ -7798,6 +7918,7 @@ class RunWorkflowTaskBase:
 
     def fromJson(self, m):
         import tercen.model.impl as impl
+        RunWorkflowTaskBase.__bases__ = (impl.ProjectTask,)
         super().fromJson(m)
         self.subKind = m.get(Vocabulary.SUBKIND)
         if self.subKind is None and m.get(Vocabulary.KIND) != Vocabulary.RunWorkflowTask_CLASS:
@@ -7826,7 +7947,7 @@ class RunWorkflowTaskBase:
         return m
 
 
-class GraphicalFactorBase:
+class GraphicalFactorBase(BaseObject):
     def __init__(self, m=None):
         import tercen.model.impl as impl
         GraphicalFactorBase.__bases__ = (impl.SciObject,)
@@ -7839,6 +7960,7 @@ class GraphicalFactorBase:
 
     def fromJson(self, m):
         import tercen.model.impl as impl
+        GraphicalFactorBase.__bases__ = (impl.SciObject,)
         super().fromJson(m)
         self.subKind = m.get(Vocabulary.SUBKIND)
         if self.subKind is None and m.get(Vocabulary.KIND) != Vocabulary.GraphicalFactor_CLASS:
@@ -7875,7 +7997,7 @@ class GraphicalFactorBase:
         return m
 
 
-class RenameRelationBase:
+class RenameRelationBase(BaseObject):
     def __init__(self, m=None):
         import tercen.model.impl as impl
         RenameRelationBase.__bases__ = (impl.Relation,)
@@ -7889,6 +8011,7 @@ class RenameRelationBase:
 
     def fromJson(self, m):
         import tercen.model.impl as impl
+        RenameRelationBase.__bases__ = (impl.Relation,)
         super().fromJson(m)
         self.subKind = m.get(Vocabulary.SUBKIND)
         if self.subKind is None and m.get(Vocabulary.KIND) != Vocabulary.RenameRelation_CLASS:
@@ -7929,7 +8052,7 @@ class RenameRelationBase:
         return m
 
 
-class ChartSizeBase:
+class ChartSizeBase(BaseObject):
     def __init__(self, m=None):
         import tercen.model.impl as impl
         ChartSizeBase.__bases__ = (impl.Chart,)
@@ -7941,6 +8064,7 @@ class ChartSizeBase:
 
     def fromJson(self, m):
         import tercen.model.impl as impl
+        ChartSizeBase.__bases__ = (impl.Chart,)
         super().fromJson(m)
         self.subKind = m.get(Vocabulary.SUBKIND)
         if self.subKind is None and m.get(Vocabulary.KIND) != Vocabulary.ChartSize_CLASS:
@@ -7971,7 +8095,7 @@ class ChartSizeBase:
         return m
 
 
-class ChartLineBase:
+class ChartLineBase(BaseObject):
     def __init__(self, m=None):
         import tercen.model.impl as impl
         ChartLineBase.__bases__ = (impl.ChartSize,)
@@ -7983,6 +8107,7 @@ class ChartLineBase:
 
     def fromJson(self, m):
         import tercen.model.impl as impl
+        ChartLineBase.__bases__ = (impl.ChartSize,)
         super().fromJson(m)
         self.subKind = m.get(Vocabulary.SUBKIND)
         if self.subKind is None and m.get(Vocabulary.KIND) != Vocabulary.ChartLine_CLASS:
@@ -8007,7 +8132,7 @@ class ChartLineBase:
         return m
 
 
-class ColorListBase:
+class ColorListBase(BaseObject):
     def __init__(self, m=None):
         import tercen.model.impl as impl
         ColorListBase.__bases__ = (impl.SciObject,)
@@ -8019,6 +8144,7 @@ class ColorListBase:
 
     def fromJson(self, m):
         import tercen.model.impl as impl
+        ColorListBase.__bases__ = (impl.SciObject,)
         super().fromJson(m)
         self.subKind = m.get(Vocabulary.SUBKIND)
         if self.subKind is None and m.get(Vocabulary.KIND) != Vocabulary.ColorList_CLASS:
@@ -8045,7 +8171,7 @@ class ColorListBase:
         return m
 
 
-class CrossTabStepBase:
+class CrossTabStepBase(BaseObject):
     def __init__(self, m=None):
         import tercen.model.impl as impl
         CrossTabStepBase.__bases__ = (impl.NamespaceStep,)
@@ -8057,6 +8183,7 @@ class CrossTabStepBase:
 
     def fromJson(self, m):
         import tercen.model.impl as impl
+        CrossTabStepBase.__bases__ = (impl.NamespaceStep,)
         super().fromJson(m)
         self.subKind = m.get(Vocabulary.SUBKIND)
         if self.subKind is None and m.get(Vocabulary.KIND) != Vocabulary.CrossTabStep_CLASS:
@@ -8089,7 +8216,7 @@ class CrossTabStepBase:
         return m
 
 
-class DataStepBase:
+class DataStepBase(BaseObject):
     def __init__(self, m=None):
         import tercen.model.impl as impl
         DataStepBase.__bases__ = (impl.CrossTabStep,)
@@ -8102,6 +8229,7 @@ class DataStepBase:
 
     def fromJson(self, m):
         import tercen.model.impl as impl
+        DataStepBase.__bases__ = (impl.CrossTabStep,)
         super().fromJson(m)
         self.subKind = m.get(Vocabulary.SUBKIND)
         if self.subKind is None and m.get(Vocabulary.KIND) != Vocabulary.DataStep_CLASS:
@@ -8134,7 +8262,7 @@ class DataStepBase:
         return m
 
 
-class SearchResultBase:
+class SearchResultBase(BaseObject):
     def __init__(self, m=None):
         import tercen.model.impl as impl
         SearchResultBase.__bases__ = (impl.SciObject,)
@@ -8148,6 +8276,7 @@ class SearchResultBase:
 
     def fromJson(self, m):
         import tercen.model.impl as impl
+        SearchResultBase.__bases__ = (impl.SciObject,)
         super().fromJson(m)
         self.subKind = m.get(Vocabulary.SUBKIND)
         if self.subKind is None and m.get(Vocabulary.KIND) != Vocabulary.SearchResult_CLASS:
@@ -8183,7 +8312,7 @@ class SearchResultBase:
         return m
 
 
-class GateOperatorModelBase:
+class GateOperatorModelBase(BaseObject):
     def __init__(self, m=None):
         import tercen.model.impl as impl
         GateOperatorModelBase.__bases__ = (impl.OperatorModel,)
@@ -8195,6 +8324,7 @@ class GateOperatorModelBase:
 
     def fromJson(self, m):
         import tercen.model.impl as impl
+        GateOperatorModelBase.__bases__ = (impl.OperatorModel,)
         super().fromJson(m)
         self.subKind = m.get(Vocabulary.SUBKIND)
         if self.subKind is None and m.get(Vocabulary.KIND) != Vocabulary.GateOperatorModel_CLASS:
@@ -8226,7 +8356,7 @@ class GateOperatorModelBase:
         return m
 
 
-class AnnotationModelBase:
+class AnnotationModelBase(BaseObject):
     def __init__(self, m=None):
         import tercen.model.impl as impl
         AnnotationModelBase.__bases__ = (impl.SciObject,)
@@ -8241,6 +8371,7 @@ class AnnotationModelBase:
 
     def fromJson(self, m):
         import tercen.model.impl as impl
+        AnnotationModelBase.__bases__ = (impl.SciObject,)
         super().fromJson(m)
         self.subKind = m.get(Vocabulary.SUBKIND)
         if self.subKind is None and m.get(Vocabulary.KIND) != Vocabulary.AnnotationModel_CLASS:
@@ -8290,7 +8421,7 @@ class AnnotationModelBase:
         return m
 
 
-class ROperatorBase:
+class ROperatorBase(BaseObject):
     def __init__(self, m=None):
         import tercen.model.impl as impl
         ROperatorBase.__bases__ = (impl.GitOperator,)
@@ -8302,6 +8433,7 @@ class ROperatorBase:
 
     def fromJson(self, m):
         import tercen.model.impl as impl
+        ROperatorBase.__bases__ = (impl.GitOperator,)
         super().fromJson(m)
         self.subKind = m.get(Vocabulary.SUBKIND)
         if self.subKind is None and m.get(Vocabulary.KIND) != Vocabulary.ROperator_CLASS:
@@ -8326,7 +8458,7 @@ class ROperatorBase:
         return m
 
 
-class OutStepBase:
+class OutStepBase(BaseObject):
     def __init__(self, m=None):
         import tercen.model.impl as impl
         OutStepBase.__bases__ = (impl.RelationStep,)
@@ -8338,6 +8470,7 @@ class OutStepBase:
 
     def fromJson(self, m):
         import tercen.model.impl as impl
+        OutStepBase.__bases__ = (impl.RelationStep,)
         super().fromJson(m)
         self.subKind = m.get(Vocabulary.SUBKIND)
         if self.subKind is None and m.get(Vocabulary.KIND) != Vocabulary.OutStep_CLASS:
@@ -8368,7 +8501,7 @@ class OutStepBase:
         return m
 
 
-class LibraryTaskBase:
+class LibraryTaskBase(BaseObject):
     def __init__(self, m=None):
         import tercen.model.impl as impl
         LibraryTaskBase.__bases__ = (impl.Task,)
@@ -8380,6 +8513,7 @@ class LibraryTaskBase:
 
     def fromJson(self, m):
         import tercen.model.impl as impl
+        LibraryTaskBase.__bases__ = (impl.Task,)
         super().fromJson(m)
         self.subKind = m.get(Vocabulary.SUBKIND)
         if self.subKind is None and m.get(Vocabulary.KIND) != Vocabulary.LibraryTask_CLASS:
@@ -8404,7 +8538,7 @@ class LibraryTaskBase:
         return m
 
 
-class PreProcessorBase:
+class PreProcessorBase(BaseObject):
     def __init__(self, m=None):
         import tercen.model.impl as impl
         PreProcessorBase.__bases__ = (impl.SciObject,)
@@ -8417,6 +8551,7 @@ class PreProcessorBase:
 
     def fromJson(self, m):
         import tercen.model.impl as impl
+        PreProcessorBase.__bases__ = (impl.SciObject,)
         super().fromJson(m)
         self.subKind = m.get(Vocabulary.SUBKIND)
         if self.subKind is None and m.get(Vocabulary.KIND) != Vocabulary.PreProcessor_CLASS:
@@ -8449,7 +8584,7 @@ class PreProcessorBase:
         return m
 
 
-class PortBase:
+class PortBase(BaseObject):
     def __init__(self, m=None):
         import tercen.model.impl as impl
         PortBase.__bases__ = (impl.IdObject,)
@@ -8462,6 +8597,7 @@ class PortBase:
 
     def fromJson(self, m):
         import tercen.model.impl as impl
+        PortBase.__bases__ = (impl.IdObject,)
         super().fromJson(m)
         self.subKind = m.get(Vocabulary.SUBKIND)
         if self.subKind is None and m.get(Vocabulary.KIND) != Vocabulary.Port_CLASS:
@@ -8494,7 +8630,7 @@ class PortBase:
         return m
 
 
-class InputPortBase:
+class InputPortBase(BaseObject):
     def __init__(self, m=None):
         import tercen.model.impl as impl
         InputPortBase.__bases__ = (impl.Port,)
@@ -8506,6 +8642,7 @@ class InputPortBase:
 
     def fromJson(self, m):
         import tercen.model.impl as impl
+        InputPortBase.__bases__ = (impl.Port,)
         super().fromJson(m)
         self.subKind = m.get(Vocabulary.SUBKIND)
         if self.subKind is None and m.get(Vocabulary.KIND) != Vocabulary.InputPort_CLASS:
@@ -8530,7 +8667,7 @@ class InputPortBase:
         return m
 
 
-class PropertiesBase:
+class PropertiesBase(BaseObject):
     def __init__(self, m=None):
         import tercen.model.impl as impl
         PropertiesBase.__bases__ = (impl.SciObject,)
@@ -8543,6 +8680,7 @@ class PropertiesBase:
 
     def fromJson(self, m):
         import tercen.model.impl as impl
+        PropertiesBase.__bases__ = (impl.SciObject,)
         super().fromJson(m)
         self.subKind = m.get(Vocabulary.SUBKIND)
         if self.subKind is None and m.get(Vocabulary.KIND) != Vocabulary.Properties_CLASS:
@@ -8583,7 +8721,7 @@ class PropertiesBase:
         return m
 
 
-class PropertyValueBase:
+class PropertyValueBase(BaseObject):
     def __init__(self, m=None):
         import tercen.model.impl as impl
         PropertyValueBase.__bases__ = (impl.SciObject,)
@@ -8596,6 +8734,7 @@ class PropertyValueBase:
 
     def fromJson(self, m):
         import tercen.model.impl as impl
+        PropertyValueBase.__bases__ = (impl.SciObject,)
         super().fromJson(m)
         self.subKind = m.get(Vocabulary.SUBKIND)
         if self.subKind is None and m.get(Vocabulary.KIND) != Vocabulary.PropertyValue_CLASS:
@@ -8624,7 +8763,7 @@ class PropertyValueBase:
         return m
 
 
-class DoneStateBase:
+class DoneStateBase(BaseObject):
     def __init__(self, m=None):
         import tercen.model.impl as impl
         DoneStateBase.__bases__ = (impl.State,)
@@ -8636,6 +8775,7 @@ class DoneStateBase:
 
     def fromJson(self, m):
         import tercen.model.impl as impl
+        DoneStateBase.__bases__ = (impl.State,)
         super().fromJson(m)
         self.subKind = m.get(Vocabulary.SUBKIND)
         if self.subKind is None and m.get(Vocabulary.KIND) != Vocabulary.DoneState_CLASS:
@@ -8660,7 +8800,7 @@ class DoneStateBase:
         return m
 
 
-class AclContextBase:
+class AclContextBase(BaseObject):
     def __init__(self, m=None):
         import tercen.model.impl as impl
         AclContextBase.__bases__ = (impl.SciObject,)
@@ -8673,6 +8813,7 @@ class AclContextBase:
 
     def fromJson(self, m):
         import tercen.model.impl as impl
+        AclContextBase.__bases__ = (impl.SciObject,)
         super().fromJson(m)
         self.subKind = m.get(Vocabulary.SUBKIND)
         if self.subKind is None and m.get(Vocabulary.KIND) != Vocabulary.AclContext_CLASS:
@@ -8701,7 +8842,7 @@ class AclContextBase:
         return m
 
 
-class DockerWebAppOperatorBase:
+class DockerWebAppOperatorBase(BaseObject):
     def __init__(self, m=None):
         import tercen.model.impl as impl
         DockerWebAppOperatorBase.__bases__ = (impl.WebAppOperator,)
@@ -8713,6 +8854,7 @@ class DockerWebAppOperatorBase:
 
     def fromJson(self, m):
         import tercen.model.impl as impl
+        DockerWebAppOperatorBase.__bases__ = (impl.WebAppOperator,)
         super().fromJson(m)
         self.subKind = m.get(Vocabulary.SUBKIND)
         if self.subKind is None and m.get(Vocabulary.KIND) != Vocabulary.DockerWebAppOperator_CLASS:
@@ -8739,7 +8881,7 @@ class DockerWebAppOperatorBase:
         return m
 
 
-class OperatorUnitTestBase:
+class OperatorUnitTestBase(BaseObject):
     def __init__(self, m=None):
         import tercen.model.impl as impl
         OperatorUnitTestBase.__bases__ = (impl.SciObject,)
@@ -8767,6 +8909,7 @@ class OperatorUnitTestBase:
 
     def fromJson(self, m):
         import tercen.model.impl as impl
+        OperatorUnitTestBase.__bases__ = (impl.SciObject,)
         super().fromJson(m)
         self.subKind = m.get(Vocabulary.SUBKIND)
         if self.subKind is None and m.get(Vocabulary.KIND) != Vocabulary.OperatorUnitTest_CLASS:
@@ -8852,7 +8995,7 @@ class OperatorUnitTestBase:
         return m
 
 
-class TableStepBase:
+class TableStepBase(BaseObject):
     def __init__(self, m=None):
         import tercen.model.impl as impl
         TableStepBase.__bases__ = (impl.RelationStep,)
@@ -8864,6 +9007,7 @@ class TableStepBase:
 
     def fromJson(self, m):
         import tercen.model.impl as impl
+        TableStepBase.__bases__ = (impl.RelationStep,)
         super().fromJson(m)
         self.subKind = m.get(Vocabulary.SUBKIND)
         if self.subKind is None and m.get(Vocabulary.KIND) != Vocabulary.TableStep_CLASS:
@@ -8894,7 +9038,7 @@ class TableStepBase:
         return m
 
 
-class RunWebAppTaskBase:
+class RunWebAppTaskBase(BaseObject):
     def __init__(self, m=None):
         import tercen.model.impl as impl
         RunWebAppTaskBase.__bases__ = (impl.ProjectTask,)
@@ -8908,6 +9052,7 @@ class RunWebAppTaskBase:
 
     def fromJson(self, m):
         import tercen.model.impl as impl
+        RunWebAppTaskBase.__bases__ = (impl.ProjectTask,)
         super().fromJson(m)
         self.subKind = m.get(Vocabulary.SUBKIND)
         if self.subKind is None and m.get(Vocabulary.KIND) != Vocabulary.RunWebAppTask_CLASS:
@@ -8941,7 +9086,7 @@ class RunWebAppTaskBase:
         return m
 
 
-class UnionRelationBase:
+class UnionRelationBase(BaseObject):
     def __init__(self, m=None):
         import tercen.model.impl as impl
         UnionRelationBase.__bases__ = (impl.Relation,)
@@ -8953,6 +9098,7 @@ class UnionRelationBase:
 
     def fromJson(self, m):
         import tercen.model.impl as impl
+        UnionRelationBase.__bases__ = (impl.Relation,)
         super().fromJson(m)
         self.subKind = m.get(Vocabulary.SUBKIND)
         if self.subKind is None and m.get(Vocabulary.KIND) != Vocabulary.UnionRelation_CLASS:
@@ -8985,7 +9131,7 @@ class UnionRelationBase:
         return m
 
 
-class ProfilesBase:
+class ProfilesBase(BaseObject):
     def __init__(self, m=None):
         import tercen.model.impl as impl
         ProfilesBase.__bases__ = (impl.SciObject,)
@@ -9001,6 +9147,7 @@ class ProfilesBase:
 
     def fromJson(self, m):
         import tercen.model.impl as impl
+        ProfilesBase.__bases__ = (impl.SciObject,)
         super().fromJson(m)
         self.subKind = m.get(Vocabulary.SUBKIND)
         if self.subKind is None and m.get(Vocabulary.KIND) != Vocabulary.Profiles_CLASS:
@@ -9055,7 +9202,7 @@ class ProfilesBase:
         return m
 
 
-class FilterExprBase:
+class FilterExprBase(BaseObject):
     def __init__(self, m=None):
         import tercen.model.impl as impl
         FilterExprBase.__bases__ = (impl.FilterTopExpr,)
@@ -9069,6 +9216,7 @@ class FilterExprBase:
 
     def fromJson(self, m):
         import tercen.model.impl as impl
+        FilterExprBase.__bases__ = (impl.FilterTopExpr,)
         super().fromJson(m)
         self.subKind = m.get(Vocabulary.SUBKIND)
         if self.subKind is None and m.get(Vocabulary.KIND) != Vocabulary.FilterExpr_CLASS:
@@ -9105,7 +9253,7 @@ class FilterExprBase:
         return m
 
 
-class FilterExpr2dBase:
+class FilterExpr2dBase(BaseObject):
     def __init__(self, m=None):
         import tercen.model.impl as impl
         FilterExpr2dBase.__bases__ = (impl.FilterExpr,)
@@ -9117,6 +9265,7 @@ class FilterExpr2dBase:
 
     def fromJson(self, m):
         import tercen.model.impl as impl
+        FilterExpr2dBase.__bases__ = (impl.FilterExpr,)
         super().fromJson(m)
         self.subKind = m.get(Vocabulary.SUBKIND)
         if self.subKind is None and m.get(Vocabulary.KIND) != Vocabulary.FilterExpr2d_CLASS:
@@ -9147,7 +9296,7 @@ class FilterExpr2dBase:
         return m
 
 
-class FactorsPropertyBase:
+class FactorsPropertyBase(BaseObject):
     def __init__(self, m=None):
         import tercen.model.impl as impl
         FactorsPropertyBase.__bases__ = (impl.StringProperty,)
@@ -9159,6 +9308,7 @@ class FactorsPropertyBase:
 
     def fromJson(self, m):
         import tercen.model.impl as impl
+        FactorsPropertyBase.__bases__ = (impl.StringProperty,)
         super().fromJson(m)
         self.subKind = m.get(Vocabulary.SUBKIND)
         if self.subKind is None and m.get(Vocabulary.KIND) != Vocabulary.FactorsProperty_CLASS:
@@ -9183,7 +9333,7 @@ class FactorsPropertyBase:
         return m
 
 
-class OperatorRefBase:
+class OperatorRefBase(BaseObject):
     def __init__(self, m=None):
         import tercen.model.impl as impl
         OperatorRefBase.__bases__ = (impl.SciObject,)
@@ -9200,6 +9350,7 @@ class OperatorRefBase:
 
     def fromJson(self, m):
         import tercen.model.impl as impl
+        OperatorRefBase.__bases__ = (impl.SciObject,)
         super().fromJson(m)
         self.subKind = m.get(Vocabulary.SUBKIND)
         if self.subKind is None and m.get(Vocabulary.KIND) != Vocabulary.OperatorRef_CLASS:
@@ -9245,7 +9396,7 @@ class OperatorRefBase:
         return m
 
 
-class JoinStepBase:
+class JoinStepBase(BaseObject):
     def __init__(self, m=None):
         import tercen.model.impl as impl
         JoinStepBase.__bases__ = (impl.NamespaceStep,)
@@ -9258,6 +9409,7 @@ class JoinStepBase:
 
     def fromJson(self, m):
         import tercen.model.impl as impl
+        JoinStepBase.__bases__ = (impl.NamespaceStep,)
         super().fromJson(m)
         self.subKind = m.get(Vocabulary.SUBKIND)
         if self.subKind is None and m.get(Vocabulary.KIND) != Vocabulary.JoinStep_CLASS:
@@ -9296,7 +9448,7 @@ class JoinStepBase:
         return m
 
 
-class WizardStepBase:
+class WizardStepBase(BaseObject):
     def __init__(self, m=None):
         import tercen.model.impl as impl
         WizardStepBase.__bases__ = (impl.NamespaceStep,)
@@ -9308,6 +9460,7 @@ class WizardStepBase:
 
     def fromJson(self, m):
         import tercen.model.impl as impl
+        WizardStepBase.__bases__ = (impl.NamespaceStep,)
         super().fromJson(m)
         self.subKind = m.get(Vocabulary.SUBKIND)
         if self.subKind is None and m.get(Vocabulary.KIND) != Vocabulary.WizardStep_CLASS:
@@ -9338,7 +9491,7 @@ class WizardStepBase:
         return m
 
 
-class WizardStepModelBase:
+class WizardStepModelBase(BaseObject):
     def __init__(self, m=None):
         import tercen.model.impl as impl
         WizardStepModelBase.__bases__ = (impl.StepModel,)
@@ -9357,6 +9510,7 @@ class WizardStepModelBase:
 
     def fromJson(self, m):
         import tercen.model.impl as impl
+        WizardStepModelBase.__bases__ = (impl.StepModel,)
         super().fromJson(m)
         self.subKind = m.get(Vocabulary.SUBKIND)
         if self.subKind is None and m.get(Vocabulary.KIND) != Vocabulary.WizardStepModel_CLASS:
@@ -9426,7 +9580,7 @@ class WizardStepModelBase:
         return m
 
 
-class InitStateBase:
+class InitStateBase(BaseObject):
     def __init__(self, m=None):
         import tercen.model.impl as impl
         InitStateBase.__bases__ = (impl.State,)
@@ -9438,6 +9592,7 @@ class InitStateBase:
 
     def fromJson(self, m):
         import tercen.model.impl as impl
+        InitStateBase.__bases__ = (impl.State,)
         super().fromJson(m)
         self.subKind = m.get(Vocabulary.SUBKIND)
         if self.subKind is None and m.get(Vocabulary.KIND) != Vocabulary.InitState_CLASS:
@@ -9462,7 +9617,7 @@ class InitStateBase:
         return m
 
 
-class PendingStateBase:
+class PendingStateBase(BaseObject):
     def __init__(self, m=None):
         import tercen.model.impl as impl
         PendingStateBase.__bases__ = (impl.State,)
@@ -9474,6 +9629,7 @@ class PendingStateBase:
 
     def fromJson(self, m):
         import tercen.model.impl as impl
+        PendingStateBase.__bases__ = (impl.State,)
         super().fromJson(m)
         self.subKind = m.get(Vocabulary.SUBKIND)
         if self.subKind is None and m.get(Vocabulary.KIND) != Vocabulary.PendingState_CLASS:
@@ -9498,7 +9654,7 @@ class PendingStateBase:
         return m
 
 
-class ChartPointBase:
+class ChartPointBase(BaseObject):
     def __init__(self, m=None):
         import tercen.model.impl as impl
         ChartPointBase.__bases__ = (impl.ChartSize,)
@@ -9510,6 +9666,7 @@ class ChartPointBase:
 
     def fromJson(self, m):
         import tercen.model.impl as impl
+        ChartPointBase.__bases__ = (impl.ChartSize,)
         super().fromJson(m)
         self.subKind = m.get(Vocabulary.SUBKIND)
         if self.subKind is None and m.get(Vocabulary.KIND) != Vocabulary.ChartPoint_CLASS:
@@ -9534,7 +9691,7 @@ class ChartPointBase:
         return m
 
 
-class ColumnPairBase:
+class ColumnPairBase(BaseObject):
     def __init__(self, m=None):
         import tercen.model.impl as impl
         ColumnPairBase.__bases__ = (impl.SciObject,)
@@ -9547,6 +9704,7 @@ class ColumnPairBase:
 
     def fromJson(self, m):
         import tercen.model.impl as impl
+        ColumnPairBase.__bases__ = (impl.SciObject,)
         super().fromJson(m)
         self.subKind = m.get(Vocabulary.SUBKIND)
         if self.subKind is None and m.get(Vocabulary.KIND) != Vocabulary.ColumnPair_CLASS:
@@ -9581,7 +9739,7 @@ class ColumnPairBase:
         return m
 
 
-class CreateGitOperatorTaskBase:
+class CreateGitOperatorTaskBase(BaseObject):
     def __init__(self, m=None):
         import tercen.model.impl as impl
         CreateGitOperatorTaskBase.__bases__ = (impl.Task,)
@@ -9597,6 +9755,7 @@ class CreateGitOperatorTaskBase:
 
     def fromJson(self, m):
         import tercen.model.impl as impl
+        CreateGitOperatorTaskBase.__bases__ = (impl.Task,)
         super().fromJson(m)
         self.subKind = m.get(Vocabulary.SUBKIND)
         if self.subKind is None and m.get(Vocabulary.KIND) != Vocabulary.CreateGitOperatorTask_CLASS:
@@ -9634,7 +9793,7 @@ class CreateGitOperatorTaskBase:
         return m
 
 
-class TaxIdBase:
+class TaxIdBase(BaseObject):
     def __init__(self, m=None):
         import tercen.model.impl as impl
         TaxIdBase.__bases__ = (impl.SciObject,)
@@ -9648,6 +9807,7 @@ class TaxIdBase:
 
     def fromJson(self, m):
         import tercen.model.impl as impl
+        TaxIdBase.__bases__ = (impl.SciObject,)
         super().fromJson(m)
         self.subKind = m.get(Vocabulary.SUBKIND)
         if self.subKind is None and m.get(Vocabulary.KIND) != Vocabulary.TaxId_CLASS:
@@ -9678,7 +9838,7 @@ class TaxIdBase:
         return m
 
 
-class IssueMessageBase:
+class IssueMessageBase(BaseObject):
     def __init__(self, m=None):
         import tercen.model.impl as impl
         IssueMessageBase.__bases__ = (impl.ProjectDocument,)
@@ -9691,6 +9851,7 @@ class IssueMessageBase:
 
     def fromJson(self, m):
         import tercen.model.impl as impl
+        IssueMessageBase.__bases__ = (impl.ProjectDocument,)
         super().fromJson(m)
         self.subKind = m.get(Vocabulary.SUBKIND)
         if self.subKind is None and m.get(Vocabulary.KIND) != Vocabulary.IssueMessage_CLASS:
@@ -9719,7 +9880,7 @@ class IssueMessageBase:
         return m
 
 
-class TableSchemaBase:
+class TableSchemaBase(BaseObject):
     def __init__(self, m=None):
         import tercen.model.impl as impl
         TableSchemaBase.__bases__ = (impl.Schema,)
@@ -9731,6 +9892,7 @@ class TableSchemaBase:
 
     def fromJson(self, m):
         import tercen.model.impl as impl
+        TableSchemaBase.__bases__ = (impl.Schema,)
         super().fromJson(m)
         self.subKind = m.get(Vocabulary.SUBKIND)
         if self.subKind is None and m.get(Vocabulary.KIND) != Vocabulary.TableSchema_CLASS:
@@ -9755,7 +9917,7 @@ class TableSchemaBase:
         return m
 
 
-class PlanBase:
+class PlanBase(BaseObject):
     def __init__(self, m=None):
         import tercen.model.impl as impl
         PlanBase.__bases__ = (impl.SciObject,)
@@ -9771,6 +9933,7 @@ class PlanBase:
 
     def fromJson(self, m):
         import tercen.model.impl as impl
+        PlanBase.__bases__ = (impl.SciObject,)
         super().fromJson(m)
         self.subKind = m.get(Vocabulary.SUBKIND)
         if self.subKind is None and m.get(Vocabulary.KIND) != Vocabulary.Plan_CLASS:
@@ -9808,7 +9971,7 @@ class PlanBase:
         return m
 
 
-class CSVParserParamBase:
+class CSVParserParamBase(BaseObject):
     def __init__(self, m=None):
         import tercen.model.impl as impl
         CSVParserParamBase.__bases__ = (impl.SciObject,)
@@ -9825,6 +9988,7 @@ class CSVParserParamBase:
 
     def fromJson(self, m):
         import tercen.model.impl as impl
+        CSVParserParamBase.__bases__ = (impl.SciObject,)
         super().fromJson(m)
         self.subKind = m.get(Vocabulary.SUBKIND)
         if self.subKind is None and m.get(Vocabulary.KIND) != Vocabulary.CSVParserParam_CLASS:
@@ -9861,7 +10025,7 @@ class CSVParserParamBase:
         return m
 
 
-class ExportTableTaskBase:
+class ExportTableTaskBase(BaseObject):
     def __init__(self, m=None):
         import tercen.model.impl as impl
         ExportTableTaskBase.__bases__ = (impl.ProjectTask,)
@@ -9879,6 +10043,7 @@ class ExportTableTaskBase:
 
     def fromJson(self, m):
         import tercen.model.impl as impl
+        ExportTableTaskBase.__bases__ = (impl.ProjectTask,)
         super().fromJson(m)
         self.subKind = m.get(Vocabulary.SUBKIND)
         if self.subKind is None and m.get(Vocabulary.KIND) != Vocabulary.ExportTableTask_CLASS:
@@ -9926,7 +10091,7 @@ class ExportTableTaskBase:
         return m
 
 
-class GenericEventBase:
+class GenericEventBase(BaseObject):
     def __init__(self, m=None):
         import tercen.model.impl as impl
         GenericEventBase.__bases__ = (impl.Event,)
@@ -9939,6 +10104,7 @@ class GenericEventBase:
 
     def fromJson(self, m):
         import tercen.model.impl as impl
+        GenericEventBase.__bases__ = (impl.Event,)
         super().fromJson(m)
         self.subKind = m.get(Vocabulary.SUBKIND)
         if self.subKind is None and m.get(Vocabulary.KIND) != Vocabulary.GenericEvent_CLASS:
@@ -9967,7 +10133,7 @@ class GenericEventBase:
         return m
 
 
-class OutputPortBase:
+class OutputPortBase(BaseObject):
     def __init__(self, m=None):
         import tercen.model.impl as impl
         OutputPortBase.__bases__ = (impl.Port,)
@@ -9979,6 +10145,7 @@ class OutputPortBase:
 
     def fromJson(self, m):
         import tercen.model.impl as impl
+        OutputPortBase.__bases__ = (impl.Port,)
         super().fromJson(m)
         self.subKind = m.get(Vocabulary.SUBKIND)
         if self.subKind is None and m.get(Vocabulary.KIND) != Vocabulary.OutputPort_CLASS:
@@ -10003,7 +10170,7 @@ class OutputPortBase:
         return m
 
 
-class LinkBase:
+class LinkBase(BaseObject):
     def __init__(self, m=None):
         import tercen.model.impl as impl
         LinkBase.__bases__ = (impl.IdObject,)
@@ -10016,6 +10183,7 @@ class LinkBase:
 
     def fromJson(self, m):
         import tercen.model.impl as impl
+        LinkBase.__bases__ = (impl.IdObject,)
         super().fromJson(m)
         self.subKind = m.get(Vocabulary.SUBKIND)
         if self.subKind is None and m.get(Vocabulary.KIND) != Vocabulary.Link_CLASS:
@@ -10044,7 +10212,7 @@ class LinkBase:
         return m
 
 
-class AppDesignBase:
+class AppDesignBase(BaseObject):
     def __init__(self, m=None):
         import tercen.model.impl as impl
         AppDesignBase.__bases__ = (impl.SciObject,)
@@ -10061,6 +10229,7 @@ class AppDesignBase:
 
     def fromJson(self, m):
         import tercen.model.impl as impl
+        AppDesignBase.__bases__ = (impl.SciObject,)
         super().fromJson(m)
         self.subKind = m.get(Vocabulary.SUBKIND)
         if self.subKind is None and m.get(Vocabulary.KIND) != Vocabulary.AppDesign_CLASS:
@@ -10109,7 +10278,7 @@ class AppDesignBase:
         return m
 
 
-class GarbageTasks2Base:
+class GarbageTasks2Base(BaseObject):
     def __init__(self, m=None):
         import tercen.model.impl as impl
         GarbageTasks2Base.__bases__ = (impl.GarbageObject,)
@@ -10125,6 +10294,7 @@ class GarbageTasks2Base:
 
     def fromJson(self, m):
         import tercen.model.impl as impl
+        GarbageTasks2Base.__bases__ = (impl.GarbageObject,)
         super().fromJson(m)
         self.subKind = m.get(Vocabulary.SUBKIND)
         if self.subKind is None and m.get(Vocabulary.KIND) != Vocabulary.GarbageTasks2_CLASS:
@@ -10168,7 +10338,7 @@ class GarbageTasks2Base:
         return m
 
 
-class WorkflowBase:
+class WorkflowBase(BaseObject):
     def __init__(self, m=None):
         import tercen.model.impl as impl
         WorkflowBase.__bases__ = (impl.ProjectDocument,)
@@ -10182,6 +10352,7 @@ class WorkflowBase:
 
     def fromJson(self, m):
         import tercen.model.impl as impl
+        WorkflowBase.__bases__ = (impl.ProjectDocument,)
         super().fromJson(m)
         self.subKind = m.get(Vocabulary.SUBKIND)
         if self.subKind is None and m.get(Vocabulary.KIND) != Vocabulary.Workflow_CLASS:
@@ -10225,7 +10396,7 @@ class WorkflowBase:
         return m
 
 
-class NamedFilterBase:
+class NamedFilterBase(BaseObject):
     def __init__(self, m=None):
         import tercen.model.impl as impl
         NamedFilterBase.__bases__ = (impl.Filter,)
@@ -10238,6 +10409,7 @@ class NamedFilterBase:
 
     def fromJson(self, m):
         import tercen.model.impl as impl
+        NamedFilterBase.__bases__ = (impl.Filter,)
         super().fromJson(m)
         self.subKind = m.get(Vocabulary.SUBKIND)
         if self.subKind is None and m.get(Vocabulary.KIND) != Vocabulary.NamedFilter_CLASS:
@@ -10271,7 +10443,7 @@ class NamedFilterBase:
         return m
 
 
-class TableProfileBase:
+class TableProfileBase(BaseObject):
     def __init__(self, m=None):
         import tercen.model.impl as impl
         TableProfileBase.__bases__ = (impl.Profile,)
@@ -10284,6 +10456,7 @@ class TableProfileBase:
 
     def fromJson(self, m):
         import tercen.model.impl as impl
+        TableProfileBase.__bases__ = (impl.Profile,)
         super().fromJson(m)
         self.subKind = m.get(Vocabulary.SUBKIND)
         if self.subKind is None and m.get(Vocabulary.KIND) != Vocabulary.TableProfile_CLASS:
@@ -10312,7 +10485,7 @@ class TableProfileBase:
         return m
 
 
-class MeltStepModelBase:
+class MeltStepModelBase(BaseObject):
     def __init__(self, m=None):
         import tercen.model.impl as impl
         MeltStepModelBase.__bases__ = (impl.StepModel,)
@@ -10328,6 +10501,7 @@ class MeltStepModelBase:
 
     def fromJson(self, m):
         import tercen.model.impl as impl
+        MeltStepModelBase.__bases__ = (impl.StepModel,)
         super().fromJson(m)
         self.subKind = m.get(Vocabulary.SUBKIND)
         if self.subKind is None and m.get(Vocabulary.KIND) != Vocabulary.MeltStepModel_CLASS:
@@ -10368,7 +10542,7 @@ class MeltStepModelBase:
         return m
 
 
-class ExportModelBase:
+class ExportModelBase(BaseObject):
     def __init__(self, m=None):
         import tercen.model.impl as impl
         ExportModelBase.__bases__ = (impl.StepModel,)
@@ -10380,6 +10554,7 @@ class ExportModelBase:
 
     def fromJson(self, m):
         import tercen.model.impl as impl
+        ExportModelBase.__bases__ = (impl.StepModel,)
         super().fromJson(m)
         self.subKind = m.get(Vocabulary.SUBKIND)
         if self.subKind is None and m.get(Vocabulary.KIND) != Vocabulary.ExportModel_CLASS:
@@ -10404,7 +10579,7 @@ class ExportModelBase:
         return m
 
 
-class AnnotationOperatorModelBase:
+class AnnotationOperatorModelBase(BaseObject):
     def __init__(self, m=None):
         import tercen.model.impl as impl
         AnnotationOperatorModelBase.__bases__ = (impl.OperatorModel,)
@@ -10417,6 +10592,7 @@ class AnnotationOperatorModelBase:
 
     def fromJson(self, m):
         import tercen.model.impl as impl
+        AnnotationOperatorModelBase.__bases__ = (impl.OperatorModel,)
         super().fromJson(m)
         self.subKind = m.get(Vocabulary.SUBKIND)
         if self.subKind is None and m.get(Vocabulary.KIND) != Vocabulary.AnnotationOperatorModel_CLASS:
@@ -10456,7 +10632,7 @@ class AnnotationOperatorModelBase:
         return m
 
 
-class AxisBase:
+class AxisBase(BaseObject):
     def __init__(self, m=None):
         import tercen.model.impl as impl
         AxisBase.__bases__ = (impl.SciObject,)
@@ -10470,6 +10646,7 @@ class AxisBase:
 
     def fromJson(self, m):
         import tercen.model.impl as impl
+        AxisBase.__bases__ = (impl.SciObject,)
         super().fromJson(m)
         self.subKind = m.get(Vocabulary.SUBKIND)
         if self.subKind is None and m.get(Vocabulary.KIND) != Vocabulary.Axis_CLASS:
@@ -10512,7 +10689,7 @@ class AxisBase:
         return m
 
 
-class BooleanPropertyBase:
+class BooleanPropertyBase(BaseObject):
     def __init__(self, m=None):
         import tercen.model.impl as impl
         BooleanPropertyBase.__bases__ = (impl.Property,)
@@ -10524,6 +10701,7 @@ class BooleanPropertyBase:
 
     def fromJson(self, m):
         import tercen.model.impl as impl
+        BooleanPropertyBase.__bases__ = (impl.Property,)
         super().fromJson(m)
         self.subKind = m.get(Vocabulary.SUBKIND)
         if self.subKind is None and m.get(Vocabulary.KIND) != Vocabulary.BooleanProperty_CLASS:
@@ -10550,7 +10728,7 @@ class BooleanPropertyBase:
         return m
 
 
-class GatherRelationBase:
+class GatherRelationBase(BaseObject):
     def __init__(self, m=None):
         import tercen.model.impl as impl
         GatherRelationBase.__bases__ = (impl.Relation,)
@@ -10567,6 +10745,7 @@ class GatherRelationBase:
 
     def fromJson(self, m):
         import tercen.model.impl as impl
+        GatherRelationBase.__bases__ = (impl.Relation,)
         super().fromJson(m)
         self.subKind = m.get(Vocabulary.SUBKIND)
         if self.subKind is None and m.get(Vocabulary.KIND) != Vocabulary.GatherRelation_CLASS:
@@ -10610,7 +10789,7 @@ class GatherRelationBase:
         return m
 
 
-class ExportStepBase:
+class ExportStepBase(BaseObject):
     def __init__(self, m=None):
         import tercen.model.impl as impl
         ExportStepBase.__bases__ = (impl.ModelStep,)
@@ -10622,6 +10801,7 @@ class ExportStepBase:
 
     def fromJson(self, m):
         import tercen.model.impl as impl
+        ExportStepBase.__bases__ = (impl.ModelStep,)
         super().fromJson(m)
         self.subKind = m.get(Vocabulary.SUBKIND)
         if self.subKind is None and m.get(Vocabulary.KIND) != Vocabulary.ExportStep_CLASS:
@@ -10652,7 +10832,7 @@ class ExportStepBase:
         return m
 
 
-class ViewStepBase:
+class ViewStepBase(BaseObject):
     def __init__(self, m=None):
         import tercen.model.impl as impl
         ViewStepBase.__bases__ = (impl.Step,)
@@ -10664,6 +10844,7 @@ class ViewStepBase:
 
     def fromJson(self, m):
         import tercen.model.impl as impl
+        ViewStepBase.__bases__ = (impl.Step,)
         super().fromJson(m)
         self.subKind = m.get(Vocabulary.SUBKIND)
         if self.subKind is None and m.get(Vocabulary.KIND) != Vocabulary.ViewStep_CLASS:
@@ -10688,7 +10869,7 @@ class ViewStepBase:
         return m
 
 
-class ApiCallProfileBase:
+class ApiCallProfileBase(BaseObject):
     def __init__(self, m=None):
         import tercen.model.impl as impl
         ApiCallProfileBase.__bases__ = (impl.Profile,)
@@ -10700,6 +10881,7 @@ class ApiCallProfileBase:
 
     def fromJson(self, m):
         import tercen.model.impl as impl
+        ApiCallProfileBase.__bases__ = (impl.Profile,)
         super().fromJson(m)
         self.subKind = m.get(Vocabulary.SUBKIND)
         if self.subKind is None and m.get(Vocabulary.KIND) != Vocabulary.ApiCallProfile_CLASS:
@@ -10726,7 +10908,7 @@ class ApiCallProfileBase:
         return m
 
 
-class ColorsBase:
+class ColorsBase(BaseObject):
     def __init__(self, m=None):
         import tercen.model.impl as impl
         ColorsBase.__bases__ = (impl.SciObject,)
@@ -10739,6 +10921,7 @@ class ColorsBase:
 
     def fromJson(self, m):
         import tercen.model.impl as impl
+        ColorsBase.__bases__ = (impl.SciObject,)
         super().fromJson(m)
         self.subKind = m.get(Vocabulary.SUBKIND)
         if self.subKind is None and m.get(Vocabulary.KIND) != Vocabulary.Colors_CLASS:
@@ -10777,7 +10960,7 @@ class ColorsBase:
         return m
 
 
-class CompositeRelationBase:
+class CompositeRelationBase(BaseObject):
     def __init__(self, m=None):
         import tercen.model.impl as impl
         CompositeRelationBase.__bases__ = (impl.Relation,)
@@ -10790,6 +10973,7 @@ class CompositeRelationBase:
 
     def fromJson(self, m):
         import tercen.model.impl as impl
+        CompositeRelationBase.__bases__ = (impl.Relation,)
         super().fromJson(m)
         self.subKind = m.get(Vocabulary.SUBKIND)
         if self.subKind is None and m.get(Vocabulary.KIND) != Vocabulary.CompositeRelation_CLASS:
@@ -10828,7 +11012,7 @@ class CompositeRelationBase:
         return m
 
 
-class GitProjectTaskBase:
+class GitProjectTaskBase(BaseObject):
     def __init__(self, m=None):
         import tercen.model.impl as impl
         GitProjectTaskBase.__bases__ = (impl.Task,)
@@ -10840,6 +11024,7 @@ class GitProjectTaskBase:
 
     def fromJson(self, m):
         import tercen.model.impl as impl
+        GitProjectTaskBase.__bases__ = (impl.Task,)
         super().fromJson(m)
         self.subKind = m.get(Vocabulary.SUBKIND)
         if self.subKind is None and m.get(Vocabulary.KIND) != Vocabulary.GitProjectTask_CLASS:
@@ -10864,7 +11049,7 @@ class GitProjectTaskBase:
         return m
 
 
-class ComputedTableSchemaBase:
+class ComputedTableSchemaBase(BaseObject):
     def __init__(self, m=None):
         import tercen.model.impl as impl
         ComputedTableSchemaBase.__bases__ = (impl.Schema,)
@@ -10876,6 +11061,7 @@ class ComputedTableSchemaBase:
 
     def fromJson(self, m):
         import tercen.model.impl as impl
+        ComputedTableSchemaBase.__bases__ = (impl.Schema,)
         super().fromJson(m)
         self.subKind = m.get(Vocabulary.SUBKIND)
         if self.subKind is None and m.get(Vocabulary.KIND) != Vocabulary.ComputedTableSchema_CLASS:
@@ -10906,7 +11092,7 @@ class ComputedTableSchemaBase:
         return m
 
 
-class TablePropertiesBase:
+class TablePropertiesBase(BaseObject):
     def __init__(self, m=None):
         import tercen.model.impl as impl
         TablePropertiesBase.__bases__ = (impl.SciObject,)
@@ -10920,6 +11106,7 @@ class TablePropertiesBase:
 
     def fromJson(self, m):
         import tercen.model.impl as impl
+        TablePropertiesBase.__bases__ = (impl.SciObject,)
         super().fromJson(m)
         self.subKind = m.get(Vocabulary.SUBKIND)
         if self.subKind is None and m.get(Vocabulary.KIND) != Vocabulary.TableProperties_CLASS:
@@ -10953,7 +11140,7 @@ class TablePropertiesBase:
         return m
 
 
-class MappingFactorBase:
+class MappingFactorBase(BaseObject):
     def __init__(self, m=None):
         import tercen.model.impl as impl
         MappingFactorBase.__bases__ = (impl.Factor,)
@@ -10969,6 +11156,7 @@ class MappingFactorBase:
 
     def fromJson(self, m):
         import tercen.model.impl as impl
+        MappingFactorBase.__bases__ = (impl.Factor,)
         super().fromJson(m)
         self.subKind = m.get(Vocabulary.SUBKIND)
         if self.subKind is None and m.get(Vocabulary.KIND) != Vocabulary.MappingFactor_CLASS:
@@ -11009,7 +11197,7 @@ class MappingFactorBase:
         return m
 
 
-class SubscriptionPlanBase:
+class SubscriptionPlanBase(BaseObject):
     def __init__(self, m=None):
         import tercen.model.impl as impl
         SubscriptionPlanBase.__bases__ = (impl.Document,)
@@ -11027,6 +11215,7 @@ class SubscriptionPlanBase:
 
     def fromJson(self, m):
         import tercen.model.impl as impl
+        SubscriptionPlanBase.__bases__ = (impl.Document,)
         super().fromJson(m)
         self.subKind = m.get(Vocabulary.SUBKIND)
         if self.subKind is None and m.get(Vocabulary.KIND) != Vocabulary.SubscriptionPlan_CLASS:
@@ -11065,7 +11254,7 @@ class SubscriptionPlanBase:
         return m
 
 
-class FormulaPropertyBase:
+class FormulaPropertyBase(BaseObject):
     def __init__(self, m=None):
         import tercen.model.impl as impl
         FormulaPropertyBase.__bases__ = (impl.StringProperty,)
@@ -11077,6 +11266,7 @@ class FormulaPropertyBase:
 
     def fromJson(self, m):
         import tercen.model.impl as impl
+        FormulaPropertyBase.__bases__ = (impl.StringProperty,)
         super().fromJson(m)
         self.subKind = m.get(Vocabulary.SUBKIND)
         if self.subKind is None and m.get(Vocabulary.KIND) != Vocabulary.FormulaProperty_CLASS:
@@ -11101,7 +11291,7 @@ class FormulaPropertyBase:
         return m
 
 
-class UserSecretBase:
+class UserSecretBase(BaseObject):
     def __init__(self, m=None):
         import tercen.model.impl as impl
         UserSecretBase.__bases__ = (impl.PersistentObject,)
@@ -11115,6 +11305,7 @@ class UserSecretBase:
 
     def fromJson(self, m):
         import tercen.model.impl as impl
+        UserSecretBase.__bases__ = (impl.PersistentObject,)
         super().fromJson(m)
         self.subKind = m.get(Vocabulary.SUBKIND)
         if self.subKind is None and m.get(Vocabulary.KIND) != Vocabulary.UserSecret_CLASS:
@@ -11145,7 +11336,7 @@ class UserSecretBase:
         return m
 
 
-class GroupByRelationBase:
+class GroupByRelationBase(BaseObject):
     def __init__(self, m=None):
         import tercen.model.impl as impl
         GroupByRelationBase.__bases__ = (impl.Relation,)
@@ -11158,6 +11349,7 @@ class GroupByRelationBase:
 
     def fromJson(self, m):
         import tercen.model.impl as impl
+        GroupByRelationBase.__bases__ = (impl.Relation,)
         super().fromJson(m)
         self.subKind = m.get(Vocabulary.SUBKIND)
         if self.subKind is None and m.get(Vocabulary.KIND) != Vocabulary.GroupByRelation_CLASS:
