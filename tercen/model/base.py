@@ -4,6 +4,7 @@ from tercen.base.BaseObject import BaseObject
 
 class SciObjectBase(BaseObject):
     def __init__(self, m=None):
+        import tercen.model.impl as impl
         if m is not None:
             self.fromJson(m)
 
@@ -11,6 +12,7 @@ class SciObjectBase(BaseObject):
             super().__init__(m)
 
     def fromJson(self, m):
+        import tercen.model.impl as impl
         super().fromJson(m)
         self.subKind = m.get(Vocabulary.SUBKIND)
         if self.subKind is None and m.get(Vocabulary.KIND) != Vocabulary.SciObject_CLASS:
@@ -2051,6 +2053,7 @@ class ChartHeatmapBase(BaseObject):
 
 class StatisticNodeBase(BaseObject):
     def __init__(self, m=None):
+        import tercen.model.impl as impl
         if m is None:
             super().__init__(m)
             self.name = ""
@@ -2059,6 +2062,7 @@ class StatisticNodeBase(BaseObject):
             self.fromJson(m)
 
     def fromJson(self, m):
+        import tercen.model.impl as impl
         super().fromJson(m)
         self.subKind = m.get(Vocabulary.SUBKIND)
         if self.subKind is None and m.get(Vocabulary.KIND) != Vocabulary.StatisticNode_CLASS:
@@ -2993,6 +2997,7 @@ class AclBase(BaseObject):
 
 class CubeAxisQueryBase(BaseObject):
     def __init__(self, m=None):
+        import tercen.model.impl as impl
         if m is None:
             super().__init__(m)
             self.pointSize = 0
@@ -3009,6 +3014,7 @@ class CubeAxisQueryBase(BaseObject):
             self.fromJson(m)
 
     def fromJson(self, m):
+        import tercen.model.impl as impl
         super().fromJson(m)
         self.subKind = m.get(Vocabulary.SUBKIND)
         if self.subKind is None and m.get(Vocabulary.KIND) != Vocabulary.CubeAxisQuery_CLASS:
@@ -3751,6 +3757,7 @@ class TokenBase(BaseObject):
 
 class ActivityCountBase(BaseObject):
     def __init__(self, m=None):
+        import tercen.model.impl as impl
         if m is None:
             super().__init__(m)
             self.objectId = ""
@@ -3759,6 +3766,7 @@ class ActivityCountBase(BaseObject):
             self.fromJson(m)
 
     def fromJson(self, m):
+        import tercen.model.impl as impl
         super().fromJson(m)
         self.subKind = m.get(Vocabulary.SUBKIND)
         if self.subKind is None and m.get(Vocabulary.KIND) != Vocabulary.ActivityCount_CLASS:
@@ -5213,6 +5221,7 @@ class JoinStepModelBase(BaseObject):
 
 class UlimitsBase(BaseObject):
     def __init__(self, m=None):
+        import tercen.model.impl as impl
         if m is None:
             super().__init__(m)
             self.core_file_size = 0
@@ -5235,6 +5244,7 @@ class UlimitsBase(BaseObject):
             self.fromJson(m)
 
     def fromJson(self, m):
+        import tercen.model.impl as impl
         super().fromJson(m)
         self.subKind = m.get(Vocabulary.SUBKIND)
         if self.subKind is None and m.get(Vocabulary.KIND) != Vocabulary.Ulimits_CLASS:
@@ -6630,6 +6640,7 @@ class CpuTimeProfileBase(BaseObject):
 
 class AxisSettingsBase(BaseObject):
     def __init__(self, m=None):
+        import tercen.model.impl as impl
         if m is None:
             super().__init__(m)
             self.meta = list()
@@ -6637,6 +6648,7 @@ class AxisSettingsBase(BaseObject):
             self.fromJson(m)
 
     def fromJson(self, m):
+        import tercen.model.impl as impl
         super().fromJson(m)
         self.subKind = m.get(Vocabulary.SUBKIND)
         if self.subKind is None and m.get(Vocabulary.KIND) != Vocabulary.AxisSettings_CLASS:
@@ -6670,6 +6682,7 @@ class AxisSettingsBase(BaseObject):
 
 class MappingFilterBase(BaseObject):
     def __init__(self, m=None):
+        import tercen.model.impl as impl
         if m is None:
             super().__init__(m)
             self.name = ""
@@ -6680,6 +6693,7 @@ class MappingFilterBase(BaseObject):
             self.fromJson(m)
 
     def fromJson(self, m):
+        import tercen.model.impl as impl
         super().fromJson(m)
         self.subKind = m.get(Vocabulary.SUBKIND)
         if self.subKind is None and m.get(Vocabulary.KIND) != Vocabulary.MappingFilter_CLASS:
