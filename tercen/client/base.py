@@ -1,4 +1,5 @@
 import tercen.model.base
+
 import json
 from tercen.http.HttpClientService import HttpClientService, URI, encodeTSON, decodeTSON, MultiPart, MultiPartMixTransformer
 
@@ -17,7 +18,7 @@ class IssueMessageServiceBase (HttpClientService):
         if m is None:
             return None
         if useFactory:
-            return tercen.model.base.IssueMessageBase(m)
+            return tercen.model.base.IssueMessageBase.createFromJson(m)
         else:
             return tercen.model.base.IssueMessage(m)
 
@@ -39,7 +40,7 @@ class WorkerServiceBase (HttpClientService):
         if m is None:
             return None
         if useFactory:
-            return tercen.model.base.TaskBase(m)
+            return tercen.model.base.TaskBase.createFromJson(m)
         else:
             return tercen.model.base.Task(m)
 
@@ -174,7 +175,7 @@ class FileServiceBase (HttpClientService):
         if m is None:
             return None
         if useFactory:
-            return tercen.model.base.FileDocumentBase(m)
+            return tercen.model.base.FileDocumentBase.createFromJson(m)
         else:
             return tercen.model.base.FileDocument(m)
 
@@ -256,7 +257,7 @@ class GarbageCollectorServiceBase (HttpClientService):
         if m is None:
             return None
         if useFactory:
-            return tercen.model.base.GarbageObjectBase(m)
+            return tercen.model.base.GarbageObjectBase.createFromJson(m)
         else:
             return tercen.model.base.GarbageObject(m)
 
@@ -278,7 +279,7 @@ class LockServiceBase (HttpClientService):
         if m is None:
             return None
         if useFactory:
-            return tercen.model.base.LockBase(m)
+            return tercen.model.base.LockBase.createFromJson(m)
         else:
             return tercen.model.base.Lock(m)
 
@@ -331,7 +332,7 @@ class IssueServiceBase (HttpClientService):
         if m is None:
             return None
         if useFactory:
-            return tercen.model.base.IssueBase(m)
+            return tercen.model.base.IssueBase.createFromJson(m)
         else:
             return tercen.model.base.Issue(m)
 
@@ -353,7 +354,7 @@ class SubscriptionPlanServiceBase (HttpClientService):
         if m is None:
             return None
         if useFactory:
-            return tercen.model.base.SubscriptionPlanBase(m)
+            return tercen.model.base.SubscriptionPlanBase.createFromJson(m)
         else:
             return tercen.model.base.SubscriptionPlan(m)
 
@@ -525,7 +526,7 @@ class PersistentServiceBase (HttpClientService):
         if m is None:
             return None
         if useFactory:
-            return tercen.model.base.PersistentObjectBase(m)
+            return tercen.model.base.PersistentObjectBase.createFromJson(m)
         else:
             return tercen.model.base.PersistentObject(m)
 
@@ -616,7 +617,7 @@ class ActivityServiceBase (HttpClientService):
         if m is None:
             return None
         if useFactory:
-            return tercen.model.base.ActivityBase(m)
+            return tercen.model.base.ActivityBase.createFromJson(m)
         else:
             return tercen.model.base.Activity(m)
 
@@ -644,7 +645,7 @@ class FolderServiceBase (HttpClientService):
         if m is None:
             return None
         if useFactory:
-            return tercen.model.base.FolderDocumentBase(m)
+            return tercen.model.base.FolderDocumentBase.createFromJson(m)
         else:
             return tercen.model.base.FolderDocument(m)
 
@@ -704,7 +705,7 @@ class TableSchemaServiceBase (HttpClientService):
         if m is None:
             return None
         if useFactory:
-            return tercen.model.base.SchemaBase(m)
+            return tercen.model.base.SchemaBase.createFromJson(m)
         else:
             return tercen.model.base.Schema(m)
 
@@ -843,7 +844,7 @@ class TaskServiceBase (HttpClientService):
         if m is None:
             return None
         if useFactory:
-            return tercen.model.base.TaskBase(m)
+            return tercen.model.base.TaskBase.createFromJson(m)
         else:
             return tercen.model.base.Task(m)
 
@@ -1019,7 +1020,7 @@ class UserSecretServiceBase (HttpClientService):
         if m is None:
             return None
         if useFactory:
-            return tercen.model.base.UserSecretBase(m)
+            return tercen.model.base.UserSecretBase.createFromJson(m)
         else:
             return tercen.model.base.UserSecret(m)
 
@@ -1041,7 +1042,7 @@ class PatchRecordServiceBase (HttpClientService):
         if m is None:
             return None
         if useFactory:
-            return tercen.model.base.PatchRecordsBase(m)
+            return tercen.model.base.PatchRecordsBase.createFromJson(m)
         else:
             return tercen.model.base.PatchRecords(m)
 
@@ -1063,7 +1064,7 @@ class EventServiceBase (HttpClientService):
         if m is None:
             return None
         if useFactory:
-            return tercen.model.base.EventBase(m)
+            return tercen.model.base.EventBase.createFromJson(m)
         else:
             return tercen.model.base.Event(m)
 
@@ -1115,7 +1116,7 @@ class WorkflowServiceBase (HttpClientService):
         if m is None:
             return None
         if useFactory:
-            return tercen.model.base.WorkflowBase(m)
+            return tercen.model.base.WorkflowBase.createFromJson(m)
         else:
             return tercen.model.base.Workflow(m)
 
@@ -1170,7 +1171,7 @@ class UserServiceBase (HttpClientService):
         if m is None:
             return None
         if useFactory:
-            return tercen.model.base.UserBase(m)
+            return tercen.model.base.UserBase.createFromJson(m)
         else:
             return tercen.model.base.User(m)
 
@@ -1587,7 +1588,7 @@ class ProjectDocumentServiceBase (HttpClientService):
         if m is None:
             return None
         if useFactory:
-            return tercen.model.base.ProjectDocumentBase(m)
+            return tercen.model.base.ProjectDocumentBase.createFromJson(m)
         else:
             return tercen.model.base.ProjectDocument(m)
 
@@ -1659,7 +1660,7 @@ class CranLibraryServiceBase (HttpClientService):
         if m is None:
             return None
         if useFactory:
-            return tercen.model.base.RLibraryBase(m)
+            return tercen.model.base.RLibraryBase.createFromJson(m)
         else:
             return tercen.model.base.RLibrary(m)
 
@@ -1769,7 +1770,7 @@ class TeamServiceBase (HttpClientService):
         if m is None:
             return None
         if useFactory:
-            return tercen.model.base.TeamBase(m)
+            return tercen.model.base.TeamBase.createFromJson(m)
         else:
             return tercen.model.base.Team(m)
 
@@ -1842,7 +1843,7 @@ class ProjectServiceBase (HttpClientService):
         if m is None:
             return None
         if useFactory:
-            return tercen.model.base.ProjectBase(m)
+            return tercen.model.base.ProjectBase.createFromJson(m)
         else:
             return tercen.model.base.Project(m)
 
@@ -1955,7 +1956,7 @@ class DocumentServiceBase (HttpClientService):
         if m is None:
             return None
         if useFactory:
-            return tercen.model.base.DocumentBase(m)
+            return tercen.model.base.DocumentBase.createFromJson(m)
         else:
             return tercen.model.base.Document(m)
 
@@ -2099,6 +2100,6 @@ class OperatorServiceBase (HttpClientService):
         if m is None:
             return None
         if useFactory:
-            return tercen.model.base.OperatorBase(m)
+            return tercen.model.base.OperatorBase.createFromJson(m)
         else:
             return tercen.model.base.Operator(m)

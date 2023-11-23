@@ -1,19 +1,18 @@
 from urllib.error import HTTPError
 
-import sys  
-sys.path.append("./src/pytson")
+#import sys  
+#sys.path.append("./src/pytson")
 
 import pytson as ptson
-#import tercen.util.pytmp as ptson
 import urllib.request
 
 
 from tercen.base.BaseObject import BaseObject
 
-from tercen.model.base import *
+from tercen.model.impl import *
 
 
-import tercen.util.pytmp as ptmp
+#import tercen.util.pytmp as ptmp
 
 
 class TercenError(Exception):
@@ -51,13 +50,13 @@ class HttpClientService:
     def fromJson(self, m, useFactory=True):
         pass
 
-    def specificClassFromJson( self, m):
-        className = m['kind']
+    # def specificClassFromJson( self, m):
+    #     className = m['kind']
                 
-        klass = globals()[className]
-        newObj = klass(m)
+    #     klass = globals()[className]
+    #     newObj = klass(m)
 
-        return newObj
+    #     return newObj
 
     def get(self, str_id, useFactory=True):
         try:
@@ -67,8 +66,8 @@ class HttpClientService:
             if response.code() != 200:
                 self.onResponseError(response)
             else:
-                # return self.fromJson(decodeTSON(response))
-                return self.specificClassFromJson(decodeTSON(response))
+                return self.fromJson(decodeTSON(response))
+                # return self.specificClassFromJson(decodeTSON(response))
         except BaseException as e:
             self.onError(e)
 
@@ -104,7 +103,6 @@ class HttpClientService:
         except BaseException as e:
             self.onError(e)
 
-# self.findKeys("findByOwner", keys, useFactory)
 
     def findKeys(self, view_name, keys, useFactory=False):
         try:
@@ -114,7 +112,8 @@ class HttpClientService:
             if response.code() != 200:
                 self.onResponseError(response)
             else:
-                return list(map(lambda x: self.specificClassFromJson(x), decodeTSON(response)))
+                # return list(map(lambda x: self.specificClassFromJson(x), decodeTSON(response)))
+                return list(map(lambda x: self.fromJson(x), decodeTSON(response)))
         except BaseException as e:
             self.onError(e)
 
@@ -132,7 +131,8 @@ class HttpClientService:
             if response.code() != 200:
                 self.onResponseError(response)
             else:
-                return list(map(lambda x: self.specificClassFromJson(x), decodeTSON(response)))
+                # return list(map(lambda x: self.specificClassFromJson(x), decodeTSON(response)))
+                return list(map(lambda x: self.fromJson(x), decodeTSON(response)))
         except BaseException as e:
             self.onError(e)
 
@@ -349,7 +349,7 @@ class MultiPartMixTransformer:
         elif isinstance(self.parts[self.currentPart].bytes_data, dict):
             if self.jsonIter is None:
                 #FIXME change here to ptson
-                self.jsonIter = ptmp.SerializerJsonIterator(self.parts[self.currentPart].bytes_data)
+                self.jsonIter = ptson.SerializerJsonIterator(self.parts[self.currentPart].bytes_data)
                 return self.init_encode(self.parts[self.currentPart])
 
             try:
