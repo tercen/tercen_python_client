@@ -888,7 +888,8 @@ def getMeta(self, key, defaultValue=None):
         
     return defaultValue
 
-def addMeta(self, p:Pair):
+def addMeta(self, key:str, value:str):
+    p = Pair({"key":key, "value":value})
     self.removeMeta(p.key)
     self.meta.append(p)
 
