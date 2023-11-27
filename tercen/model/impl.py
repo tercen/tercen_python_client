@@ -199,6 +199,8 @@ class RunningDependentState(RunningDependentStateBase):
 class Task(TaskBase):
     def __init__(self, m=None):
         super().__init__(m)
+        self.meta = []
+
 
 class ProjectTask(ProjectTaskBase):
     def __init__(self, m=None):
@@ -848,3 +850,59 @@ class GroupByRelation(GroupByRelationBase):
     def __init__(self, m=None):
         super().__init__(m)
 
+
+# ===============================================
+# Extra methods definition
+# Note: These are defined here to bypass one class needing another class
+#       which is defined further in the file.
+
+# ++++++++++++++
+# Task
+def removeMeta(self, key):
+    for i in range(0, len(self.meta)):
+        m = self.meta[i]
+        if m.key == key:
+            self.meta.pop(i)
+            break
+
+def hasMeta(self, key):
+    for i in range(0, len(self.meta)):
+        m = self.meta[i]
+        if m.key == key:
+            return True
+    return False
+
+def getMetaPair(self, key):
+    for i in range(0, len(self.meta)):
+        m = self.meta[i]
+        if m.key == key:
+            return m
+    
+    return None
+
+def getMeta(self, key, defaultValue=None):
+    for i in range(0, len(self.meta)):
+        m = self.meta[i]
+        if m.key == key:
+            return m.value
+        
+    return defaultValue
+
+def addMeta(self, p:Pair):
+    self.removeMeta(p.key)
+    self.meta.append(p)
+
+Task.removeMeta = removeMeta 
+Task.addMeta = addMeta 
+Task.hasMeta = hasMeta 
+Task.getMetaPair = getMetaPair 
+Task.getMeta = getMeta 
+# ++++++++++++++
+# Document
+Document.removeMeta = removeMeta 
+Document.addMeta = addMeta 
+Document.hasMeta = hasMeta 
+Document.getMetaPair = getMetaPair 
+Document.getMeta = getMeta 
+
+# ++++++++++++++

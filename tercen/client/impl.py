@@ -1,5 +1,6 @@
 import tercen.client.base
 import tercen.model.base
+import tercen.model.impl
 import json
 from tercen.http.HttpClientService import decodeTSON, URI, MultiPart, encodeTSON
 
@@ -37,7 +38,7 @@ class FileService(tercen.client.base.FileServiceBase):
             if response.code() != 200:
                 self.onResponseError(response)
             else:
-                answer = tercen.model.base.FileDocumentBase.createFromJson(
+                answer = tercen.model.impl.FileDocument.createFromJson(
                     decodeTSON(response))
         except BaseException as e:
             self.onError(e)
@@ -168,7 +169,8 @@ class TaskService(tercen.client.base.TaskServiceBase):
 
                 # answer1 = tercen.model.base.TaskBase.createFromJson(respTson)
 
-                answer = self.specificClassFromJsonTask(decodeTSON(response))
+                # answer = self.specificClassFromJsonTask(decodeTSON(response))
+                answer = self.fromJson(decodeTSON(response))
 
 
         except BaseException as e:
