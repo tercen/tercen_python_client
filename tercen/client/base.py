@@ -1,5 +1,5 @@
 import tercen.model.base
-
+import tercen.model.impl
 import json
 from tercen.http.HttpClientService import HttpClientService, URI, encodeTSON, decodeTSON, MultiPart, MultiPartMixTransformer
 
@@ -20,7 +20,7 @@ class IssueMessageServiceBase (HttpClientService):
         if useFactory:
             return tercen.model.base.IssueMessageBase.createFromJson(m)
         else:
-            return tercen.model.base.IssueMessage(m)
+            return tercen.model.impl.IssueMessage(m)
 
     def findByIssueAndLastModifiedDate(self, startKey, endKey, limit=200, skip=0, descending=True, useFactory=False):
         return self.findStartKeys("findByIssueAndLastModifiedDate", startKey, endKey, limit, skip, descending, useFactory)
@@ -42,7 +42,7 @@ class WorkerServiceBase (HttpClientService):
         if useFactory:
             return tercen.model.base.TaskBase.createFromJson(m)
         else:
-            return tercen.model.base.Task(m)
+            return tercen.model.impl.Task(m)
 
     def exec(self, task):
         answer = None
@@ -177,7 +177,7 @@ class FileServiceBase (HttpClientService):
         if useFactory:
             return tercen.model.base.FileDocumentBase.createFromJson(m)
         else:
-            return tercen.model.base.FileDocument(m)
+            return tercen.model.impl.FileDocument(m)
 
     def findFileByWorkflowIdAndStepId(self, startKey, endKey, limit=200, skip=0, descending=True, useFactory=False):
         return self.findStartKeys("findFileByWorkflowIdAndStepId", startKey, endKey, limit, skip, descending, useFactory)
@@ -259,7 +259,7 @@ class GarbageCollectorServiceBase (HttpClientService):
         if useFactory:
             return tercen.model.base.GarbageObjectBase.createFromJson(m)
         else:
-            return tercen.model.base.GarbageObject(m)
+            return tercen.model.impl.GarbageObject(m)
 
     def findGarbageTasks2ByDate(self, startKey, endKey, limit=200, skip=0, descending=True, useFactory=False):
         return self.findStartKeys("findGarbageTasks2ByDate", startKey, endKey, limit, skip, descending, useFactory)
@@ -281,7 +281,7 @@ class LockServiceBase (HttpClientService):
         if useFactory:
             return tercen.model.base.LockBase.createFromJson(m)
         else:
-            return tercen.model.base.Lock(m)
+            return tercen.model.impl.Lock(m)
 
     def lock(self, name, wait):
         answer = None
@@ -334,7 +334,7 @@ class IssueServiceBase (HttpClientService):
         if useFactory:
             return tercen.model.base.IssueBase.createFromJson(m)
         else:
-            return tercen.model.base.Issue(m)
+            return tercen.model.impl.Issue(m)
 
     def findByProjectAndLastModifiedDate(self, startKey, endKey, limit=200, skip=0, descending=True, useFactory=False):
         return self.findStartKeys("findByProjectAndLastModifiedDate", startKey, endKey, limit, skip, descending, useFactory)
@@ -356,7 +356,7 @@ class SubscriptionPlanServiceBase (HttpClientService):
         if useFactory:
             return tercen.model.base.SubscriptionPlanBase.createFromJson(m)
         else:
-            return tercen.model.base.SubscriptionPlan(m)
+            return tercen.model.impl.SubscriptionPlan(m)
 
     def findByOwner(self, keys, useFactory=False):
         return self.findKeys("findByOwner", keys, useFactory)
@@ -528,7 +528,7 @@ class PersistentServiceBase (HttpClientService):
         if useFactory:
             return tercen.model.base.PersistentObjectBase.createFromJson(m)
         else:
-            return tercen.model.base.PersistentObject(m)
+            return tercen.model.impl.PersistentObject(m)
 
     def findDeleted(self, keys, useFactory=False):
         return self.findKeys("findDeleted", keys, useFactory)
@@ -619,7 +619,7 @@ class ActivityServiceBase (HttpClientService):
         if useFactory:
             return tercen.model.base.ActivityBase.createFromJson(m)
         else:
-            return tercen.model.base.Activity(m)
+            return tercen.model.impl.Activity(m)
 
     def findByUserAndDate(self, startKey, endKey, limit=200, skip=0, descending=True, useFactory=False):
         return self.findStartKeys("findByUserAndDate", startKey, endKey, limit, skip, descending, useFactory)
@@ -647,7 +647,7 @@ class FolderServiceBase (HttpClientService):
         if useFactory:
             return tercen.model.base.FolderDocumentBase.createFromJson(m)
         else:
-            return tercen.model.base.FolderDocument(m)
+            return tercen.model.impl.FolderDocument(m)
 
     def findFolderByParentFolderAndName(self, startKey, endKey, limit=200, skip=0, descending=True, useFactory=False):
         return self.findStartKeys("findFolderByParentFolderAndName", startKey, endKey, limit, skip, descending, useFactory)
@@ -707,7 +707,7 @@ class TableSchemaServiceBase (HttpClientService):
         if useFactory:
             return tercen.model.base.SchemaBase.createFromJson(m)
         else:
-            return tercen.model.base.Schema(m)
+            return tercen.model.impl.Schema(m)
 
     def findSchemaByDataDirectory(self, startKey, endKey, limit=200, skip=0, descending=True, useFactory=False):
         return self.findStartKeys("findSchemaByDataDirectory", startKey, endKey, limit, skip, descending, useFactory)
@@ -846,7 +846,7 @@ class TaskServiceBase (HttpClientService):
         if useFactory:
             return tercen.model.base.TaskBase.createFromJson(m)
         else:
-            return tercen.model.base.Task(m)
+            return tercen.model.impl.Task(m)
 
     def findByHash(self, startKey, endKey, limit=200, skip=0, descending=True, useFactory=False):
         return self.findStartKeys("findByHash", startKey, endKey, limit, skip, descending, useFactory)
@@ -1022,7 +1022,7 @@ class UserSecretServiceBase (HttpClientService):
         if useFactory:
             return tercen.model.base.UserSecretBase.createFromJson(m)
         else:
-            return tercen.model.base.UserSecret(m)
+            return tercen.model.impl.UserSecret(m)
 
     def findSecretByUserId(self, keys, useFactory=False):
         return self.findKeys("secret", keys, useFactory)
@@ -1044,7 +1044,7 @@ class PatchRecordServiceBase (HttpClientService):
         if useFactory:
             return tercen.model.base.PatchRecordsBase.createFromJson(m)
         else:
-            return tercen.model.base.PatchRecords(m)
+            return tercen.model.impl.PatchRecords(m)
 
     def findByChannelId(self, startKey, endKey, limit=200, skip=0, descending=True, useFactory=False):
         return self.findStartKeys("findByChannelId", startKey, endKey, limit, skip, descending, useFactory)
@@ -1066,7 +1066,7 @@ class EventServiceBase (HttpClientService):
         if useFactory:
             return tercen.model.base.EventBase.createFromJson(m)
         else:
-            return tercen.model.base.Event(m)
+            return tercen.model.impl.Event(m)
 
     def sendChannel(self, channel, evt):
         answer = None
@@ -1118,7 +1118,7 @@ class WorkflowServiceBase (HttpClientService):
         if useFactory:
             return tercen.model.base.WorkflowBase.createFromJson(m)
         else:
-            return tercen.model.base.Workflow(m)
+            return tercen.model.impl.Workflow(m)
 
     def getCubeQuery(self, workflowId, stepId):
         answer = None
@@ -1173,7 +1173,7 @@ class UserServiceBase (HttpClientService):
         if useFactory:
             return tercen.model.base.UserBase.createFromJson(m)
         else:
-            return tercen.model.base.User(m)
+            return tercen.model.impl.User(m)
 
     def findTeamMembers(self, keys, useFactory=False):
         return self.findKeys("teamMembers", keys, useFactory)
@@ -1590,7 +1590,7 @@ class ProjectDocumentServiceBase (HttpClientService):
         if useFactory:
             return tercen.model.base.ProjectDocumentBase.createFromJson(m)
         else:
-            return tercen.model.base.ProjectDocument(m)
+            return tercen.model.impl.ProjectDocument(m)
 
     def findProjectObjectsByLastModifiedDate(self, startKey, endKey, limit=200, skip=0, descending=True, useFactory=False):
         return self.findStartKeys("findProjectObjectsByLastModifiedDate", startKey, endKey, limit, skip, descending, useFactory)
@@ -1662,7 +1662,7 @@ class CranLibraryServiceBase (HttpClientService):
         if useFactory:
             return tercen.model.base.RLibraryBase.createFromJson(m)
         else:
-            return tercen.model.base.RLibrary(m)
+            return tercen.model.impl.RLibrary(m)
 
     def findByOwnerNameVersion(self, startKey, endKey, limit=200, skip=0, descending=True, useFactory=False):
         return self.findStartKeys("findByOwnerNameVersion", startKey, endKey, limit, skip, descending, useFactory)
@@ -1772,7 +1772,7 @@ class TeamServiceBase (HttpClientService):
         if useFactory:
             return tercen.model.base.TeamBase.createFromJson(m)
         else:
-            return tercen.model.base.Team(m)
+            return tercen.model.impl.Team(m)
 
     def findTeamByOwner(self, keys, useFactory=False):
         return self.findKeys("teamByOwner", keys, useFactory)
@@ -1845,7 +1845,7 @@ class ProjectServiceBase (HttpClientService):
         if useFactory:
             return tercen.model.base.ProjectBase.createFromJson(m)
         else:
-            return tercen.model.base.Project(m)
+            return tercen.model.impl.Project(m)
 
     def findByIsPublicAndLastModifiedDate(self, startKey, endKey, limit=200, skip=0, descending=True, useFactory=False):
         return self.findStartKeys("findByIsPublicAndLastModifiedDate", startKey, endKey, limit, skip, descending, useFactory)
@@ -1958,7 +1958,7 @@ class DocumentServiceBase (HttpClientService):
         if useFactory:
             return tercen.model.base.DocumentBase.createFromJson(m)
         else:
-            return tercen.model.base.Document(m)
+            return tercen.model.impl.Document(m)
 
     def findWorkflowByTagOwnerCreatedDate(self, startKey, endKey, limit=200, skip=0, descending=True, useFactory=False):
         return self.findStartKeys("findWorkflowByTagOwnerCreatedDate", startKey, endKey, limit, skip, descending, useFactory)
@@ -2102,4 +2102,4 @@ class OperatorServiceBase (HttpClientService):
         if useFactory:
             return tercen.model.base.OperatorBase.createFromJson(m)
         else:
-            return tercen.model.base.Operator(m)
+            return tercen.model.impl.Operator(m)
