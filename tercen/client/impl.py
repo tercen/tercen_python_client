@@ -5,10 +5,6 @@ import json
 from tercen.http.HttpClientService import decodeTSON, URI, MultiPart, encodeTSON
 
 
-class IssueMessageService(tercen.client.base.IssueMessageServiceBase):
-    def __init__(self):
-        super().__init__()
-
 
 class WorkerService(tercen.client.base.WorkerServiceBase):
     def __init__(self):
@@ -51,11 +47,6 @@ class GarbageCollectorService(tercen.client.base.GarbageCollectorServiceBase):
 
 
 class LockService(tercen.client.base.LockServiceBase):
-    def __init__(self):
-        super().__init__()
-
-
-class IssueService(tercen.client.base.IssueServiceBase):
     def __init__(self):
         super().__init__()
 

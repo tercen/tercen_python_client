@@ -6,8 +6,6 @@ class TercenClientBase:
     def __init__(self):
         self.httpClient = HttpClient()
         self.tercenURI = URI.create("https://tercen.com/")
-        self.issueMessageService = tercen.client.impl.IssueMessageService()
-        self.issueMessageService.tercenClient = self
         self.workerService = tercen.client.impl.WorkerService()
         self.workerService.tercenClient = self
         self.fileService = tercen.client.impl.FileService()
@@ -16,8 +14,6 @@ class TercenClientBase:
         self.garbageCollectorService.tercenClient = self
         self.lockService = tercen.client.impl.LockService()
         self.lockService.tercenClient = self
-        self.issueService = tercen.client.impl.IssueService()
-        self.issueService.tercenClient = self
         self.subscriptionPlanService = tercen.client.impl.SubscriptionPlanService()
         self.subscriptionPlanService.tercenClient = self
         self.persistentService = tercen.client.impl.PersistentService()
