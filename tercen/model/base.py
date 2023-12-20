@@ -154,16 +154,12 @@ class SciObjectBase(BaseObject):
             return impl.TableSchema(m)
         if kind == Vocabulary.ComputedTableSchema_CLASS:
             return impl.ComputedTableSchema(m)
-        if kind == Vocabulary.Issue_CLASS:
-            return impl.Issue(m)
         if kind == Vocabulary.FileDocument_CLASS:
             return impl.FileDocument(m)
         if kind == Vocabulary.FolderDocument_CLASS:
             return impl.FolderDocument(m)
         if kind == Vocabulary.Schema_CLASS:
             return impl.Schema(m)
-        if kind == Vocabulary.IssueMessage_CLASS:
-            return impl.IssueMessage(m)
         if kind == Vocabulary.Workflow_CLASS:
             return impl.Workflow(m)
         if kind == Vocabulary.User_CLASS:
@@ -334,10 +330,10 @@ class SciObjectBase(BaseObject):
             return impl.XYAxisList(m)
         if kind == Vocabulary.FilterTopExpr_CLASS:
             return impl.FilterTopExpr(m)
-        if kind == Vocabulary.PatchRecord_CLASS:
-            return impl.PatchRecord(m)
         if kind == Vocabulary.State_CLASS:
             return impl.State(m)
+        if kind == Vocabulary.PatchRecord_CLASS:
+            return impl.PatchRecord(m)
         if kind == Vocabulary.ColumnSchemaMetaData_CLASS:
             return impl.ColumnSchemaMetaData(m)
         if kind == Vocabulary.Privilege_CLASS:
@@ -554,16 +550,12 @@ class IdObjectBase(BaseObject):
             return impl.TableSchema(m)
         if kind == Vocabulary.ComputedTableSchema_CLASS:
             return impl.ComputedTableSchema(m)
-        if kind == Vocabulary.Issue_CLASS:
-            return impl.Issue(m)
         if kind == Vocabulary.FileDocument_CLASS:
             return impl.FileDocument(m)
         if kind == Vocabulary.FolderDocument_CLASS:
             return impl.FolderDocument(m)
         if kind == Vocabulary.Schema_CLASS:
             return impl.Schema(m)
-        if kind == Vocabulary.IssueMessage_CLASS:
-            return impl.IssueMessage(m)
         if kind == Vocabulary.Workflow_CLASS:
             return impl.Workflow(m)
         if kind == Vocabulary.User_CLASS:
@@ -729,16 +721,12 @@ class PersistentObjectBase(BaseObject):
             return impl.TableSchema(m)
         if kind == Vocabulary.ComputedTableSchema_CLASS:
             return impl.ComputedTableSchema(m)
-        if kind == Vocabulary.Issue_CLASS:
-            return impl.Issue(m)
         if kind == Vocabulary.FileDocument_CLASS:
             return impl.FileDocument(m)
         if kind == Vocabulary.FolderDocument_CLASS:
             return impl.FolderDocument(m)
         if kind == Vocabulary.Schema_CLASS:
             return impl.Schema(m)
-        if kind == Vocabulary.IssueMessage_CLASS:
-            return impl.IssueMessage(m)
         if kind == Vocabulary.Workflow_CLASS:
             return impl.Workflow(m)
         if kind == Vocabulary.User_CLASS:
@@ -842,10 +830,8 @@ class DocumentBase(BaseObject):
             super().__init__(m)
             self.description = ""
             self.name = ""
-            self.createdBy = ""
             self.tags = list()
             self.version = ""
-            self.authors = list()
             self.isPublic = True
             self.acl = impl.Acl()
             self.createdDate = impl.Date()
@@ -865,16 +851,11 @@ class DocumentBase(BaseObject):
             self.subKind = m.get(Vocabulary.KIND)
         self.description = m[Vocabulary.description_DP]
         self.name = m[Vocabulary.name_DP]
-        self.createdBy = m[Vocabulary.createdBy_DP]
         if m.get(Vocabulary.tags_DP) is None:
             self.tags = list()
         else:
             self.tags = m[Vocabulary.tags_DP]
         self.version = m[Vocabulary.version_DP]
-        if m.get(Vocabulary.authors_DP) is None:
-            self.authors = list()
-        else:
-            self.authors = m[Vocabulary.authors_DP]
         self.isPublic = m[Vocabulary.isPublic_DP]
         if m.get(Vocabulary.acl_OP) is None:
             self.acl = impl.Acl()
@@ -937,16 +918,12 @@ class DocumentBase(BaseObject):
             return impl.TableSchema(m)
         if kind == Vocabulary.ComputedTableSchema_CLASS:
             return impl.ComputedTableSchema(m)
-        if kind == Vocabulary.Issue_CLASS:
-            return impl.Issue(m)
         if kind == Vocabulary.FileDocument_CLASS:
             return impl.FileDocument(m)
         if kind == Vocabulary.FolderDocument_CLASS:
             return impl.FolderDocument(m)
         if kind == Vocabulary.Schema_CLASS:
             return impl.Schema(m)
-        if kind == Vocabulary.IssueMessage_CLASS:
-            return impl.IssueMessage(m)
         if kind == Vocabulary.Workflow_CLASS:
             return impl.Workflow(m)
         if kind == Vocabulary.User_CLASS:
@@ -975,7 +952,6 @@ class DocumentBase(BaseObject):
             m.pop(Vocabulary.SUBKIND, None)
         m[Vocabulary.description_DP] = self.description
         m[Vocabulary.name_DP] = self.name
-        m[Vocabulary.createdBy_DP] = self.createdBy
         m[Vocabulary.acl_OP] = self.acl if self.acl is None else self.acl.toJson()
         m[Vocabulary.createdDate_OP] = self.createdDate if self.createdDate is None else self.createdDate.toJson()
         m[Vocabulary.lastModifiedDate_OP] = self.lastModifiedDate if self.lastModifiedDate is None else self.lastModifiedDate.toJson()
@@ -984,7 +960,6 @@ class DocumentBase(BaseObject):
         m[Vocabulary.meta_OP] = list(map(lambda x: x.toJson(), self.meta))
         m[Vocabulary.url_OP] = self.url if self.url is None else self.url.toJson()
         m[Vocabulary.version_DP] = self.version
-        m[Vocabulary.authors_DP] = self.authors
         m[Vocabulary.isPublic_DP] = self.isPublic
         return m
 
@@ -2342,6 +2317,7 @@ class StepBase(BaseObject):
             super().__init__(m)
             self.groupId = ""
             self.name = ""
+            self.description = ""
             self.inputs = list()
             self.outputs = list()
             self.rectangle = impl.Rectangle()
@@ -2358,6 +2334,7 @@ class StepBase(BaseObject):
             self.subKind = m.get(Vocabulary.KIND)
         self.groupId = m[Vocabulary.groupId_DP]
         self.name = m[Vocabulary.name_DP]
+        self.description = m[Vocabulary.description_DP]
         if m.get(Vocabulary.inputs_OP) is None:
             self.inputs = list()
         else:
@@ -2432,6 +2409,7 @@ class StepBase(BaseObject):
             map(lambda x: x.toJson(), self.outputs))
         m[Vocabulary.rectangle_OP] = self.rectangle if self.rectangle is None else self.rectangle.toJson()
         m[Vocabulary.state_OP] = self.state if self.state is None else self.state.toJson()
+        m[Vocabulary.description_DP] = self.description
         return m
 
 
@@ -2806,7 +2784,6 @@ class OperatorBase(BaseObject):
         OperatorBase.__bases__ = (impl.Document,)
         if m is None:
             super().__init__(m)
-            self.longDescription = ""
             self.properties = list()
         else:
             self.fromJson(m)
@@ -2818,7 +2795,6 @@ class OperatorBase(BaseObject):
         self.subKind = m.get(Vocabulary.SUBKIND)
         if self.subKind is None and m.get(Vocabulary.KIND) != Vocabulary.Operator_CLASS:
             self.subKind = m.get(Vocabulary.KIND)
-        self.longDescription = m[Vocabulary.longDescription_DP]
         if m.get(Vocabulary.properties_OP) is None:
             self.properties = list()
         else:
@@ -2856,7 +2832,6 @@ class OperatorBase(BaseObject):
             m.pop(Vocabulary.SUBKIND, None)
         m[Vocabulary.properties_OP] = list(
             map(lambda x: x.toJson(), self.properties))
-        m[Vocabulary.longDescription_DP] = self.longDescription
         return m
 
 
@@ -4498,103 +4473,6 @@ class CrosstabBase(BaseObject):
         return m
 
 
-class ProjectDocumentBase(BaseObject):
-    def __init__(self, m=None):
-        import tercen.model.impl as impl
-        ProjectDocumentBase.__bases__ = (impl.Document,)
-        if m is None:
-            super().__init__(m)
-            self.projectId = ""
-            self.folderId = ""
-        else:
-            self.fromJson(m)
-
-    def fromJson(self, m):
-        import tercen.model.impl as impl
-        ProjectDocumentBase.__bases__ = (impl.Document,)
-        super().fromJson(m)
-        self.subKind = m.get(Vocabulary.SUBKIND)
-        if self.subKind is None and m.get(Vocabulary.KIND) != Vocabulary.ProjectDocument_CLASS:
-            self.subKind = m.get(Vocabulary.KIND)
-        self.projectId = m[Vocabulary.projectId_DP]
-        self.folderId = m[Vocabulary.folderId_DP]
-
-    @classmethod
-    def createFromJson(cls, m):
-        import tercen.model.impl as impl
-        kind = m.get(Vocabulary.KIND)
-        if kind == Vocabulary.ProjectDocument_CLASS:
-            return impl.ProjectDocument(m)
-        if kind == Vocabulary.CubeQueryTableSchema_CLASS:
-            return impl.CubeQueryTableSchema(m)
-        if kind == Vocabulary.TableSchema_CLASS:
-            return impl.TableSchema(m)
-        if kind == Vocabulary.ComputedTableSchema_CLASS:
-            return impl.ComputedTableSchema(m)
-        if kind == Vocabulary.Issue_CLASS:
-            return impl.Issue(m)
-        if kind == Vocabulary.FileDocument_CLASS:
-            return impl.FileDocument(m)
-        if kind == Vocabulary.FolderDocument_CLASS:
-            return impl.FolderDocument(m)
-        if kind == Vocabulary.Schema_CLASS:
-            return impl.Schema(m)
-        if kind == Vocabulary.IssueMessage_CLASS:
-            return impl.IssueMessage(m)
-        if kind == Vocabulary.Workflow_CLASS:
-            return impl.Workflow(m)
-        raise ValueError("bad kind : " + kind +
-                         " for class ProjectDocument in createFromJson")
-
-    def toJson(self):
-        m = super().toJson()
-        m[Vocabulary.KIND] = Vocabulary.ProjectDocument_CLASS
-        if self.subKind is not None and self.subKind != Vocabulary.ProjectDocument_CLASS:
-            m[Vocabulary.SUBKIND] = self.subKind
-        else:
-            m.pop(Vocabulary.SUBKIND, None)
-        m[Vocabulary.projectId_DP] = self.projectId
-        m[Vocabulary.folderId_DP] = self.folderId
-        return m
-
-
-class IssueBase(BaseObject):
-    def __init__(self, m=None):
-        import tercen.model.impl as impl
-        IssueBase.__bases__ = (impl.ProjectDocument,)
-        if m is not None:
-            self.fromJson(m)
-
-        else:
-            super().__init__(m)
-
-    def fromJson(self, m):
-        import tercen.model.impl as impl
-        IssueBase.__bases__ = (impl.ProjectDocument,)
-        super().fromJson(m)
-        self.subKind = m.get(Vocabulary.SUBKIND)
-        if self.subKind is None and m.get(Vocabulary.KIND) != Vocabulary.Issue_CLASS:
-            self.subKind = m.get(Vocabulary.KIND)
-
-    @classmethod
-    def createFromJson(cls, m):
-        import tercen.model.impl as impl
-        kind = m.get(Vocabulary.KIND)
-        if kind == Vocabulary.Issue_CLASS:
-            return impl.Issue(m)
-        raise ValueError("bad kind : " + kind +
-                         " for class Issue in createFromJson")
-
-    def toJson(self):
-        m = super().toJson()
-        m[Vocabulary.KIND] = Vocabulary.Issue_CLASS
-        if self.subKind is not None and self.subKind != Vocabulary.Issue_CLASS:
-            m[Vocabulary.SUBKIND] = self.subKind
-        else:
-            m.pop(Vocabulary.SUBKIND, None)
-        return m
-
-
 class PatchRecordBase(BaseObject):
     def __init__(self, m=None):
         import tercen.model.impl as impl
@@ -5584,6 +5462,62 @@ class StepStateBase(BaseObject):
             m.pop(Vocabulary.SUBKIND, None)
         m[Vocabulary.taskId_DP] = self.taskId
         m[Vocabulary.taskState_OP] = self.taskState if self.taskState is None else self.taskState.toJson()
+        return m
+
+
+class ProjectDocumentBase(BaseObject):
+    def __init__(self, m=None):
+        import tercen.model.impl as impl
+        ProjectDocumentBase.__bases__ = (impl.Document,)
+        if m is None:
+            super().__init__(m)
+            self.projectId = ""
+            self.folderId = ""
+        else:
+            self.fromJson(m)
+
+    def fromJson(self, m):
+        import tercen.model.impl as impl
+        ProjectDocumentBase.__bases__ = (impl.Document,)
+        super().fromJson(m)
+        self.subKind = m.get(Vocabulary.SUBKIND)
+        if self.subKind is None and m.get(Vocabulary.KIND) != Vocabulary.ProjectDocument_CLASS:
+            self.subKind = m.get(Vocabulary.KIND)
+        self.projectId = m[Vocabulary.projectId_DP]
+        self.folderId = m[Vocabulary.folderId_DP]
+
+    @classmethod
+    def createFromJson(cls, m):
+        import tercen.model.impl as impl
+        kind = m.get(Vocabulary.KIND)
+        if kind == Vocabulary.ProjectDocument_CLASS:
+            return impl.ProjectDocument(m)
+        if kind == Vocabulary.CubeQueryTableSchema_CLASS:
+            return impl.CubeQueryTableSchema(m)
+        if kind == Vocabulary.TableSchema_CLASS:
+            return impl.TableSchema(m)
+        if kind == Vocabulary.ComputedTableSchema_CLASS:
+            return impl.ComputedTableSchema(m)
+        if kind == Vocabulary.FileDocument_CLASS:
+            return impl.FileDocument(m)
+        if kind == Vocabulary.FolderDocument_CLASS:
+            return impl.FolderDocument(m)
+        if kind == Vocabulary.Schema_CLASS:
+            return impl.Schema(m)
+        if kind == Vocabulary.Workflow_CLASS:
+            return impl.Workflow(m)
+        raise ValueError("bad kind : " + kind +
+                         " for class ProjectDocument in createFromJson")
+
+    def toJson(self):
+        m = super().toJson()
+        m[Vocabulary.KIND] = Vocabulary.ProjectDocument_CLASS
+        if self.subKind is not None and self.subKind != Vocabulary.ProjectDocument_CLASS:
+            m[Vocabulary.SUBKIND] = self.subKind
+        else:
+            m.pop(Vocabulary.SUBKIND, None)
+        m[Vocabulary.projectId_DP] = self.projectId
+        m[Vocabulary.folderId_DP] = self.folderId
         return m
 
 
@@ -9849,48 +9783,6 @@ class TaxIdBase(BaseObject):
         m[Vocabulary.type_DP] = self.type
         m[Vocabulary.value_DP] = self.value
         m[Vocabulary.isValid_DP] = self.isValid
-        return m
-
-
-class IssueMessageBase(BaseObject):
-    def __init__(self, m=None):
-        import tercen.model.impl as impl
-        IssueMessageBase.__bases__ = (impl.ProjectDocument,)
-        if m is None:
-            super().__init__(m)
-            self.issueId = ""
-            self.body = ""
-        else:
-            self.fromJson(m)
-
-    def fromJson(self, m):
-        import tercen.model.impl as impl
-        IssueMessageBase.__bases__ = (impl.ProjectDocument,)
-        super().fromJson(m)
-        self.subKind = m.get(Vocabulary.SUBKIND)
-        if self.subKind is None and m.get(Vocabulary.KIND) != Vocabulary.IssueMessage_CLASS:
-            self.subKind = m.get(Vocabulary.KIND)
-        self.issueId = m[Vocabulary.issueId_DP]
-        self.body = m[Vocabulary.body_DP]
-
-    @classmethod
-    def createFromJson(cls, m):
-        import tercen.model.impl as impl
-        kind = m.get(Vocabulary.KIND)
-        if kind == Vocabulary.IssueMessage_CLASS:
-            return impl.IssueMessage(m)
-        raise ValueError("bad kind : " + kind +
-                         " for class IssueMessage in createFromJson")
-
-    def toJson(self):
-        m = super().toJson()
-        m[Vocabulary.KIND] = Vocabulary.IssueMessage_CLASS
-        if self.subKind is not None and self.subKind != Vocabulary.IssueMessage_CLASS:
-            m[Vocabulary.SUBKIND] = self.subKind
-        else:
-            m.pop(Vocabulary.SUBKIND, None)
-        m[Vocabulary.issueId_DP] = self.issueId
-        m[Vocabulary.body_DP] = self.body
         return m
 
 

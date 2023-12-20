@@ -278,14 +278,6 @@ class Crosstab(CrosstabBase):
     def __init__(self, m=None):
         super().__init__(m)
 
-class ProjectDocument(ProjectDocumentBase):
-    def __init__(self, m=None):
-        super().__init__(m)
-
-class Issue(IssueBase):
-    def __init__(self, m=None):
-        super().__init__(m)
-
 class PatchRecord(PatchRecordBase):
     def __init__(self, m=None):
         super().__init__(m)
@@ -359,6 +351,10 @@ class Date(DateBase):
         super().__init__(m)
 
 class StepState(StepStateBase):
+    def __init__(self, m=None):
+        super().__init__(m)
+
+class ProjectDocument(ProjectDocumentBase):
     def __init__(self, m=None):
         super().__init__(m)
 
@@ -722,10 +718,6 @@ class TaxId(TaxIdBase):
     def __init__(self, m=None):
         super().__init__(m)
 
-class IssueMessage(IssueMessageBase):
-    def __init__(self, m=None):
-        super().__init__(m)
-
 class TableSchema(TableSchemaBase):
     def __init__(self, m=None):
         super().__init__(m)
@@ -877,7 +869,7 @@ def getMetaPair(self, key):
         m = self.meta[i]
         if m.key == key:
             return m
-    
+
     return None
 
 def getMeta(self, key, defaultValue=None):
@@ -885,7 +877,7 @@ def getMeta(self, key, defaultValue=None):
         m = self.meta[i]
         if m.key == key:
             return m.value
-        
+
     return defaultValue
 
 def addMeta(self, key:str, value:str):
@@ -893,17 +885,17 @@ def addMeta(self, key:str, value:str):
     self.removeMeta(p.key)
     self.meta.append(p)
 
-Task.removeMeta = removeMeta 
-Task.addMeta = addMeta 
-Task.hasMeta = hasMeta 
-Task.getMetaPair = getMetaPair 
-Task.getMeta = getMeta 
+Task.removeMeta = removeMeta
+Task.addMeta = addMeta
+Task.hasMeta = hasMeta
+Task.getMetaPair = getMetaPair
+Task.getMeta = getMeta
 # ++++++++++++++
 # Document
-Document.removeMeta = removeMeta 
-Document.addMeta = addMeta 
-Document.hasMeta = hasMeta 
-Document.getMetaPair = getMetaPair 
-Document.getMeta = getMeta 
+Document.removeMeta = removeMeta
+Document.addMeta = addMeta
+Document.hasMeta = hasMeta
+Document.getMetaPair = getMetaPair
+Document.getMeta = getMeta
 
 # ++++++++++++++

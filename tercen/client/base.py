@@ -4,28 +4,6 @@ import json
 from tercen.http.HttpClientService import HttpClientService, URI, encodeTSON, decodeTSON, MultiPart, MultiPartMixTransformer
 
 
-class IssueMessageServiceBase (HttpClientService):
-    def getBaseUri(self):
-        return URI.create("api/v1/issue_message")
-
-    def getServiceName(self):
-        return "IssueMessage"
-
-    def toJson(self, object):
-        return object.toJson()
-
-    def fromJson(self, m, useFactory=True):
-        if m is None:
-            return None
-        if useFactory:
-            return tercen.model.base.IssueMessageBase.createFromJson(m)
-        else:
-            return tercen.model.impl.IssueMessage(m)
-
-    def findByIssueAndLastModifiedDate(self, startKey, endKey, limit=200, skip=0, descending=True, useFactory=False):
-        return self.findStartKeys("findByIssueAndLastModifiedDate", startKey, endKey, limit, skip, descending, useFactory)
-
-
 class WorkerServiceBase (HttpClientService):
     def getBaseUri(self):
         return URI.create("api/v1/worker")
@@ -161,6 +139,28 @@ class WorkerServiceBase (HttpClientService):
         return answer
 
 
+class GarbageCollectorServiceBase (HttpClientService):
+    def getBaseUri(self):
+        return URI.create("api/v1/gc")
+
+    def getServiceName(self):
+        return "GarbageObject"
+
+    def toJson(self, object):
+        return object.toJson()
+
+    def fromJson(self, m, useFactory=True):
+        if m is None:
+            return None
+        if useFactory:
+            return tercen.model.base.GarbageObjectBase.createFromJson(m)
+        else:
+            return tercen.model.impl.GarbageObject(m)
+
+    def findGarbageTasks2ByDate(self, startKey, endKey, limit=200, skip=0, descending=True, useFactory=False):
+        return self.findStartKeys("findGarbageTasks2ByDate", startKey, endKey, limit, skip, descending, useFactory)
+
+
 class FileServiceBase (HttpClientService):
     def getBaseUri(self):
         return URI.create("api/v1/file")
@@ -243,28 +243,6 @@ class FileServiceBase (HttpClientService):
         return answer
 
 
-class GarbageCollectorServiceBase (HttpClientService):
-    def getBaseUri(self):
-        return URI.create("api/v1/gc")
-
-    def getServiceName(self):
-        return "GarbageObject"
-
-    def toJson(self, object):
-        return object.toJson()
-
-    def fromJson(self, m, useFactory=True):
-        if m is None:
-            return None
-        if useFactory:
-            return tercen.model.base.GarbageObjectBase.createFromJson(m)
-        else:
-            return tercen.model.impl.GarbageObject(m)
-
-    def findGarbageTasks2ByDate(self, startKey, endKey, limit=200, skip=0, descending=True, useFactory=False):
-        return self.findStartKeys("findGarbageTasks2ByDate", startKey, endKey, limit, skip, descending, useFactory)
-
-
 class LockServiceBase (HttpClientService):
     def getBaseUri(self):
         return URI.create("api/v1/lock")
@@ -316,28 +294,6 @@ class LockServiceBase (HttpClientService):
         except BaseException as e:
             self.onError(e)
         return answer
-
-
-class IssueServiceBase (HttpClientService):
-    def getBaseUri(self):
-        return URI.create("api/v1/issue")
-
-    def getServiceName(self):
-        return "Issue"
-
-    def toJson(self, object):
-        return object.toJson()
-
-    def fromJson(self, m, useFactory=True):
-        if m is None:
-            return None
-        if useFactory:
-            return tercen.model.base.IssueBase.createFromJson(m)
-        else:
-            return tercen.model.impl.Issue(m)
-
-    def findByProjectAndLastModifiedDate(self, startKey, endKey, limit=200, skip=0, descending=True, useFactory=False):
-        return self.findStartKeys("findByProjectAndLastModifiedDate", startKey, endKey, limit, skip, descending, useFactory)
 
 
 class SubscriptionPlanServiceBase (HttpClientService):
@@ -1991,6 +1947,28 @@ class DocumentServiceBase (HttpClientService):
             else:
                 answer = tercen.model.base.SearchResultBase.createFromJson(
                     decodeTSON(response))
+        except BaseException as e:
+            self.onError(e)
+        return answer
+
+    def getLibrary(self, projectId, teamIds, docTypes, tags, offset, limit):
+        answer = None
+        try:
+            uri = URI.create("api/v1/d" + "/" + "getLibrary")
+            params = {}
+            params["projectId"] = projectId
+            params["teamIds"] = teamIds
+            params["docTypes"] = docTypes
+            params["tags"] = tags
+            params["offset"] = offset
+            params["limit"] = limit
+            response = self.getHttpClient().post(
+                self.getServiceUri(uri).toString(), None, encodeTSON(params))
+            if response.code() != 200:
+                self.onResponseError(response)
+            else:
+                answer = [tercen.model.base.DocumentBase.createFromJson(
+                    sch) for sch in decodeTSON(response)]
         except BaseException as e:
             self.onError(e)
         return answer
