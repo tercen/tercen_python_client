@@ -437,7 +437,7 @@ class OperatorContextDev(TercenContext):
     def __init__(self, workflowId = None, stepId = None, authToken = None, username = None, password = None,
                          serviceUri  = None):
         self.client = TercenClient(serviceUri)
-        if authToken is None:
+        if authToken is None or authToken == '':
             self.session = self.client.userService.connect(username, password)
             self.client.userService.tercenClient.token = self.session.token.token
             
