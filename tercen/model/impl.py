@@ -60,10 +60,6 @@ class StorageProfile(StorageProfileBase):
     def __init__(self, m=None):
         super().__init__(m)
 
-class OperatorOutputSpec(OperatorOutputSpecBase):
-    def __init__(self, m=None):
-        super().__init__(m)
-
 class ResourceSummary(ResourceSummaryBase):
     def __init__(self, m=None):
         super().__init__(m)
@@ -340,10 +336,6 @@ class RDescription(RDescriptionBase):
     def __init__(self, m=None):
         super().__init__(m)
 
-class Factor(FactorBase):
-    def __init__(self, m=None):
-        super().__init__(m)
-
 class MetaFactor(MetaFactorBase):
     def __init__(self, m=None):
         super().__init__(m)
@@ -401,6 +393,10 @@ class XYAxis(XYAxisBase):
         super().__init__(m)
 
 class Principal(PrincipalBase):
+    def __init__(self, m=None):
+        super().__init__(m)
+
+class Factor(FactorBase):
     def __init__(self, m=None):
         super().__init__(m)
 
@@ -581,10 +577,6 @@ class GraphicalFactor(GraphicalFactorBase):
         super().__init__(m)
 
 class RenameRelation(RenameRelationBase):
-    def __init__(self, m=None):
-        super().__init__(m)
-
-class OperatorInputSpec(OperatorInputSpecBase):
     def __init__(self, m=None):
         super().__init__(m)
 
