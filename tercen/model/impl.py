@@ -60,6 +60,10 @@ class StorageProfile(StorageProfileBase):
     def __init__(self, m=None):
         super().__init__(m)
 
+class OperatorOutputSpec(OperatorOutputSpecBase):
+    def __init__(self, m=None):
+        super().__init__(m)
+
 class ResourceSummary(ResourceSummaryBase):
     def __init__(self, m=None):
         super().__init__(m)
@@ -199,8 +203,6 @@ class RunningDependentState(RunningDependentStateBase):
 class Task(TaskBase):
     def __init__(self, m=None):
         super().__init__(m)
-        self.meta = []
-
 
 class ProjectTask(ProjectTaskBase):
     def __init__(self, m=None):
@@ -259,6 +261,10 @@ class CrosstabTable(CrosstabTableBase):
         super().__init__(m)
 
 class XYAxisList(XYAxisListBase):
+    def __init__(self, m=None):
+        super().__init__(m)
+
+class AxisSpec(AxisSpecBase):
     def __init__(self, m=None):
         super().__init__(m)
 
@@ -334,6 +340,14 @@ class RDescription(RDescriptionBase):
     def __init__(self, m=None):
         super().__init__(m)
 
+class Factor(FactorBase):
+    def __init__(self, m=None):
+        super().__init__(m)
+
+class MetaFactor(MetaFactorBase):
+    def __init__(self, m=None):
+        super().__init__(m)
+
 class JetPalette(JetPaletteBase):
     def __init__(self, m=None):
         super().__init__(m)
@@ -390,10 +404,6 @@ class Principal(PrincipalBase):
     def __init__(self, m=None):
         super().__init__(m)
 
-class Factor(FactorBase):
-    def __init__(self, m=None):
-        super().__init__(m)
-
 class Attribute(AttributeBase):
     def __init__(self, m=None):
         super().__init__(m)
@@ -431,6 +441,10 @@ class ReferenceRelation(ReferenceRelationBase):
         super().__init__(m)
 
 class RProxy(RProxyBase):
+    def __init__(self, m=None):
+        super().__init__(m)
+
+class OperatorSpec(OperatorSpecBase):
     def __init__(self, m=None):
         super().__init__(m)
 
@@ -567,6 +581,10 @@ class GraphicalFactor(GraphicalFactorBase):
         super().__init__(m)
 
 class RenameRelation(RenameRelationBase):
+    def __init__(self, m=None):
+        super().__init__(m)
+
+class OperatorInputSpec(OperatorInputSpecBase):
     def __init__(self, m=None):
         super().__init__(m)
 
@@ -714,11 +732,15 @@ class CreateGitOperatorTask(CreateGitOperatorTaskBase):
     def __init__(self, m=None):
         super().__init__(m)
 
-class TaxId(TaxIdBase):
+class CrosstabSpec(CrosstabSpecBase):
     def __init__(self, m=None):
         super().__init__(m)
 
 class TableSchema(TableSchemaBase):
+    def __init__(self, m=None):
+        super().__init__(m)
+
+class TaxId(TaxIdBase):
     def __init__(self, m=None):
         super().__init__(m)
 
@@ -842,60 +864,3 @@ class GroupByRelation(GroupByRelationBase):
     def __init__(self, m=None):
         super().__init__(m)
 
-
-# ===============================================
-# Extra methods definition
-# Note: These are defined here to bypass one class needing another class
-#       which is defined further in the file.
-
-# ++++++++++++++
-# Task
-def removeMeta(self, key):
-    for i in range(0, len(self.meta)):
-        m = self.meta[i]
-        if m.key == key:
-            self.meta.pop(i)
-            break
-
-def hasMeta(self, key):
-    for i in range(0, len(self.meta)):
-        m = self.meta[i]
-        if m.key == key:
-            return True
-    return False
-
-def getMetaPair(self, key):
-    for i in range(0, len(self.meta)):
-        m = self.meta[i]
-        if m.key == key:
-            return m
-
-    return None
-
-def getMeta(self, key, defaultValue=None):
-    for i in range(0, len(self.meta)):
-        m = self.meta[i]
-        if m.key == key:
-            return m.value
-
-    return defaultValue
-
-def addMeta(self, key:str, value:str):
-    p = Pair({"key":key, "value":value})
-    self.removeMeta(p.key)
-    self.meta.append(p)
-
-Task.removeMeta = removeMeta
-Task.addMeta = addMeta
-Task.hasMeta = hasMeta
-Task.getMetaPair = getMetaPair
-Task.getMeta = getMeta
-# ++++++++++++++
-# Document
-Document.removeMeta = removeMeta
-Document.addMeta = addMeta
-Document.hasMeta = hasMeta
-Document.getMetaPair = getMetaPair
-Document.getMeta = getMeta
-
-# ++++++++++++++
