@@ -118,6 +118,7 @@ class WorkflowBuilder():
         fileDoc.name = "data.csv"
         fileDoc.projectId = self.proj.id
         fileDoc.acl.owner = self.proj.acl.owner
+        fileDoc.createdBy = self.proj.acl.owner
         fileDoc.metadata.contentEncoding = "application/octet-stream"
 
         self.fileDoc = self.client.fileService.uploadTable(fileDoc, utl.dataframe_to_table(df, values_as_list=True)[0].toJson() )
