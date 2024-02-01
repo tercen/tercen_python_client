@@ -889,7 +889,10 @@ class DocumentBase(BaseObject):
         else:
             self.url = UrlBase.createFromJson(m.get(Vocabulary.url_OP))
 
-        self.createdBy = m[Vocabulary.createdBy_DP]
+        if m.get(Vocabulary.createdBy_DP) is None:
+            self.createdBy = ""
+        else:
+            self.createdBy = m[Vocabulary.createdBy_DP]
 
     @classmethod
     def createFromJson(cls, m):
