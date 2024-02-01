@@ -835,6 +835,7 @@ class DocumentBase(BaseObject):
             self.isPublic = True
             self.acl = impl.Acl()
             self.createdDate = impl.Date()
+            self.createdBy = ""
             self.lastModifiedDate = impl.Date()
             self.urls = list()
             self.meta = list()
@@ -887,6 +888,8 @@ class DocumentBase(BaseObject):
             self.url = impl.Url()
         else:
             self.url = UrlBase.createFromJson(m.get(Vocabulary.url_OP))
+
+        self.createdBy = m[Vocabulary.createdBy_DP]
 
     @classmethod
     def createFromJson(cls, m):
@@ -961,6 +964,7 @@ class DocumentBase(BaseObject):
         m[Vocabulary.url_OP] = self.url if self.url is None else self.url.toJson()
         m[Vocabulary.version_DP] = self.version
         m[Vocabulary.isPublic_DP] = self.isPublic
+        m[Vocabulary.createdBy_DP] = self.createdBy
         return m
 
 
@@ -976,7 +980,6 @@ class UserBase(BaseObject):
             self.roles = list()
             self.invitedByUsername = ""
             self.invitationCounts = 0
-            self.createdBy = ""
             self.maxInvitation = 0
             self.teamAcl = impl.Acl()
             self.billingInfo = impl.BillingInfo()
@@ -1010,10 +1013,6 @@ class UserBase(BaseObject):
             self.billingInfo = BillingInfoBase.createFromJson(
                 m.get(Vocabulary.billingInfo_OP))
         
-        if m.get(Vocabulary.createdBy_DP) is None:
-            self.createdBy = ""
-        else:
-            self.createdBy = m[Vocabulary.createdBy_DP]
 
     @classmethod
     def createFromJson(cls, m):
