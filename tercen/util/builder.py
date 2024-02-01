@@ -51,8 +51,9 @@ class WorkflowBuilder():
         self.proj = None
         for p in projects:
             if p.name == projectName:
-                self.proj = p
-                break
+                self.client.projectService.delete(p.id, p.rev)
+                # self.proj = p
+                # break
 
         
         if not self.proj is None:
@@ -66,16 +67,16 @@ class WorkflowBuilder():
 
 
         self.workflow = None
-        wkfObjs = self.client.persistentService.findByKind(['Workflow'], useFactory=True)
-        for w in wkfObjs:
-            wkf = self.client.workflowService.get(w.id)
+        # wkfObjs = self.client.persistentService.findByKind(['Workflow'], useFactory=True)
+        # for w in wkfObjs:
+        #     wkf = self.client.workflowService.get(w.id)
             
-            if self.proj.id == wkf.projectId and wkf.name == workflowName:
-                self.workflow = wkf
-                break
+        #     if self.proj.id == wkf.projectId and wkf.name == workflowName:
+        #         self.workflow = wkf
+        #         break
 
-        if not self.workflow is None:
-            self.client.workflowService.delete(self.workflow.id, self.workflow.rev)
+        # if not self.workflow is None:
+        #     self.client.workflowService.delete(self.workflow.id, self.workflow.rev)
 
         self.workflow = Workflow()
         self.workflow.steps = []
