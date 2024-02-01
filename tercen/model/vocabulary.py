@@ -592,4 +592,3 @@ graphicalFactor_OP = "graphicalFactor";
 palette_OP = "palette";
 mainRelation_OP = "mainRelation";
 metaData_OP = "metaData";
-createdBy_DP = "createdBy";

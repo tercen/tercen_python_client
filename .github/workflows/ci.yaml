@@ -25,16 +25,6 @@ jobs:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v2
       - uses: tercen/actions/start-tercen@main
-      # - uses: tercen/actions@0.1.1 
-      - name: Check open port
-        run: bash wait_conn.sh 127.0.0.1 5400
-      # - uses: nrukavkov/open-ports-check-action@v1
-      #   with:
-      #     port: 5400
-      #     host: '127.0.0.1'
-      #     pause: 2000
-      #     needFail: 'true'
-      #     reverse: 'false'
       - name: Install client dependencies
         run: |
           python3 -m pip install --upgrade pip
