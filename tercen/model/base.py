@@ -976,6 +976,7 @@ class UserBase(BaseObject):
             self.roles = list()
             self.invitedByUsername = ""
             self.invitationCounts = 0
+            self.createdBy = ""
             self.maxInvitation = 0
             self.teamAcl = impl.Acl()
             self.billingInfo = impl.BillingInfo()
@@ -1008,6 +1009,11 @@ class UserBase(BaseObject):
         else:
             self.billingInfo = BillingInfoBase.createFromJson(
                 m.get(Vocabulary.billingInfo_OP))
+        
+        if m.get(Vocabulary.createdBy_DP) is None:
+            self.createdBy = ""
+        else:
+            self.createdBy = m[Vocabulary.createdBy_DP]
 
     @classmethod
     def createFromJson(cls, m):
