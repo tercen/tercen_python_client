@@ -55,7 +55,7 @@ def dataframe_to_table(df, values_as_list=False) -> Table:
 
         strType = False
 
-        if( dtypes[i] == "object" and isinstance(values[0], str) ):
+        if( (dtypes[i] == "string" or dtypes[i] == "object") and isinstance(values[0], str) ):
             column.type = 'string'
             strType = True
         elif( dtypes[i] == "float64" or dtypes[i] == "float32"):

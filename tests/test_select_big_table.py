@@ -45,7 +45,7 @@ class TestTercen(unittest.TestCase):
 
             serviceUri = ''.join([conf["SERVICE_URL"], ":", conf["SERVICE_PORT"]])
 
-        self.nRows = 100000
+        self.nRows = 1000000
 
         self.data = pd.DataFrame( {'Values':range(0,self.nRows), 
                 "Columns":range(0,self.nRows),
@@ -85,6 +85,32 @@ class TestTercen(unittest.TestCase):
         assert(resDf[".y"].dtype == pl.Float64)
 
         np.testing.assert_allclose(resDf[".y"],  self.data["Values"], self.tol)
+
+    def test_update(self) -> None:
+        print("Start")
+        selNames = ['.y', '.ci', '.ri']
+     
+        resDf = self.context.select( selNames  )
+
+        resDf = resDf.with_columns( (pl.col(".y") * 2).alias("y2") )
+        resDf = resDf.with_columns( (pl.col(".y") ).alias("y") )
+        resDf = resDf.drop(".y")
+
+        smallDf = resDf.clone().slice(0, 50000)
+        resDf = self.context.add_namespace(resDf) 
+        smallDf = self.context.add_namespace(smallDf) 
+
+        import time
+        start = time.time()
+        resDf = self.context.save_dev(resDf.clone())
+        end = time.time()
+        print("Large Df: {}".format(end-start))
+
+        start = time.time()
+        smallDf = self.context.save_dev(smallDf.clone())
+        end = time.time()
+        print("Small Df: {}".format(end-start))
+        
 
     def test_select_pandas(self) -> None:
         selNames = ['.y']
