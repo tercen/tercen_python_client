@@ -123,7 +123,19 @@ class TestTercen(unittest.TestCase):
         assert( not resDf is None )
         assert(resDf[:,0].dtype == pl.Float64)
         
+    def test_select_offset_nr(self) -> None:
+        '''types'''
+        targetYDf = self.data
+       
+        selNames = ['.y', '.ci', '.ri']
+     
+        resDf = self.context.select( selNames, offset=3, nr=3 )
+        
+        y = np.sort(resDf[selNames[0]])
+        yt = np.sort(targetYDf["Values"])[2:5]
 
+        assert( not resDf is None )
+        np.testing.assert_allclose(y, yt, self.tol)
 
     def test_select_types(self) -> None:
         '''types'''

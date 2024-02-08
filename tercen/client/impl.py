@@ -83,12 +83,15 @@ class TableSchemaService(tercen.client.base.TableSchemaServiceBase):
     def selectStream(self, tableId, cnames, offset, limit):
         response = None
         try:
-            uri = URI.create("api/v1/schema" + "/" + "selectStream")
+            if offset == 0 and limit == -1:
+                uri = URI.create("api/v1/schema" + "/" + "selectStream")
+            else:
+                uri = URI.create("api/v1/schema" + "/" + "select")
             params = {}
             params["tableId"] = tableId
             params["cnames"] = cnames
-            params["offset"] = offset
-            params["limit"] = limit
+            params["offset"] = int(offset)
+            params["limit"] = int(limit)
             response = self.getHttpClient().post(
                 self.getServiceUri(uri).toString(), None, encodeTSON(params))
             if response.code() != 200:
