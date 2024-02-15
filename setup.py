@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 setup(
     name='tercen_python_client',
-    version='0.10.3',
+    version='0.10.4',
     packages=find_packages(exclude=['tests']),
     install_requires=[
         'numpy==1.22.*',
@@ -10,7 +10,7 @@ setup(
         'python-dateutil==2.8.*',
         'pytz==2023.*',
         'scipy==1.11.*',
-        'pytson @ git+https://github.com/tercen/pytson@1.8.7#egg=pytson',
+        'pytson @ git+https://github.com/tercen/pytson@1.8.8#egg=pytson',
         'polars==0.20.*',
         'pipreqs==0.4.*'
     ],
