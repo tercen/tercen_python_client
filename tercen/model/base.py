@@ -280,10 +280,12 @@ class SciObjectBase(BaseObject):
             return impl.MeltStepModel(m)
         if kind == Vocabulary.ExportModel_CLASS:
             return impl.ExportModel(m)
-        if kind == Vocabulary.Attribute_CLASS:
-            return impl.Attribute(m)
         if kind == Vocabulary.MappingFactor_CLASS:
             return impl.MappingFactor(m)
+        if kind == Vocabulary.MetaFactor_CLASS:
+            return impl.MetaFactor(m)
+        if kind == Vocabulary.Attribute_CLASS:
+            return impl.Attribute(m)
         if kind == Vocabulary.ChartLine_CLASS:
             return impl.ChartLine(m)
         if kind == Vocabulary.ChartPoint_CLASS:
@@ -1500,6 +1502,41 @@ class StorageProfileBase(BaseObject):
         else:
             m.pop(Vocabulary.SUBKIND, None)
         m[Vocabulary.size_DP] = self.size
+        return m
+
+
+class OperatorOutputSpecBase(BaseObject):
+    def __init__(self, m=None):
+        import tercen.model.impl as impl
+        if m is not None:
+            self.fromJson(m)
+
+        else:
+            super().__init__(m)
+
+    def fromJson(self, m):
+        import tercen.model.impl as impl
+        super().fromJson(m)
+        self.subKind = m.get(Vocabulary.SUBKIND)
+        if self.subKind is None and m.get(Vocabulary.KIND) != Vocabulary.OperatorOutputSpec_CLASS:
+            self.subKind = m.get(Vocabulary.KIND)
+
+    @classmethod
+    def createFromJson(cls, m):
+        import tercen.model.impl as impl
+        kind = m.get(Vocabulary.KIND)
+        if kind == Vocabulary.OperatorOutputSpec_CLASS:
+            return impl.OperatorOutputSpec(m)
+        raise ValueError("bad kind : " + kind +
+                         " for class OperatorOutputSpec in createFromJson")
+
+    def toJson(self):
+        m = super().toJson()
+        m[Vocabulary.KIND] = Vocabulary.OperatorOutputSpec_CLASS
+        if self.subKind is not None and self.subKind != Vocabulary.OperatorOutputSpec_CLASS:
+            m[Vocabulary.SUBKIND] = self.subKind
+        else:
+            m.pop(Vocabulary.SUBKIND, None)
         return m
 
 
@@ -2785,6 +2822,7 @@ class OperatorBase(BaseObject):
         if m is None:
             super().__init__(m)
             self.properties = list()
+            self.operatorSpec = impl.OperatorSpec()
         else:
             self.fromJson(m)
 
@@ -2801,6 +2839,11 @@ class OperatorBase(BaseObject):
             self.properties = list()
             for o in m.get(Vocabulary.properties_OP):
                 self.properties.append(PropertyBase.createFromJson(o))
+        if m.get(Vocabulary.operatorSpec_OP) is None:
+            self.operatorSpec = impl.OperatorSpec()
+        else:
+            self.operatorSpec = OperatorSpecBase.createFromJson(
+                m.get(Vocabulary.operatorSpec_OP))
 
     @classmethod
     def createFromJson(cls, m):
@@ -2832,6 +2875,7 @@ class OperatorBase(BaseObject):
             m.pop(Vocabulary.SUBKIND, None)
         m[Vocabulary.properties_OP] = list(
             map(lambda x: x.toJson(), self.properties))
+        m[Vocabulary.operatorSpec_OP] = self.operatorSpec if self.operatorSpec is None else self.operatorSpec.toJson()
         return m
 
 
@@ -5285,33 +5329,79 @@ class RDescriptionBase(BaseObject):
         return m
 
 
-class MetaFactorBase(BaseObject):
+class FactorBase(BaseObject):
     def __init__(self, m=None):
         import tercen.model.impl as impl
+        FactorBase.__bases__ = (impl.SciObject,)
         if m is None:
             super().__init__(m)
             self.name = ""
-            self.description = ""
-            self.crosstabMapping = ""
-            self.metaCardinality = ""
             self.type = ""
+        else:
+            self.fromJson(m)
+
+    def fromJson(self, m):
+        import tercen.model.impl as impl
+        FactorBase.__bases__ = (impl.SciObject,)
+        super().fromJson(m)
+        self.subKind = m.get(Vocabulary.SUBKIND)
+        if self.subKind is None and m.get(Vocabulary.KIND) != Vocabulary.Factor_CLASS:
+            self.subKind = m.get(Vocabulary.KIND)
+        self.name = m[Vocabulary.name_DP]
+        self.type = m[Vocabulary.type_DP]
+
+    @classmethod
+    def createFromJson(cls, m):
+        import tercen.model.impl as impl
+        kind = m.get(Vocabulary.KIND)
+        if kind == Vocabulary.Factor_CLASS:
+            return impl.Factor(m)
+        if kind == Vocabulary.MappingFactor_CLASS:
+            return impl.MappingFactor(m)
+        if kind == Vocabulary.MetaFactor_CLASS:
+            return impl.MetaFactor(m)
+        if kind == Vocabulary.Attribute_CLASS:
+            return impl.Attribute(m)
+        raise ValueError("bad kind : " + kind +
+                         " for class Factor in createFromJson")
+
+    def toJson(self):
+        m = super().toJson()
+        m[Vocabulary.KIND] = Vocabulary.Factor_CLASS
+        if self.subKind is not None and self.subKind != Vocabulary.Factor_CLASS:
+            m[Vocabulary.SUBKIND] = self.subKind
+        else:
+            m.pop(Vocabulary.SUBKIND, None)
+        m[Vocabulary.name_DP] = self.name
+        m[Vocabulary.type_DP] = self.type
+        return m
+
+
+class MetaFactorBase(BaseObject):
+    def __init__(self, m=None):
+        import tercen.model.impl as impl
+        MetaFactorBase.__bases__ = (impl.Factor,)
+        if m is None:
+            super().__init__(m)
+            self.description = ""
             self.ontologyMapping = ""
+            self.crosstabMapping = ""
+            self.cardinality = ""
             self.factors = list()
         else:
             self.fromJson(m)
 
     def fromJson(self, m):
         import tercen.model.impl as impl
+        MetaFactorBase.__bases__ = (impl.Factor,)
         super().fromJson(m)
         self.subKind = m.get(Vocabulary.SUBKIND)
         if self.subKind is None and m.get(Vocabulary.KIND) != Vocabulary.MetaFactor_CLASS:
             self.subKind = m.get(Vocabulary.KIND)
-        self.name = m[Vocabulary.name_DP]
         self.description = m[Vocabulary.description_DP]
-        self.crosstabMapping = m[Vocabulary.crosstabMapping_DP]
-        self.metaCardinality = m[Vocabulary.metaCardinality_DP]
-        self.type = m[Vocabulary.type_DP]
         self.ontologyMapping = m[Vocabulary.ontologyMapping_DP]
+        self.crosstabMapping = m[Vocabulary.crosstabMapping_DP]
+        self.cardinality = m[Vocabulary.cardinality_DP]
         if m.get(Vocabulary.factors_OP) is None:
             self.factors = list()
         else:
@@ -5325,6 +5415,8 @@ class MetaFactorBase(BaseObject):
         kind = m.get(Vocabulary.KIND)
         if kind == Vocabulary.MetaFactor_CLASS:
             return impl.MetaFactor(m)
+        if kind == Vocabulary.MappingFactor_CLASS:
+            return impl.MappingFactor(m)
         raise ValueError("bad kind : " + kind +
                          " for class MetaFactor in createFromJson")
 
@@ -5335,12 +5427,10 @@ class MetaFactorBase(BaseObject):
             m[Vocabulary.SUBKIND] = self.subKind
         else:
             m.pop(Vocabulary.SUBKIND, None)
-        m[Vocabulary.name_DP] = self.name
         m[Vocabulary.description_DP] = self.description
-        m[Vocabulary.crosstabMapping_DP] = self.crosstabMapping
-        m[Vocabulary.metaCardinality_DP] = self.metaCardinality
-        m[Vocabulary.type_DP] = self.type
         m[Vocabulary.ontologyMapping_DP] = self.ontologyMapping
+        m[Vocabulary.crosstabMapping_DP] = self.crosstabMapping
+        m[Vocabulary.cardinality_DP] = self.cardinality
         m[Vocabulary.factors_OP] = list(
             map(lambda x: x.toJson(), self.factors))
         return m
@@ -6033,52 +6123,6 @@ class PrincipalBase(BaseObject):
         return m
 
 
-class FactorBase(BaseObject):
-    def __init__(self, m=None):
-        import tercen.model.impl as impl
-        FactorBase.__bases__ = (impl.SciObject,)
-        if m is None:
-            super().__init__(m)
-            self.name = ""
-            self.type = ""
-        else:
-            self.fromJson(m)
-
-    def fromJson(self, m):
-        import tercen.model.impl as impl
-        FactorBase.__bases__ = (impl.SciObject,)
-        super().fromJson(m)
-        self.subKind = m.get(Vocabulary.SUBKIND)
-        if self.subKind is None and m.get(Vocabulary.KIND) != Vocabulary.Factor_CLASS:
-            self.subKind = m.get(Vocabulary.KIND)
-        self.name = m[Vocabulary.name_DP]
-        self.type = m[Vocabulary.type_DP]
-
-    @classmethod
-    def createFromJson(cls, m):
-        import tercen.model.impl as impl
-        kind = m.get(Vocabulary.KIND)
-        if kind == Vocabulary.Factor_CLASS:
-            return impl.Factor(m)
-        if kind == Vocabulary.Attribute_CLASS:
-            return impl.Attribute(m)
-        if kind == Vocabulary.MappingFactor_CLASS:
-            return impl.MappingFactor(m)
-        raise ValueError("bad kind : " + kind +
-                         " for class Factor in createFromJson")
-
-    def toJson(self):
-        m = super().toJson()
-        m[Vocabulary.KIND] = Vocabulary.Factor_CLASS
-        if self.subKind is not None and self.subKind != Vocabulary.Factor_CLASS:
-            m[Vocabulary.SUBKIND] = self.subKind
-        else:
-            m.pop(Vocabulary.SUBKIND, None)
-        m[Vocabulary.name_DP] = self.name
-        m[Vocabulary.type_DP] = self.type
-        return m
-
-
 class AttributeBase(BaseObject):
     def __init__(self, m=None):
         import tercen.model.impl as impl
@@ -6497,8 +6541,10 @@ class OperatorSpecBase(BaseObject):
         import tercen.model.impl as impl
         if m is None:
             super().__init__(m)
+            self.ontologyUri = ""
             self.ontologyVersion = ""
-            self.crosstabSpecs = list()
+            self.inputSpecs = list()
+            self.outputSpecs = list()
         else:
             self.fromJson(m)
 
@@ -6508,13 +6554,21 @@ class OperatorSpecBase(BaseObject):
         self.subKind = m.get(Vocabulary.SUBKIND)
         if self.subKind is None and m.get(Vocabulary.KIND) != Vocabulary.OperatorSpec_CLASS:
             self.subKind = m.get(Vocabulary.KIND)
+        self.ontologyUri = m[Vocabulary.ontologyUri_DP]
         self.ontologyVersion = m[Vocabulary.ontologyVersion_DP]
-        if m.get(Vocabulary.crosstabSpecs_OP) is None:
-            self.crosstabSpecs = list()
+        if m.get(Vocabulary.inputSpecs_OP) is None:
+            self.inputSpecs = list()
         else:
-            self.crosstabSpecs = list()
-            for o in m.get(Vocabulary.crosstabSpecs_OP):
-                self.crosstabSpecs.append(CrosstabSpecBase.createFromJson(o))
+            self.inputSpecs = list()
+            for o in m.get(Vocabulary.inputSpecs_OP):
+                self.inputSpecs.append(OperatorInputSpecBase.createFromJson(o))
+        if m.get(Vocabulary.outputSpecs_OP) is None:
+            self.outputSpecs = list()
+        else:
+            self.outputSpecs = list()
+            for o in m.get(Vocabulary.outputSpecs_OP):
+                self.outputSpecs.append(
+                    OperatorOutputSpecBase.createFromJson(o))
 
     @classmethod
     def createFromJson(cls, m):
@@ -6532,9 +6586,12 @@ class OperatorSpecBase(BaseObject):
             m[Vocabulary.SUBKIND] = self.subKind
         else:
             m.pop(Vocabulary.SUBKIND, None)
+        m[Vocabulary.ontologyUri_DP] = self.ontologyUri
         m[Vocabulary.ontologyVersion_DP] = self.ontologyVersion
-        m[Vocabulary.crosstabSpecs_OP] = list(
-            map(lambda x: x.toJson(), self.crosstabSpecs))
+        m[Vocabulary.inputSpecs_OP] = list(
+            map(lambda x: x.toJson(), self.inputSpecs))
+        m[Vocabulary.outputSpecs_OP] = list(
+            map(lambda x: x.toJson(), self.outputSpecs))
         return m
 
 
@@ -8147,6 +8204,43 @@ class RenameRelationBase(BaseObject):
         m[Vocabulary.relation_OP] = self.relation if self.relation is None else self.relation.toJson()
         m[Vocabulary.inNames_DP] = self.inNames
         m[Vocabulary.outNames_DP] = self.outNames
+        return m
+
+
+class OperatorInputSpecBase(BaseObject):
+    def __init__(self, m=None):
+        import tercen.model.impl as impl
+        if m is not None:
+            self.fromJson(m)
+
+        else:
+            super().__init__(m)
+
+    def fromJson(self, m):
+        import tercen.model.impl as impl
+        super().fromJson(m)
+        self.subKind = m.get(Vocabulary.SUBKIND)
+        if self.subKind is None and m.get(Vocabulary.KIND) != Vocabulary.OperatorInputSpec_CLASS:
+            self.subKind = m.get(Vocabulary.KIND)
+
+    @classmethod
+    def createFromJson(cls, m):
+        import tercen.model.impl as impl
+        kind = m.get(Vocabulary.KIND)
+        if kind == Vocabulary.OperatorInputSpec_CLASS:
+            return impl.OperatorInputSpec(m)
+        if kind == Vocabulary.CrosstabSpec_CLASS:
+            return impl.CrosstabSpec(m)
+        raise ValueError("bad kind : " + kind +
+                         " for class OperatorInputSpec in createFromJson")
+
+    def toJson(self):
+        m = super().toJson()
+        m[Vocabulary.KIND] = Vocabulary.OperatorInputSpec_CLASS
+        if self.subKind is not None and self.subKind != Vocabulary.OperatorInputSpec_CLASS:
+            m[Vocabulary.SUBKIND] = self.subKind
+        else:
+            m.pop(Vocabulary.SUBKIND, None)
         return m
 
 
@@ -9901,6 +9995,7 @@ class CreateGitOperatorTaskBase(BaseObject):
 class CrosstabSpecBase(BaseObject):
     def __init__(self, m=None):
         import tercen.model.impl as impl
+        CrosstabSpecBase.__bases__ = (impl.OperatorInputSpec,)
         if m is None:
             super().__init__(m)
             self.metaFactors = list()
@@ -9910,6 +10005,7 @@ class CrosstabSpecBase(BaseObject):
 
     def fromJson(self, m):
         import tercen.model.impl as impl
+        CrosstabSpecBase.__bases__ = (impl.OperatorInputSpec,)
         super().fromJson(m)
         self.subKind = m.get(Vocabulary.SUBKIND)
         if self.subKind is None and m.get(Vocabulary.KIND) != Vocabulary.CrosstabSpec_CLASS:
@@ -10458,6 +10554,7 @@ class WorkflowBase(BaseObject):
         WorkflowBase.__bases__ = (impl.ProjectDocument,)
         if m is None:
             super().__init__(m)
+            self.scale = 0.0
             self.links = list()
             self.steps = list()
             self.offset = impl.Point()
@@ -10471,6 +10568,7 @@ class WorkflowBase(BaseObject):
         self.subKind = m.get(Vocabulary.SUBKIND)
         if self.subKind is None and m.get(Vocabulary.KIND) != Vocabulary.Workflow_CLASS:
             self.subKind = m.get(Vocabulary.KIND)
+        self.scale = m[Vocabulary.scale_DP]
         if m.get(Vocabulary.links_OP) is None:
             self.links = list()
         else:
@@ -10507,6 +10605,7 @@ class WorkflowBase(BaseObject):
         m[Vocabulary.links_OP] = list(map(lambda x: x.toJson(), self.links))
         m[Vocabulary.steps_OP] = list(map(lambda x: x.toJson(), self.steps))
         m[Vocabulary.offset_OP] = self.offset if self.offset is None else self.offset.toJson()
+        m[Vocabulary.scale_DP] = self.scale
         return m
 
 
@@ -11257,34 +11356,25 @@ class TablePropertiesBase(BaseObject):
 class MappingFactorBase(BaseObject):
     def __init__(self, m=None):
         import tercen.model.impl as impl
-        MappingFactorBase.__bases__ = (impl.Factor,)
+        MappingFactorBase.__bases__ = (impl.MetaFactor,)
         if m is None:
             super().__init__(m)
-            self.isSingle = True
-            self.description = ""
             self.factorName = ""
+            self.isSingle = True
             self.isRequired = True
-            self.factors = list()
         else:
             self.fromJson(m)
 
     def fromJson(self, m):
         import tercen.model.impl as impl
-        MappingFactorBase.__bases__ = (impl.Factor,)
+        MappingFactorBase.__bases__ = (impl.MetaFactor,)
         super().fromJson(m)
         self.subKind = m.get(Vocabulary.SUBKIND)
         if self.subKind is None and m.get(Vocabulary.KIND) != Vocabulary.MappingFactor_CLASS:
             self.subKind = m.get(Vocabulary.KIND)
-        self.isSingle = m[Vocabulary.isSingle_DP]
-        self.description = m[Vocabulary.description_DP]
         self.factorName = m[Vocabulary.factorName_DP]
+        self.isSingle = m[Vocabulary.isSingle_DP]
         self.isRequired = m[Vocabulary.isRequired_DP]
-        if m.get(Vocabulary.factors_OP) is None:
-            self.factors = list()
-        else:
-            self.factors = list()
-            for o in m.get(Vocabulary.factors_OP):
-                self.factors.append(FactorBase.createFromJson(o))
 
     @classmethod
     def createFromJson(cls, m):
@@ -11302,11 +11392,8 @@ class MappingFactorBase(BaseObject):
             m[Vocabulary.SUBKIND] = self.subKind
         else:
             m.pop(Vocabulary.SUBKIND, None)
-        m[Vocabulary.isSingle_DP] = self.isSingle
-        m[Vocabulary.description_DP] = self.description
         m[Vocabulary.factorName_DP] = self.factorName
-        m[Vocabulary.factors_OP] = list(
-            map(lambda x: x.toJson(), self.factors))
+        m[Vocabulary.isSingle_DP] = self.isSingle
         m[Vocabulary.isRequired_DP] = self.isRequired
         return m
 

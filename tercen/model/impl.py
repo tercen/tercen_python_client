@@ -60,6 +60,10 @@ class StorageProfile(StorageProfileBase):
     def __init__(self, m=None):
         super().__init__(m)
 
+class OperatorOutputSpec(OperatorOutputSpecBase):
+    def __init__(self, m=None):
+        super().__init__(m)
+
 class ResourceSummary(ResourceSummaryBase):
     def __init__(self, m=None):
         super().__init__(m)
@@ -336,6 +340,10 @@ class RDescription(RDescriptionBase):
     def __init__(self, m=None):
         super().__init__(m)
 
+class Factor(FactorBase):
+    def __init__(self, m=None):
+        super().__init__(m)
+
 class MetaFactor(MetaFactorBase):
     def __init__(self, m=None):
         super().__init__(m)
@@ -393,10 +401,6 @@ class XYAxis(XYAxisBase):
         super().__init__(m)
 
 class Principal(PrincipalBase):
-    def __init__(self, m=None):
-        super().__init__(m)
-
-class Factor(FactorBase):
     def __init__(self, m=None):
         super().__init__(m)
 
@@ -577,6 +581,10 @@ class GraphicalFactor(GraphicalFactorBase):
         super().__init__(m)
 
 class RenameRelation(RenameRelationBase):
+    def __init__(self, m=None):
+        super().__init__(m)
+
+class OperatorInputSpec(OperatorInputSpecBase):
     def __init__(self, m=None):
         super().__init__(m)
 
@@ -855,53 +863,4 @@ class UserSecret(UserSecretBase):
 class GroupByRelation(GroupByRelationBase):
     def __init__(self, m=None):
         super().__init__(m)
-
-
-def removeMeta(self, key):
-    for i in range(0, len(self.meta)):
-        m = self.meta[i]
-        if m.key == key:
-            self.meta.pop(i)
-            break
-
-def hasMeta(self, key):
-    for i in range(0, len(self.meta)):
-        m = self.meta[i]
-        if m.key == key:
-            return True
-    return False
-
-
-def getMetaPair(self, key):
-    for i in range(0, len(self.meta)):
-        m = self.meta[i]
-        if m.key == key:
-            return m
-
-def getMeta(self, key, defaultValue=None):
-    for i in range(0, len(self.meta)):
-        m = self.meta[i]
-        if m.key == key:
-            return m.value
-    return defaultValue
-
-def addMeta(self, key:str, value:str):
-    p = Pair({"key":key, "value":value})
-    self.removeMeta(p.key)
-    self.meta.append(p)
-
-
-Task.removeMeta = removeMeta
-Task.addMeta = addMeta
-Task.hasMeta = hasMeta
-Task.getMetaPair = getMetaPair
-Task.getMeta = getMeta
-
-
-Document.removeMeta = removeMeta
-Document.addMeta = addMeta
-Document.hasMeta = hasMeta
-Document.getMetaPair = getMetaPair
-Document.getMeta = getMeta
-
 

@@ -1364,6 +1364,24 @@ class UserServiceBase (HttpClientService):
             self.onError(e)
         return answer
 
+    def createTokenForTask(self, userId, validityInSeconds, taskId):
+        answer = None
+        try:
+            uri = URI.create("api/v1/user" + "/" + "createTokenForTask")
+            params = {}
+            params["userId"] = userId
+            params["validityInSeconds"] = validityInSeconds
+            params["taskId"] = taskId
+            response = self.getHttpClient().post(
+                self.getServiceUri(uri).toString(), None, encodeTSON(params))
+            if response.code() != 200:
+                self.onResponseError(response)
+            else:
+                answer = decodeTSON(response).get(0)
+        except BaseException as e:
+            self.onError(e)
+        return answer
+
     def isTokenValid(self, token):
         answer = True
         try:
