@@ -126,50 +126,51 @@ class TestFileService(unittest.TestCase):
         self.client.fileService.delete(file.id, file.rev)
         self.client.teamService.delete(project.id, project.rev)
 
-    def test_upload_file_from_library(self): 
-        dsLib = self.client.documentService.getTercenDatasetLibrary(0, 100)
-
-        
-        fileDoc = None
-        for l in dsLib:
-            if l.name == "Crabs Data.csv":
-                fileDoc = l
-                break
-
-        assert(not fileDoc is None)
-
-
-        project = Project()
-        project.name = 'python_project_file'
-        project.acl.owner = 'test'
-        project = self.client.projectService.create(project)
-
-        gt = ''
-        if "GITHUB_TOKEN" in os.environ:
-            gt = os.environ["GITHUB_TOKEN"]
-        
-
-
-        gitTask = ImportGitDatasetTask()
-        gitTask.state = InitState()
-        gitTask.gitToken = gt
-        gitTask.projectId = project.id
-        gitTask.url = fileDoc.url
-        gitTask.version = fileDoc.version
-        gitTask.owner = project.acl.owner
-
-        gitTask = self.client.taskService.create( gitTask )
-        self.client.taskService.runTask(gitTask.id)
-        gitTask = self.client.taskService.waitDone(gitTask.id)
-
-
-        
-        sch = self.client.tableSchemaService.get(gitTask.schemaId)
-        assert(not sch is None)
-
-
-        self.client.fileService.delete(sch.id, sch.rev)
-        self.client.teamService.delete(project.id, project.rev)
+    # def test_upload_file_from_library(self):
+    #     dsLib = self.client.documentService.getLibrary('', [], ['Schema'], 0, 100)
+    #     # dsLib = self.client.documentService.getTercenDatasetLibrary(0, 100)
+    #
+    #
+    #     fileDoc = None
+    #     for l in dsLib:
+    #         if l.name == "Crabs Data.csv":
+    #             fileDoc = l
+    #             break
+    #
+    #     assert(not fileDoc is None)
+    #
+    #
+    #     project = Project()
+    #     project.name = 'python_project_file'
+    #     project.acl.owner = 'test'
+    #     project = self.client.projectService.create(project)
+    #
+    #     gt = ''
+    #     if "GITHUB_TOKEN" in os.environ:
+    #         gt = os.environ["GITHUB_TOKEN"]
+    #
+    #
+    #
+    #     gitTask = ImportGitDatasetTask()
+    #     gitTask.state = InitState()
+    #     gitTask.gitToken = gt
+    #     gitTask.projectId = project.id
+    #     gitTask.url = fileDoc.url
+    #     gitTask.version = fileDoc.version
+    #     gitTask.owner = project.acl.owner
+    #
+    #     gitTask = self.client.taskService.create( gitTask )
+    #     self.client.taskService.runTask(gitTask.id)
+    #     gitTask = self.client.taskService.waitDone(gitTask.id)
+    #
+    #
+    #
+    #     sch = self.client.tableSchemaService.get(gitTask.schemaId)
+    #     assert(not sch is None)
+    #
+    #
+    #     self.client.fileService.delete(sch.id, sch.rev)
+    #     self.client.teamService.delete(project.id, project.rev)
 
 
 

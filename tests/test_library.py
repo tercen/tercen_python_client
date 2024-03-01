@@ -48,7 +48,7 @@ class TestUserService(unittest.TestCase):
 
     def test_dataset_library(self):
         #Parameters are seemingly ignored
-        lib = self.client.documentService.getTercenDatasetLibrary(0, 1)
+        lib = self.client.documentService.getLibrary('', [], ['Schema', 'File', 'Operator'], [], 0, 100)
 
         assert(not lib is None)
         assert(len(lib) > 0)
