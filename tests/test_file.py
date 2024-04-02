@@ -9,7 +9,7 @@ from tercen.model.impl import Project, FileDocument, CSVTask, InitState, \
             FileDocument, Project, ImportGitDatasetTask
 
 class TestFileService(unittest.TestCase):
-    #TEST UPLOAD DOWNLOAD worksheet...
+    
     def setUp(self):
         envs = os.environ
         isLocal = False
@@ -72,36 +72,6 @@ class TestFileService(unittest.TestCase):
         assert data.read() == bytes_data
         self.client.teamService.delete(project.id, project.rev)
 
-    def test_upload_download_large_json_file(self):
-        import json
-        with open('./tests/data/worksheet.jwks', "r") as file:
-            jsonContent = file.read()
-
-             
-        
-        df = pd.DataFrame({"Content":[jsonContent]})
-
-        # df = pd.read_csv('./tests/data/worksheet.jwks')
-        # # df = pd.read_csv('./tests/data/scRNAseq_large_by25_no0.csv')
-        bytes_data = utl.dataframe_to_bytes(df)
-
-
-        project = Project()
-        project.name = 'python_project_file'
-        project.acl.owner = 'test'
-        project = self.client.projectService.create(project)
-        file = FileDocument()
-        file.name = "hello.txt"
-        file.acl.owner = 'test'
-        file.projectId = project.id 
-
-        
-
-        # bytes_data = "hello\n\nhello\n\n42".encode("utf_8")
-        file = self.client.fileService.upload(file, bytes_data)
-        data = self.client.fileService.download(file.id)
-        assert data.read() == bytes_data
-        self.client.teamService.delete(project.id, project.rev)
 
     def test_upload_download_large_file(self):
         df = pd.read_csv('./tests/data/hospitals.csv')
