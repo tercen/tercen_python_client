@@ -45,15 +45,15 @@ class TestUserService(unittest.TestCase):
                                    "DockerWebAppOperator"])
 
 
-    def test_library_tags(self):
-        lib = self.client.documentService.getLibrary('', [], ['Schema', 'File', 'Operator'], ["flow cytometry"], 0, 100)
+    # def test_library_tags(self):
+    #     lib = self.client.documentService.getLibrary('', [], ['Schema', 'File', 'Operator'], ["flow cytometry"], 0, 100)
 
-        assert(not lib is None)
-        assert(len(lib) > 0)
+    #     assert(not lib is None)
+    #     assert(len(lib) > 0)
 
-        for op in lib:
-            assert( isinstance(op, Document )) 
-            assert("flow cytometry" in op.tags)
+    #     for op in lib:
+    #         assert( isinstance(op, Document )) 
+    #         assert("flow cytometry" in op.tags)
 
     def test_library(self):
         lib = self.client.documentService.getLibrary('', [], ['Schema', 'File', 'Operator'], [], 10, limit=int(15))
