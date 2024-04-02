@@ -50,14 +50,6 @@ class HttpClientService:
     def fromJson(self, m, useFactory=True):
         pass
 
-    # def specificClassFromJson( self, m):
-    #     className = m['kind']
-                
-    #     klass = globals()[className]
-    #     newObj = klass(m)
-
-    #     return newObj
-
     def get(self, str_id, useFactory=True):
         try:
             params = {"id": str_id, "useFactory": str(useFactory).lower()}
@@ -232,6 +224,22 @@ class HttpClient:
         except HTTPError as e:
             return Response(e)
 
+    def multipart_non_chunked(self, uri, headers=None, parts=None):
+        if parts is None:
+            parts = []
+        if headers is None:
+            headers = {}
+        try:
+            frontier = "ab63a1363ab349aa8627be56b0479de2"
+            data = MultiPartMixTransformerNonChunked(frontier, parts).encode_parts()
+            headers["Content-Type"] = "multipart/mixed; boundary=" + frontier
+            req = urllib.request.Request(uri, headers=self.buildHeaders(headers), data=data, method='POST')
+
+            return Response(urllib.request.urlopen(req))
+
+        except HTTPError as e:
+            return Response(e)
+
 
 class Response:
     def __init__(self, httpResponseOrError):
@@ -266,6 +274,34 @@ class MultiPart:
     def toTson(self):
         return {"headers":self.headers, "content":self.bytes_data}
 
+class MultiPartMixTransformerNonChunked:
+    def __init__(self, frontier, parts):
+        self.frontier = frontier
+        self.parts = parts
+
+    def encode_parts(self):
+        data = bytearray()
+        for part in self.parts:
+            data.extend("--".encode("utf-8"))
+            data.extend(self.frontier.encode("utf-8"))
+            data.extend([13, 10])
+
+            for key, value in part.headers.items():
+                data.extend(key.encode("utf-8"))
+                data.extend(": ".encode("utf-8"))
+                data.extend(value.encode("utf-8"))
+                data.extend([13, 10])
+
+            data.extend([13, 10])
+            data.extend(part.bytes_data)
+            data.extend([13, 10])
+
+        data.extend("--".encode("utf-8"))
+        data.extend(self.frontier.encode("utf-8"))
+        data.extend("--".encode("utf-8"))
+        data.extend([13, 10])
+
+        return data
 
 class MultiPartMixTransformer:
     def __init__(self, frontier, parts):

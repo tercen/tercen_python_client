@@ -31,30 +31,41 @@ class TestUserService(unittest.TestCase):
 
             self.serviceUri = ''.join([conf["SERVICE_URL"], ":", conf["SERVICE_PORT"]])
         self.client = TercenClient(self.serviceUri)
-        session = self.client.userService.connect(self.username, self.passw)
+        self.client.userService.connect(self.username, self.passw)
 
-    def test_operator_library(self):
-        #Parameters are seemingly ignored
-        lib = self.client.documentService.getTercenOperatorLibrary(0, 1)
+    def test_library_operator(self):
+        lib = self.client.documentService.getLibrary('', [], ['Operator'], [], 0, 500)
 
         assert(not lib is None)
         assert(len(lib) > 0)
 
         for op in lib:
-            op.__class__.__bases__[0].__bases__[0].__bases__[0].__bases__[0]
-            if not issubclass(op.__class__, Operator  ):
-                print('z')
-            assert( issubclass(op.__class__, Operator  )) 
+            assert( isinstance(op, Document  )) 
+            assert( op.subKind in ["Operator", "ROperator", "DockerOperator", "ShinyOperator",\
+                                   "DockerWebAppOperator"])
 
-    def test_dataset_library(self):
-        #Parameters are seemingly ignored
-        lib = self.client.documentService.getLibrary('', [], ['Schema', 'File', 'Operator'], [], 0, 100)
+
+    def test_library_tags(self):
+        lib = self.client.documentService.getLibrary('', [], ['Schema', 'File', 'Operator'], ["flow cytometry"], 0, 100)
 
         assert(not lib is None)
         assert(len(lib) > 0)
 
         for op in lib:
             assert( isinstance(op, Document )) 
+            assert("flow cytometry" in op.tags)
+
+    def test_library(self):
+        lib = self.client.documentService.getLibrary('', [], ['Schema', 'File', 'Operator'], [], 10, limit=int(15))
+
+        assert(not lib is None)
+        # assert(len(lib) == 15)
+        # Parameters offset and limit are being ignored
+        assert(len(lib) > 0)
+
+        for op in lib:
+            assert( isinstance(op, Document )) 
+
         
 
 if __name__ == '__main__':

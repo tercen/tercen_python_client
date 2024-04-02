@@ -40,6 +40,26 @@ class FileService(tercen.client.base.FileServiceBase):
             self.onError(e)
         return answer
 
+    def uploadSingle(self, file, bytes):
+        answer = None
+        try:
+            uri = URI.create("api/v1/file" + "/" + "upload")
+            parts = []
+            parts.append(MultiPart({"Content-Type": "application/json"},
+                         json.JSONEncoder().encode([file.toJson()]).encode("utf-8")))
+            parts.append(
+                MultiPart({"Content-Type": "application/octet-stream"}, bytes))
+            response = self.getHttpClient().multipart_non_chunked(
+                self.getServiceUri(uri).toString(), None, parts)
+            if response.code() != 200:
+                self.onResponseError(response)
+            else:
+                answer = tercen.model.base.FileDocumentBase.createFromJson(
+                    decodeTSON(response))
+        except BaseException as e:
+            self.onError(e)
+        return answer
+
 
 class GarbageCollectorService(tercen.client.base.GarbageCollectorServiceBase):
     def __init__(self):
