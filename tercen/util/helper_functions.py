@@ -222,7 +222,7 @@ def bytes_to_dataframe( tableBytes, df_engine="polars" ) -> pd.DataFrame:
     return dwnDf
 
 
-def as_relation(obj) -> Relation:
+def as_relation(obj, relationName=None) -> Relation:
     
     if issubclass(obj.__class__, Relation):
         return obj
@@ -241,7 +241,10 @@ def as_relation(obj) -> Relation:
     rel = InMemoryRelation()
 
     rel.id = uuid.uuid4().__str__()
-    tbl.properties.name = rel.id
+    if relationName is None:
+        tbl.properties.name = rel.id
+    else:
+        tbl.properties.name = relationName
     rel.inMemoryTable = tbl
 
     return rel
