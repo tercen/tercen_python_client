@@ -33,7 +33,13 @@ class TestUserService(unittest.TestCase):
             self.serviceUri = ''.join([conf["SERVICE_URL"], ":", conf["SERVICE_PORT"]])
         self.client = TercenClient(self.serviceUri)
         session = self.client.userService.connect(self.username, self.passw)
-
+    
+    def test_list_user(self):
+        users = self.client.userService.list(['test'])
+        self.assertIsNotNone(users)
+        self.assertEqual(len(users), 1)
+        self.assertEqual(users[0].name, 'test')
+        
     def test_get_user(self):
         user = self.client.userService.get('test')
         self.assertIsNotNone(user)
