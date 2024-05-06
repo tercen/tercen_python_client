@@ -40,7 +40,11 @@ class FileService(tercen.client.base.FileServiceBase):
             self.onError(e)
         return answer
 
-    def uploadSingle(self, file, bytes):
+    def uploadFromFile(self, file, filePath):
+        import os
+        if not os.path.exists(filePath) or not os.path.isfile(filePath):
+            raise ValueError("Last argument must be a path to an existing file")
+        
         answer = None
         try:
             uri = URI.create("api/v1/file" + "/" + "upload")
@@ -48,8 +52,9 @@ class FileService(tercen.client.base.FileServiceBase):
             parts.append(MultiPart({"Content-Type": "application/json"},
                          json.JSONEncoder().encode([file.toJson()]).encode("utf-8")))
             parts.append(
-                MultiPart({"Content-Type": "application/octet-stream"}, bytes))
-            response = self.getHttpClient().multipart_non_chunked(
+                MultiPart({"Content-Type": "application/octet-stream"}, filePath))
+            
+            response = self.getHttpClient().multipart(
                 self.getServiceUri(uri).toString(), None, parts)
             if response.code() != 200:
                 self.onResponseError(response)

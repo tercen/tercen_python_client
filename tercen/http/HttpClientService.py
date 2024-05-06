@@ -274,34 +274,34 @@ class MultiPart:
     def toTson(self):
         return {"headers":self.headers, "content":self.bytes_data}
 
-class MultiPartMixTransformerNonChunked:
-    def __init__(self, frontier, parts):
-        self.frontier = frontier
-        self.parts = parts
+# class MultiPartMixTransformerNonChunked:
+#     def __init__(self, frontier, parts):
+#         self.frontier = frontier
+#         self.parts = parts
 
-    def encode_parts(self):
-        data = bytearray()
-        for part in self.parts:
-            data.extend("--".encode("utf-8"))
-            data.extend(self.frontier.encode("utf-8"))
-            data.extend([13, 10])
+#     def encode_parts(self):
+#         data = bytearray()
+#         for part in self.parts:
+#             data.extend("--".encode("utf-8"))
+#             data.extend(self.frontier.encode("utf-8"))
+#             data.extend([13, 10])
 
-            for key, value in part.headers.items():
-                data.extend(key.encode("utf-8"))
-                data.extend(": ".encode("utf-8"))
-                data.extend(value.encode("utf-8"))
-                data.extend([13, 10])
+#             for key, value in part.headers.items():
+#                 data.extend(key.encode("utf-8"))
+#                 data.extend(": ".encode("utf-8"))
+#                 data.extend(value.encode("utf-8"))
+#                 data.extend([13, 10])
 
-            data.extend([13, 10])
-            data.extend(part.bytes_data)
-            data.extend([13, 10])
+#             data.extend([13, 10])
+#             data.extend(part.bytes_data)
+#             data.extend([13, 10])
 
-        data.extend("--".encode("utf-8"))
-        data.extend(self.frontier.encode("utf-8"))
-        data.extend("--".encode("utf-8"))
-        data.extend([13, 10])
+#         data.extend("--".encode("utf-8"))
+#         data.extend(self.frontier.encode("utf-8"))
+#         data.extend("--".encode("utf-8"))
+#         data.extend([13, 10])
 
-        return data
+#         return data
 
 class MultiPartMixTransformer:
     def __init__(self, frontier, parts):
@@ -310,6 +310,8 @@ class MultiPartMixTransformer:
         # self.data = self.encode_parts(parts)
         self.jsonIter = None
         self.doneIter = False
+        self.filePtr = None
+        self.currentFileChunk = 0
         self.currentPart = 0
     
     def init_encode(self, part):
@@ -372,6 +374,7 @@ class MultiPartMixTransformer:
     def __iter__(self):
         return self
 
+
     def __next__(self):
         if self.currentPart >= len(self.parts) or self.doneIter:
             if not self.doneIter:
@@ -379,12 +382,30 @@ class MultiPartMixTransformer:
                 return self.finish_all_encode()
             else:
                 raise StopIteration
+
+        elif isinstance(self.parts[self.currentPart].bytes_data, str):
+            if self.filePtr is None:
+                self.filePtr = open(self.parts[self.currentPart].bytes_data, "rb")
+                return self.init_encode(self.parts[self.currentPart])
+            
+            dataChunk = self.filePtr.read(512*1024)
+            
+            # print("Reading chunk: {} [{} bytes]".format(self.currentFileChunk, len(dataChunk)))
+            # self.currentFileChunk += 1
+
+            if dataChunk is None or len(dataChunk) == 0:
+                self.currentPart = self.currentPart  + 1
+                self.filePtr.close()
+                return self.finish_encode()
+            else:
+                return dataChunk
+
         elif isinstance(self.parts[self.currentPart].bytes_data, bytes):
             self.currentPart = self.currentPart + 1
             return self.encode_part(self.parts[self.currentPart-1])
+        
         elif isinstance(self.parts[self.currentPart].bytes_data, dict):
             if self.jsonIter is None:
-                #FIXME change here to ptson
                 self.jsonIter = ptson.SerializerJsonIterator(self.parts[self.currentPart].bytes_data)
                 return self.init_encode(self.parts[self.currentPart])
 

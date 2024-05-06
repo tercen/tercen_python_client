@@ -1,9 +1,10 @@
 import unittest, os
 from tercen.client.factory import TercenClient
 
-
+from line_profiler import profile
 import pandas as pd
 import numpy as np
+import numpy.testing as npt
 import tercen.util.helper_functions as utl
 from tercen.model.impl import Project, FileDocument, CSVTask, InitState, \
             FileDocument, Project, ImportGitDatasetTask
@@ -97,11 +98,10 @@ class TestFileService(unittest.TestCase):
         self.client.teamService.delete(project.id, project.rev)
 
 
-    def test_upload_download_large_file_non_chunked(self):
+    def test_upload_from_file(self):
         df = pd.read_csv('./tests/data/hospitals.csv')
-        # df = pd.read_csv('./tests/data/scRNAseq_large_by25_no0.csv')
-        bytes_data = utl.dataframe_to_bytes(df)
-
+        #bytes_data = utl.dataframe_to_bytes(df)
+        import tempfile
 
         project = Project()
         project.name = 'python_project_file'
@@ -115,10 +115,31 @@ class TestFileService(unittest.TestCase):
         
 
         # bytes_data = "hello\n\nhello\n\n42".encode("utf_8")
-        file = self.client.fileService.uploadSingle(file, bytes_data)
+        print("uploading")
+        file = self.client.fileService.uploadFromFile(file, './tests/data/hospitals.csv')
+        print("done")
         data = self.client.fileService.download(file.id)
-        assert data.read() == bytes_data
+        tmpFile = tempfile.gettempdir() + "/tempfile"
+        with open(tmpFile, "wb") as f:
+            f.write(data.read())
+            
+        dfOut = pd.read_csv(tmpFile)
+        
+        for colIn, colOut in zip(df, dfOut):
+            assert(colIn == colOut)
+            if isinstance(df[colIn][0], str):
+                for valIn, valOut in zip(df[colIn], dfOut[colOut]):
+                    if isinstance(valIn, str) or isinstance(valOut, str):
+                        assert(valIn == valOut)
+            else:
+                npt.assert_array_almost_equal(df[colIn],dfOut[colOut])
+            
+
+        
+        # assert data.read() == bytes_data
         self.client.teamService.delete(project.id, project.rev)
+        
+        print(".")
 
 
     def test_upload_file_as_table(self): 

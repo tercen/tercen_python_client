@@ -41,8 +41,9 @@ class TestUserService(unittest.TestCase):
 
         for op in lib:
             assert( isinstance(op, Document  )) 
+
             assert( op.subKind in ["Operator", "ROperator", "DockerOperator", "ShinyOperator",\
-                                   "DockerWebAppOperator"])
+                                   "DockerWebAppOperator", "WebAppOperator"])
 
 
     # def test_library_tags(self):
