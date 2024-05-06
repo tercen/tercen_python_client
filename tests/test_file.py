@@ -1,7 +1,6 @@
 import unittest, os
 from tercen.client.factory import TercenClient
 
-from line_profiler import profile
 import pandas as pd
 import numpy as np
 import numpy.testing as npt
