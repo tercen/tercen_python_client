@@ -95,7 +95,20 @@ class HttpClientService:
         except BaseException as e:
             self.onError(e)
 
-
+    def list(self, ids, useFactory=True):
+        try:
+            params = {'useFactory': str(useFactory).lower()}
+            url = self.getServiceUri(self.getBaseUri()).resolve(URI.create('list')).replaceQueryParameters(params)
+            response = self.getHttpClient().post(
+                url.toString(), None, encodeTSON(ids))
+            if response.code() != 200:
+                self.onResponseError(response)
+            else:
+                # return list(map(lambda x: self.specificClassFromJson(x), decodeTSON(response)))
+                return list(map(lambda x: self.fromJson(x), decodeTSON(response)))
+        except BaseException as e:
+            self.onError(e)
+            
     def findKeys(self, view_name, keys, useFactory=False):
         try:
             params = {'useFactory': str(useFactory).lower()}
