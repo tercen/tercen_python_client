@@ -224,21 +224,7 @@ class HttpClient:
         except HTTPError as e:
             return Response(e)
 
-    def multipart_non_chunked(self, uri, headers=None, parts=None):
-        if parts is None:
-            parts = []
-        if headers is None:
-            headers = {}
-        try:
-            frontier = "ab63a1363ab349aa8627be56b0479de2"
-            data = MultiPartMixTransformerNonChunked(frontier, parts).encode_parts()
-            headers["Content-Type"] = "multipart/mixed; boundary=" + frontier
-            req = urllib.request.Request(uri, headers=self.buildHeaders(headers), data=data, method='POST')
 
-            return Response(urllib.request.urlopen(req))
-
-        except HTTPError as e:
-            return Response(e)
 
 
 class Response:
