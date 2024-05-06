@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 setup(
     name='tercen_python_client',
-    version='0.10.9',
+    version='0.10.10',
     packages=find_packages(exclude=['tests']),
     install_requires=[
         'numpy==1.22.*',
