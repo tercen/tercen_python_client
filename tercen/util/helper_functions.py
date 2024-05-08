@@ -1,7 +1,7 @@
 import pandas as pd
 import polars as pl
 import numpy as np
-import polars.datatypes.classes as plc
+
 
 from io import BytesIO
 import tempfile, string, random

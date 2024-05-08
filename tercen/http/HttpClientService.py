@@ -242,10 +242,6 @@ class HttpClient:
 
 class Response:
     def __init__(self, httpResponseOrError):
-        # if httpResponseOrError is HTTPError:
-        #     self.status = httpResponseOrError.code
-        #     self.data = httpResponseOrError.read()
-        # else:
         self.status = httpResponseOrError.status
         self.stream = httpResponseOrError
 
@@ -272,35 +268,6 @@ class MultiPart:
 
     def toTson(self):
         return {"headers":self.headers, "content":self.bytes_data}
-
-# class MultiPartMixTransformerNonChunked:
-#     def __init__(self, frontier, parts):
-#         self.frontier = frontier
-#         self.parts = parts
-
-#     def encode_parts(self):
-#         data = bytearray()
-#         for part in self.parts:
-#             data.extend("--".encode("utf-8"))
-#             data.extend(self.frontier.encode("utf-8"))
-#             data.extend([13, 10])
-
-#             for key, value in part.headers.items():
-#                 data.extend(key.encode("utf-8"))
-#                 data.extend(": ".encode("utf-8"))
-#                 data.extend(value.encode("utf-8"))
-#                 data.extend([13, 10])
-
-#             data.extend([13, 10])
-#             data.extend(part.bytes_data)
-#             data.extend([13, 10])
-
-#         data.extend("--".encode("utf-8"))
-#         data.extend(self.frontier.encode("utf-8"))
-#         data.extend("--".encode("utf-8"))
-#         data.extend([13, 10])
-
-#         return data
 
 class MultiPartMixTransformer:
     def __init__(self, frontier, parts):
@@ -389,9 +356,6 @@ class MultiPartMixTransformer:
             
             dataChunk = self.filePtr.read(512*1024)
             
-            # print("Reading chunk: {} [{} bytes]".format(self.currentFileChunk, len(dataChunk)))
-            # self.currentFileChunk += 1
-
             if dataChunk is None or len(dataChunk) == 0:
                 self.currentPart = self.currentPart  + 1
                 self.filePtr.close()
@@ -419,17 +383,8 @@ class MultiPartMixTransformer:
 
 #FIXME Has to be a request object!
 def encodeTSON(obj ):
-    # tson_bytes = ptson.encodeTSON(obj)
-    # tson_bytes.seek(0)
-    # encObj = tson_bytes.read()
-
-    # return ptson.encodeTSON(obj).getbuffer().tobytes()
     return ptson.encodeTSON(obj).getbuffer().tobytes()
 
 
 def decodeTSON(bts : Response):
-    # iobytes = io.BytesIO()
-    # iobytes.write(bts)
-    # iobytes.seek(0)
-    # decodedTson = ptson.decodeTSON(iobytes)
     return ptson.decodeTSON(bts.stream)

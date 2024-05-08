@@ -54,8 +54,7 @@ def export_obj_pickle_to_project(context, data, fname, \
     with gzip.open(fname, 'wb', compresslevel=compression) as f:
         pickle.dump(data, f)
     
-    del data
-    data = []
+
 
     file = FileDocument()
     file.name = fname.split("/")[-1]
@@ -69,6 +68,8 @@ def export_obj_pickle_to_project(context, data, fname, \
     context.client.fileService.uploadFromFile(file, fname)
     
     if inplace == True:
+        del data
+        data = []
         return data
     else:
         return None
