@@ -349,6 +349,29 @@ def image_file_to_df(file_path):
 
     return imgDf
 
+def text_to_markdown_df(filename, txt):
+
+    mimetype = "text/markdown"
+    txt = txt.replace("[", "**")\
+                .replace("]", "**")\
+                .replace("\n", "\n\n")
+
+    txtBytes = txt.encode("utf-8")
+    checksum = hashlib.md5(txtBytes).hexdigest()
+
+    output_str = [ base64.b64encode(txtBytes) ]
+
+
+    outs = output_str[0].decode('utf-8')
+    txtDf = pd.DataFrame({
+        "filename":[filename],
+        "mimetype":[mimetype],
+        "checksum":[checksum],
+        ".content":[outs]
+    })
+
+    return txtDf
+
 def get_temp_filepath(ext=''):
     
     if ext != '' and str.find(ext, '.') < 0: 
