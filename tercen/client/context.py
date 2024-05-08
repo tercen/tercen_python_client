@@ -14,6 +14,9 @@ from tercen.http.HttpClientService import encodeTSON, decodeTSON
 import scipy.sparse as ssp
 import polars as pl
 
+from tercen.util.helper_objects import ObjectTraverser
+from tercen.util.helper_functions import get_list, where
+
 
 class TercenContext:
     def __init__(self, workflowId = None, stepId = None, username = 'test', password = 'test',
@@ -82,6 +85,7 @@ class TercenContext:
 
             self.task = self.context.task
             self.namespace = self.context.namespace
+            self.client = self.context.client
    
     
 
@@ -208,7 +212,26 @@ class TercenContext:
 
         return relation
 
- 
+    def document_alias_to_id(self, aliasId, colName, queryRelation=None):
+        if queryRelation is None:
+            queryRelation = self.cubeQuery.relation
+        
+        traverser = ObjectTraverser()
+        inMemRels = traverser.traverse(queryRelation, InMemoryRelation)
+        
+
+        for rel in inMemRels:
+            tbl = rel.inMemoryTable
+            
+            documentIds = get_list(tbl.columns, where([c.name == ".documentId" for c in tbl.columns ]))
+            documentAliasIds = get_list(tbl.columns, where([c.name == colName for c in tbl.columns ]))
+
+            if not documentIds is None and not documentAliasIds is None:
+                idx = where([id == aliasId for id in documentAliasIds[0].values ])
+                if not idx is None and len(idx) > 0:
+                    return documentIds[0].values[idx[0]]
+
+        return None
 
     def select_sparse(self, wide=False):
 

@@ -318,6 +318,8 @@ def image_file_to_df(file_path):
 
     if ftype == '.png':
         mimetype = "image/png"
+    if ftype == '.jpg':
+        mimetype = "image/jpg"
     elif ftype == '.svg':
         mimetype = "image/svg+xml"
     elif ftype == '.pdf':
@@ -330,7 +332,7 @@ def image_file_to_df(file_path):
     output_str = []
 
     for fpath in file_path:
-        with open(file_path, mode="rb") as f:
+        with open(fpath, mode="rb") as f:
             fc = f.read()
             output_str.append([base64.b64encode(fc)])
 
@@ -372,3 +374,12 @@ def flatten(l):
             ll.append(i)
       
     return ll
+
+
+def get_list(vec, idxVec):
+    newVec = []
+    [newVec.append(vec[i]) for i in idxVec]
+    return newVec
+
+def where(vec):
+    return [i for i, x in enumerate(vec) if x]
