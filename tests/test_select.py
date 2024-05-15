@@ -5,7 +5,9 @@ import pandas as pd
 import polars as pl
 
 import os
-
+import sys
+sys.path.append("..")
+sys.path.append(".")
 from tercen.client import context as ctx
 import tercen.util.builder as bld
 
@@ -202,10 +204,7 @@ class TestTercen(unittest.TestCase):
         stargetDf = targetDf[".y"].sort(in_place=False)
         sresDf = resDf[".y"].sort(in_place=False)
 
-        for i in range(0,20):
-            print("{} : {}".format(targetDf[".y"][i], resDf[".y"][i]) )
-        
-        
+       
         assert( not resDf is None )
         assert(resDf.shape == targetDf.shape)
         np.testing.assert_allclose(resDf[:,selNames], targetDf[:,selNames], self.tol)

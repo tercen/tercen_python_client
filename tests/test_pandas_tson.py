@@ -3,7 +3,9 @@ import numpy as np
 import numpy.testing as npt
 import pandas as pd
 import polars as pl
-
+import sys
+sys.path.append("..")
+sys.path.append(".")
 
 import tercen.util.helper_functions as utl
 

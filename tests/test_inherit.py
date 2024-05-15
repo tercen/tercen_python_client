@@ -1,6 +1,8 @@
 import unittest
 import os
-
+import sys
+sys.path.append("..")
+sys.path.append(".")
 from tercen.model.impl import Task, GitProjectTask, Pair, Document
 
 class TestTercen(unittest.TestCase):

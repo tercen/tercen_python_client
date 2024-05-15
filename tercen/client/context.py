@@ -2,6 +2,7 @@ import pandas as pd
 import numpy as np
 import multiprocessing, sys
 
+import string, random
 
 import random, string
 from tercen.model.impl import OperatorResult, FileDocument, ComputationTask, InitState,\
@@ -87,7 +88,20 @@ class TercenContext:
             self.namespace = self.context.namespace
             self.client = self.context.client
    
+   
+    def get_workflow_id(self):
+        if hasattr(self.context, "workflowId"):
+            return self.context.workflowId
+        else:
+            task = self.client.taskService.get(self.task.id)
+
+            workflowId = None
+            for envPair in task.environment:
+                if envPair.key == "workflow.id":
+                    workflowId = envPair.value
+            return workflowId
     
+
 
     def parse_args(self) -> dict:
         taskId = None

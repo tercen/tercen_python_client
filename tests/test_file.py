@@ -1,4 +1,7 @@
 import unittest, os
+import sys
+sys.path.append("..")
+sys.path.append(".")
 from tercen.client.factory import TercenClient
 
 import pandas as pd
@@ -7,6 +10,8 @@ import numpy.testing as npt
 import tercen.util.helper_functions as utl
 from tercen.model.impl import Project, FileDocument, CSVTask, InitState, \
             FileDocument, Project, ImportGitDatasetTask
+
+from tercen.util.helper_functions import download_to_file, get_temp_filepath
 
 class TestFileService(unittest.TestCase):
     
@@ -70,6 +75,26 @@ class TestFileService(unittest.TestCase):
         file = self.client.fileService.upload(file, bytes_data)
         data = self.client.fileService.download(file.id)
         assert data.read() == bytes_data
+        self.client.teamService.delete(project.id, project.rev)
+        
+        
+    def test_download_to_file(self):
+        project = Project()
+        project.name = 'python_project_file'
+        project.acl.owner = 'test'
+        project = self.client.projectService.create(project)
+        file = FileDocument()
+        file.name = "hello.txt"
+        file.acl.owner = 'test'
+        file.projectId = project.id
+        bytes_data = "hello\n\nhello\n\n42".encode("utf_8")
+        file = self.client.fileService.upload(file, bytes_data)
+        fpath = get_temp_filepath(ext='txt', workflowId=None)
+        download_to_file(self.client, file, fpath, maxTries=10, interval=5)
+        # data = self.client.fileService.download(file.id)
+        with open(fpath, "rb") as f:
+            data = f.read()
+        assert data == bytes_data
         self.client.teamService.delete(project.id, project.rev)
 
 

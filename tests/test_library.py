@@ -1,4 +1,7 @@
 import unittest, os
+import sys
+sys.path.append("..")
+sys.path.append(".")
 from tercen.client.factory import TercenClient
 from tercen.model.impl import Operator, Document
 

@@ -1,10 +1,11 @@
 import pandas as pd
 import polars as pl
 import numpy as np
-
+import gzip
 
 from io import BytesIO
-import tempfile, string, random
+from hashlib import sha256
+import tempfile, string, random, pickle, shutil
 
 import pytson as ptson
 
@@ -13,9 +14,10 @@ from tercen.model.impl import Table, Column, InMemoryRelation, Relation, \
                         SimpleRelation, Schema, \
                         CompositeRelation, JoinOperator, ColumnPair
 
+from http.client import IncompleteRead
 # import tercen.util.pytmp as ptmp
 
-
+import time
 
 def dataframe_to_table(df, values_as_list=False) -> Table:
 
@@ -372,15 +374,28 @@ def text_to_markdown_df(filename, txt):
 
     return txtDf
 
-def get_temp_filepath(ext=''):
+def get_temp_dir(workflowId=None, overwrite=True):
+    # workflowId = context.get_workflow_id()
+    if workflowId is None:
+        workflowId = ''.join(random.choice(string.ascii_uppercase + string.digits) for _ in range(12))
+    tmpFolder = tempfile.gettempdir() + "/"  + workflowId 
+    if os.path.exists(tmpFolder) and overwrite==True:
+        shutil.rmtree(tmpFolder)
+    
+    os.makedirs(tmpFolder, exist_ok=True)
+    return tmpFolder
+
+def get_temp_filepath(ext='', workflowId=None):
     
     if ext != '' and str.find(ext, '.') < 0: 
         ext = ''.join([".", ext])
 
     letters = string.ascii_letters
     fname = ''.join(random.choice(letters) for i in range(32))
-    file_path = ''.join((tempfile.gettempdir(), '/', fname,
-            ext))
+    tempDir = get_temp_dir(workflowId)
+    file_path = ''.join((tempDir, '/', fname,
+                ext))
+
     
     return file_path
 
@@ -406,3 +421,55 @@ def get_list(vec, idxVec):
 
 def where(vec):
     return [i for i, x in enumerate(vec) if x]
+
+
+def read_in_chunks(file_object, chunk_size=1024 * 64):
+    while True:
+        data = file_object.read(chunk_size)
+        if not data:
+            break
+        yield data
+        
+def download_to_file(client, fileDoc, fname, maxTries=10, interval=5, isGzip=False):
+    downloadTry = 1
+    downloadSuccessful = False
+
+    data = None
+    while(downloadTry < maxTries):
+        try:
+            print("Downloading {} [Try {}]".format(fileDoc.name, downloadTry))
+            resp = client.fileService.download(fileDoc.id)
+
+            f = open(fname, "wb")
+            f.close()
+
+            with open(fname, "ab") as file:
+                for chunk in read_in_chunks(resp):
+                    file.write(chunk)
+
+            # Try to read file as the response has no information to check file integrity
+            if isGzip == True:
+                with gzip.open(fname, 'rb') as gFile:
+                    gFile.read()
+                    downloadSuccessful = True
+                    break
+            else:
+                with open(fname, 'rb') as gFile:
+                    gFile.read()
+                    downloadSuccessful = True
+                    break
+        except IncompleteRead:
+            print("Download failed. Trying again in 5 seconds.")
+            downloadTry += 1
+            time.sleep(interval)
+
+
+    if not downloadSuccessful:
+        raise RuntimeError("Failed to download or extract {}".format(fileDoc.name))
+
+    # return pickle.loads(data)
+
+
+
+# def random_string(size=6, chars=string.ascii_uppercase + string.digits):
+# return ''.join(random.choice(chars) for _ in range(size))

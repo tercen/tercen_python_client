@@ -15,6 +15,7 @@ class FileService(tercen.client.base.FileServiceBase):
     def __init__(self):
         super().__init__()
 
+
     # Pass the iterator to post and build from there...
     def uploadTable(self, file, tableJson):
         answer = None

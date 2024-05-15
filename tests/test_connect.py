@@ -1,5 +1,8 @@
 import unittest
 import os
+import sys
+sys.path.append("..")
+sys.path.append(".")
 from tercen.client.factory import TercenClient
 
 

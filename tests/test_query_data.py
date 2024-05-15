@@ -4,7 +4,9 @@ import numpy.testing as npt
 import pandas as pd
 import tempfile, string, random, os, sys
 import zlib
-
+import sys
+sys.path.append("..")
+sys.path.append(".")
 import json
 import pytson as ptson
 import tercen.util.helper_functions as utl
