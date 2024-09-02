@@ -24,6 +24,7 @@ class ObjectTraverser:
                         if targetAttr is None:
                             self.foundList.append(attrVal)
                         else:
+                            #CHeck if being called
                             self.foundList.append(getattr(attrVal, targetAttr))
                     else: 
                         try:

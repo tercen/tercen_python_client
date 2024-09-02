@@ -333,10 +333,10 @@ def image_file_to_df(file_path):
 
     output_str = []
 
-    for fpath in file_path:
-        with open(fpath, mode="rb") as f:
-            fc = f.read()
-            output_str.append([base64.b64encode(fc)])
+    # for fpath in file_path:
+    with open(file_path, mode="rb") as f:
+        fc = f.read()
+        output_str.append([base64.b64encode(fc)])
 
 
     o = output_str[0][0]
