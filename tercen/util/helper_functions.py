@@ -320,7 +320,7 @@ def image_file_to_df(file_path):
 
     if ftype == '.png':
         mimetype = "image/png"
-    if ftype == '.jpg':
+    elif ftype == '.jpg':
         mimetype = "image/jpg"
     elif ftype == '.svg':
         mimetype = "image/svg+xml"
