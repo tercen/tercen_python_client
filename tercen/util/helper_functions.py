@@ -564,10 +564,10 @@ def get_data(context, fileDoc, is_data=True):
 
 def append_img_to_df(df, imagePath, pltCi=0):
     if df is None:
-        df = utl.image_file_to_df(imagePath)
+        df = image_file_to_df(imagePath)
         df.insert(0, ".ri", int(pltCi))
     else:
-        tmpDf = utl.image_file_to_df(imagePath)
+        tmpDf = image_file_to_df(imagePath)
         tmpDf.insert(0, ".ri", int(pltCi))
         df = pd.concat([df, tmpDf])
     return df
