@@ -47,6 +47,7 @@ def export_to_project_as_csv(context, df, fname, projectId, folderId, user, work
 def export_obj_pickle_to_project(context, data, fname, \
         projectId, folderId, user, compression=1, fileExt="gz",\
         inplace=True):
+    
     fname = "{}.{}".format(fname, fileExt)
 
 
@@ -54,7 +55,8 @@ def export_obj_pickle_to_project(context, data, fname, \
     with gzip.open(fname, 'wb', compresslevel=compression) as f:
         pickle.dump(data, f)
     
-
+    del data
+    data = []
 
     file = FileDocument()
     file.name = fname.split("/")[-1]
@@ -64,12 +66,14 @@ def export_obj_pickle_to_project(context, data, fname, \
     file.folderId = folderId
     file.metadata.contentEncoding = "gzip"
 
+    with open(fname, 'rb') as f:
+            bytes_data =  f.read()
+
     context.log("Exporting {}: Uploading".format(fname))
-    context.client.fileService.uploadFromFile(file, fname)
+    context.client.fileService.uploadFromFile(file, bytes_data)
     
     if inplace == True:
-        del data
-        data = []
         return data
     else:
         return None
+
