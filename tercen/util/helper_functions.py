@@ -527,9 +527,8 @@ def get_document_id(queryRelation, aliasId, colName):
     for rel in inMemRels:
         tbl = rel.inMemoryTable
         
-        documentIds = get(tbl.columns, where([c.name == ".documentId" for c in tbl.columns ]))
-        # documentAliasIds = get(tbl.columns, where([c.name == "documentId" for c in tbl.columns ]))
-        documentAliasIds = get(tbl.columns, where([c.name == colName for c in tbl.columns ]))
+        documentIds = get_list(tbl.columns, where([c.name == ".documentId" for c in tbl.columns ]))
+        documentAliasIds = get_list(tbl.columns, where([c.name == colName for c in tbl.columns ]))
 
         if not documentIds is None and not documentAliasIds is None:
             idx = where([id == aliasId for id in documentAliasIds[0].values ])
