@@ -129,7 +129,6 @@ if __name__ == '__main__':
             context.context.client.taskService.runTask(cbTask.id)
             cbTask = context.context.client.taskService.waitDone(cbTask.id)
             
-            # step.state.taskState = InitState()
             step.state.taskId = cbTask.id
             wkf.steps[i] = step
 
@@ -149,7 +148,6 @@ if __name__ == '__main__':
         step.computedRelation = task.computedRelation
         step.state.taskId = task.id
         step.state.taskState = task.state
-        # step.state = DoneState()
         wkf.steps[i] = step
 
         context.context.client.workflowService.update(wkf)

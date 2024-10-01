@@ -30,18 +30,7 @@ venvName = str.split(venvPath, '/')[-1]
 if len(sys.argv) <= 1:
     raise "Base folder is required to detect requirements"
 
-
-# tercen_requirements.txt <- IF it exists...
 baseReq = wdFolder + "/tercen_requirements.txt"
-# if len(sys.argv) > 1:
-#     for k in range(2, len(sys.argv)):
-#         param = sys.argv[k].split("==")
-#         if param[0] == "--baseReq":
-#             baseReq = param[1]
-#         if param[0] == "-h":
-#             print_help_message()
-#             sys.exit()
-
 
 baseModules = []
 baseModulesLines = []
