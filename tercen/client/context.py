@@ -20,7 +20,7 @@ from tercen.util.helper_functions import get_list, where
 
 
 class TercenContext:
-    def __init__(self, workflowId = None, stepId = None, username = 'test', password = 'test',
+    def __init__(self, workflowId = None, stepId = None, username = 'admin', password = 'admin',
      authToken = None, taskId = None, serviceUri = "http://127.0.0.1:5400/"):
         
         args = self.parse_args()
