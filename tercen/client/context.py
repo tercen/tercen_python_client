@@ -402,6 +402,16 @@ class TercenContext:
 
     def operator_property(self, name, typeFn=str, default=None):
         props = self.context.cubeQuery.operatorSettings.operatorRef.propertyValues
+        
+        def tercenBool(value):
+            if value == "true":
+                return True
+            else:
+                return False 
+        
+        if typeFn == bool:
+            typeFn = tercenBool
+        
         for p in props:
             if p.name == name:
                 if p.value is None:
