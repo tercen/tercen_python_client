@@ -11,6 +11,8 @@ class IdObject(IdObjectBase):
 class PersistentObject(PersistentObjectBase):
     def __init__(self, m=None):
         super().__init__(m)
+        self.isDeleted = False
+        
 
 class Document(DocumentBase):
     def __init__(self, m=None):
@@ -19,6 +21,7 @@ class Document(DocumentBase):
 class User(UserBase):
     def __init__(self, m=None):
         super().__init__(m)
+        self.isPublic = False
 
 class Team(TeamBase):
     def __init__(self, m=None):
