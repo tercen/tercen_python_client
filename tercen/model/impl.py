@@ -914,3 +914,10 @@ Document.addMeta = addMeta
 Document.hasMeta = hasMeta
 Document.getMetaPair = getMetaPair
 Document.getMeta = getMeta
+
+
+FileDocument.removeMeta = removeMeta
+FileDocument.addMeta = addMeta
+FileDocument.hasMeta = hasMeta
+FileDocument.getMetaPair = getMetaPair
+FileDocument.getMeta = getMeta
