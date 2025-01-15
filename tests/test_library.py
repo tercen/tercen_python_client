@@ -3,7 +3,7 @@ import sys
 sys.path.append("..")
 sys.path.append(".")
 from tercen.client.factory import TercenClient
-from tercen.model.impl import Operator, Document
+from tercen.model.impl import Operator, Document, WebAppOperator
 
 class TestUserService(unittest.TestCase):
 
@@ -38,15 +38,16 @@ class TestUserService(unittest.TestCase):
 
     def test_library_operator(self):
         lib = self.client.documentService.getLibrary('', [], ['Operator'], [], 0, 500)
-
+        
         assert(not lib is None)
         assert(len(lib) > 0)
 
         for op in lib:
-            assert( isinstance(op, Document  )) 
-
-            assert( op.subKind in ["Operator", "ROperator", "DockerOperator", "ShinyOperator",\
+            assert( isinstance(op, Document )) 
+            assert( isinstance(op, WebAppOperator ) or op.subKind in ["Operator", "ROperator", "DockerOperator", "ShinyOperator",\
                                    "DockerWebAppOperator", "WebAppOperator"])
+            # assert( op.subKind in ["Operator", "ROperator", "DockerOperator", "ShinyOperator",\
+                                #    "DockerWebAppOperator", "WebAppOperator"])
 
 
     # def test_library_tags(self):

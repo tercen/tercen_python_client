@@ -1359,7 +1359,7 @@ class UserServiceBase (HttpClientService):
             if response.code() != 200:
                 self.onResponseError(response)
             else:
-                answer = decodeTSON(response).get(0)
+                answer = decodeTSON(response)[0]
         except BaseException as e:
             self.onError(e)
         return answer
@@ -1393,7 +1393,8 @@ class UserServiceBase (HttpClientService):
             if response.code() != 200:
                 self.onResponseError(response)
             else:
-                answer = decodeTSON(response).get(0)
+                
+                answer = decodeTSON(response)[0]
         except BaseException as e:
             self.onError(e)
         return answer
