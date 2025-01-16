@@ -82,10 +82,14 @@ class SciObjectBase(BaseObject):
             return impl.ReferenceRelation(m)
         if kind == Vocabulary.InMemoryRelation_CLASS:
             return impl.InMemoryRelation(m)
+        if kind == Vocabulary.PairwiseRelation_CLASS:
+            return impl.PairwiseRelation(m)
         if kind == Vocabulary.RenameRelation_CLASS:
             return impl.RenameRelation(m)
         if kind == Vocabulary.UnionRelation_CLASS:
             return impl.UnionRelation(m)
+        if kind == Vocabulary.RangeRelation_CLASS:
+            return impl.RangeRelation(m)
         if kind == Vocabulary.SimpleRelation_CLASS:
             return impl.SimpleRelation(m)
         if kind == Vocabulary.GatherRelation_CLASS:
@@ -398,6 +402,8 @@ class SciObjectBase(BaseObject):
             return impl.ColorElement(m)
         if kind == Vocabulary.PreProcessor_CLASS:
             return impl.PreProcessor(m)
+        if kind == Vocabulary.FileSummary_CLASS:
+            return impl.FileSummary(m)
         if kind == Vocabulary.Properties_CLASS:
             return impl.Properties(m)
         if kind == Vocabulary.PropertyValue_CLASS:
@@ -480,10 +486,14 @@ class IdObjectBase(BaseObject):
             return impl.ReferenceRelation(m)
         if kind == Vocabulary.InMemoryRelation_CLASS:
             return impl.InMemoryRelation(m)
+        if kind == Vocabulary.PairwiseRelation_CLASS:
+            return impl.PairwiseRelation(m)
         if kind == Vocabulary.RenameRelation_CLASS:
             return impl.RenameRelation(m)
         if kind == Vocabulary.UnionRelation_CLASS:
             return impl.UnionRelation(m)
+        if kind == Vocabulary.RangeRelation_CLASS:
+            return impl.RangeRelation(m)
         if kind == Vocabulary.SimpleRelation_CLASS:
             return impl.SimpleRelation(m)
         if kind == Vocabulary.GatherRelation_CLASS:
@@ -1342,10 +1352,14 @@ class RelationBase(BaseObject):
             return impl.ReferenceRelation(m)
         if kind == Vocabulary.InMemoryRelation_CLASS:
             return impl.InMemoryRelation(m)
+        if kind == Vocabulary.PairwiseRelation_CLASS:
+            return impl.PairwiseRelation(m)
         if kind == Vocabulary.RenameRelation_CLASS:
             return impl.RenameRelation(m)
         if kind == Vocabulary.UnionRelation_CLASS:
             return impl.UnionRelation(m)
+        if kind == Vocabulary.RangeRelation_CLASS:
+            return impl.RangeRelation(m)
         if kind == Vocabulary.SimpleRelation_CLASS:
             return impl.SimpleRelation(m)
         if kind == Vocabulary.GatherRelation_CLASS:
@@ -2060,6 +2074,89 @@ class ChartHeatmapBase(BaseObject):
             m[Vocabulary.SUBKIND] = self.subKind
         else:
             m.pop(Vocabulary.SUBKIND, None)
+        return m
+
+
+class CValuesBase(BaseObject):
+    def __init__(self, m=None):
+        import tercen.model.impl as impl
+        if m is not None:
+            self.fromJson(m)
+
+        else:
+            super().__init__(m)
+
+    def fromJson(self, m):
+        import tercen.model.impl as impl
+        super().fromJson(m)
+        self.subKind = m.get(Vocabulary.SUBKIND)
+        if self.subKind is None and m.get(Vocabulary.KIND) != Vocabulary.CValues_CLASS:
+            self.subKind = m.get(Vocabulary.KIND)
+
+    @classmethod
+    def createFromJson(cls, m):
+        import tercen.model.impl as impl
+        kind = m.get(Vocabulary.KIND)
+        if kind == Vocabulary.CValues_CLASS:
+            return impl.CValues(m)
+        if kind == Vocabulary.I32Values_CLASS:
+            return impl.I32Values(m)
+        if kind == Vocabulary.F64Values_CLASS:
+            return impl.F64Values(m)
+        if kind == Vocabulary.StrValues_CLASS:
+            return impl.StrValues(m)
+        raise ValueError("bad kind : " + kind +
+                         " for class CValues in createFromJson")
+
+    def toJson(self):
+        m = super().toJson()
+        m[Vocabulary.KIND] = Vocabulary.CValues_CLASS
+        if self.subKind is not None and self.subKind != Vocabulary.CValues_CLASS:
+            m[Vocabulary.SUBKIND] = self.subKind
+        else:
+            m.pop(Vocabulary.SUBKIND, None)
+        return m
+
+
+class I32ValuesBase(BaseObject):
+    def __init__(self, m=None):
+        import tercen.model.impl as impl
+        I32ValuesBase.__bases__ = (impl.CValues,)
+        if m is None:
+            super().__init__(m)
+            self.values = list()
+        else:
+            self.fromJson(m)
+
+    def fromJson(self, m):
+        import tercen.model.impl as impl
+        I32ValuesBase.__bases__ = (impl.CValues,)
+        super().fromJson(m)
+        self.subKind = m.get(Vocabulary.SUBKIND)
+        if self.subKind is None and m.get(Vocabulary.KIND) != Vocabulary.I32Values_CLASS:
+            self.subKind = m.get(Vocabulary.KIND)
+        if m.get(Vocabulary.values_DP) is None:
+            self.values = list()
+        else:
+            self.values = m[Vocabulary.values_DP]
+
+    @classmethod
+    def createFromJson(cls, m):
+        import tercen.model.impl as impl
+        kind = m.get(Vocabulary.KIND)
+        if kind == Vocabulary.I32Values_CLASS:
+            return impl.I32Values(m)
+        raise ValueError("bad kind : " + kind +
+                         " for class I32Values in createFromJson")
+
+    def toJson(self):
+        m = super().toJson()
+        m[Vocabulary.KIND] = Vocabulary.I32Values_CLASS
+        if self.subKind is not None and self.subKind != Vocabulary.I32Values_CLASS:
+            m[Vocabulary.SUBKIND] = self.subKind
+        else:
+            m.pop(Vocabulary.SUBKIND, None)
+        m[Vocabulary.values_DP] = self.values
         return m
 
 
@@ -3188,6 +3285,7 @@ class TaskSummaryBase(BaseObject):
             super().__init__(m)
             self.n = 0
             self.duration = 0.0
+            self.size = 0
         else:
             self.fromJson(m)
 
@@ -3200,6 +3298,7 @@ class TaskSummaryBase(BaseObject):
             self.subKind = m.get(Vocabulary.KIND)
         self.n = m[Vocabulary.n_DP]
         self.duration = m[Vocabulary.duration_DP]
+        self.size = m[Vocabulary.size_DP]
 
     @classmethod
     def createFromJson(cls, m):
@@ -3219,6 +3318,7 @@ class TaskSummaryBase(BaseObject):
             m.pop(Vocabulary.SUBKIND, None)
         m[Vocabulary.n_DP] = self.n
         m[Vocabulary.duration_DP] = self.duration
+        m[Vocabulary.size_DP] = self.size
         return m
 
 
@@ -3423,6 +3523,7 @@ class TaskBase(BaseObject):
             self.owner = ""
             self.taskHash = ""
             self.channelId = ""
+            self.size = 0
             self.environment = list()
             self.state = impl.State()
             self.createdDate = impl.Date()
@@ -3445,6 +3546,7 @@ class TaskBase(BaseObject):
         self.owner = m[Vocabulary.owner_DP]
         self.taskHash = m[Vocabulary.taskHash_DP]
         self.channelId = m[Vocabulary.channelId_DP]
+        self.size = m[Vocabulary.size_DP]
         if m.get(Vocabulary.environment_OP) is None:
             self.environment = list()
         else:
@@ -3551,6 +3653,7 @@ class TaskBase(BaseObject):
         m[Vocabulary.owner_DP] = self.owner
         m[Vocabulary.taskHash_DP] = self.taskHash
         m[Vocabulary.channelId_DP] = self.channelId
+        m[Vocabulary.size_DP] = self.size
         m[Vocabulary.meta_OP] = list(map(lambda x: x.toJson(), self.meta))
         return m
 
@@ -4061,6 +4164,7 @@ class TableStepModelBase(BaseObject):
         TableStepModelBase.__bases__ = (impl.StepModel,)
         if m is None:
             super().__init__(m)
+            self.filterSelector = ""
             self.relation = impl.Relation()
         else:
             self.fromJson(m)
@@ -4072,6 +4176,7 @@ class TableStepModelBase(BaseObject):
         self.subKind = m.get(Vocabulary.SUBKIND)
         if self.subKind is None and m.get(Vocabulary.KIND) != Vocabulary.TableStepModel_CLASS:
             self.subKind = m.get(Vocabulary.KIND)
+        self.filterSelector = m[Vocabulary.filterSelector_DP]
         if m.get(Vocabulary.relation_OP) is None:
             self.relation = impl.Relation()
         else:
@@ -4095,6 +4200,7 @@ class TableStepModelBase(BaseObject):
         else:
             m.pop(Vocabulary.SUBKIND, None)
         m[Vocabulary.relation_OP] = self.relation if self.relation is None else self.relation.toJson()
+        m[Vocabulary.filterSelector_DP] = self.filterSelector
         return m
 
 
@@ -4259,6 +4365,48 @@ class CrosstabTableBase(BaseObject):
         m[Vocabulary.rectangleSelections_OP] = list(
             map(lambda x: x.toJson(), self.rectangleSelections))
         m[Vocabulary.nRows_DP] = self.nRows
+        return m
+
+
+class F64ValuesBase(BaseObject):
+    def __init__(self, m=None):
+        import tercen.model.impl as impl
+        F64ValuesBase.__bases__ = (impl.CValues,)
+        if m is None:
+            super().__init__(m)
+            self.values = list()
+        else:
+            self.fromJson(m)
+
+    def fromJson(self, m):
+        import tercen.model.impl as impl
+        F64ValuesBase.__bases__ = (impl.CValues,)
+        super().fromJson(m)
+        self.subKind = m.get(Vocabulary.SUBKIND)
+        if self.subKind is None and m.get(Vocabulary.KIND) != Vocabulary.F64Values_CLASS:
+            self.subKind = m.get(Vocabulary.KIND)
+        if m.get(Vocabulary.values_DP) is None:
+            self.values = list()
+        else:
+            self.values = m[Vocabulary.values_DP]
+
+    @classmethod
+    def createFromJson(cls, m):
+        import tercen.model.impl as impl
+        kind = m.get(Vocabulary.KIND)
+        if kind == Vocabulary.F64Values_CLASS:
+            return impl.F64Values(m)
+        raise ValueError("bad kind : " + kind +
+                         " for class F64Values in createFromJson")
+
+    def toJson(self):
+        m = super().toJson()
+        m[Vocabulary.KIND] = Vocabulary.F64Values_CLASS
+        if self.subKind is not None and self.subKind != Vocabulary.F64Values_CLASS:
+            m[Vocabulary.SUBKIND] = self.subKind
+        else:
+            m.pop(Vocabulary.SUBKIND, None)
+        m[Vocabulary.values_DP] = self.values
         return m
 
 
@@ -6328,6 +6476,7 @@ class EnumeratedPropertyBase(BaseObject):
         EnumeratedPropertyBase.__bases__ = (impl.StringProperty,)
         if m is None:
             super().__init__(m)
+            self.isSingleSelection = True
             self.values = list()
         else:
             self.fromJson(m)
@@ -6339,6 +6488,7 @@ class EnumeratedPropertyBase(BaseObject):
         self.subKind = m.get(Vocabulary.SUBKIND)
         if self.subKind is None and m.get(Vocabulary.KIND) != Vocabulary.EnumeratedProperty_CLASS:
             self.subKind = m.get(Vocabulary.KIND)
+        self.isSingleSelection = m[Vocabulary.isSingleSelection_DP]
         if m.get(Vocabulary.values_DP) is None:
             self.values = list()
         else:
@@ -6360,6 +6510,7 @@ class EnumeratedPropertyBase(BaseObject):
             m[Vocabulary.SUBKIND] = self.subKind
         else:
             m.pop(Vocabulary.SUBKIND, None)
+        m[Vocabulary.isSingleSelection_DP] = self.isSingleSelection
         m[Vocabulary.values_DP] = self.values
         return m
 
@@ -6677,6 +6828,82 @@ class InMemoryRelationBase(BaseObject):
         else:
             m.pop(Vocabulary.SUBKIND, None)
         m[Vocabulary.inMemoryTable_OP] = self.inMemoryTable if self.inMemoryTable is None else self.inMemoryTable.toJson()
+        return m
+
+
+class PairwiseRelationBase(BaseObject):
+    def __init__(self, m=None):
+        import tercen.model.impl as impl
+        PairwiseRelationBase.__bases__ = (impl.Relation,)
+        if m is None:
+            super().__init__(m)
+            self.rowAttributes = list()
+            self.colAttributes = list()
+            self.labelAttributes = list()
+            self.colorAttributes = list()
+            self.xAttribute = ""
+            self.yAttribute = ""
+            self.errorAttribute = ""
+            self.relation = impl.Relation()
+        else:
+            self.fromJson(m)
+
+    def fromJson(self, m):
+        import tercen.model.impl as impl
+        PairwiseRelationBase.__bases__ = (impl.Relation,)
+        super().fromJson(m)
+        self.subKind = m.get(Vocabulary.SUBKIND)
+        if self.subKind is None and m.get(Vocabulary.KIND) != Vocabulary.PairwiseRelation_CLASS:
+            self.subKind = m.get(Vocabulary.KIND)
+        if m.get(Vocabulary.rowAttributes_DP) is None:
+            self.rowAttributes = list()
+        else:
+            self.rowAttributes = m[Vocabulary.rowAttributes_DP]
+        if m.get(Vocabulary.colAttributes_DP) is None:
+            self.colAttributes = list()
+        else:
+            self.colAttributes = m[Vocabulary.colAttributes_DP]
+        if m.get(Vocabulary.labelAttributes_DP) is None:
+            self.labelAttributes = list()
+        else:
+            self.labelAttributes = m[Vocabulary.labelAttributes_DP]
+        if m.get(Vocabulary.colorAttributes_DP) is None:
+            self.colorAttributes = list()
+        else:
+            self.colorAttributes = m[Vocabulary.colorAttributes_DP]
+        self.xAttribute = m[Vocabulary.xAttribute_DP]
+        self.yAttribute = m[Vocabulary.yAttribute_DP]
+        self.errorAttribute = m[Vocabulary.errorAttribute_DP]
+        if m.get(Vocabulary.relation_OP) is None:
+            self.relation = impl.Relation()
+        else:
+            self.relation = RelationBase.createFromJson(
+                m.get(Vocabulary.relation_OP))
+
+    @classmethod
+    def createFromJson(cls, m):
+        import tercen.model.impl as impl
+        kind = m.get(Vocabulary.KIND)
+        if kind == Vocabulary.PairwiseRelation_CLASS:
+            return impl.PairwiseRelation(m)
+        raise ValueError("bad kind : " + kind +
+                         " for class PairwiseRelation in createFromJson")
+
+    def toJson(self):
+        m = super().toJson()
+        m[Vocabulary.KIND] = Vocabulary.PairwiseRelation_CLASS
+        if self.subKind is not None and self.subKind != Vocabulary.PairwiseRelation_CLASS:
+            m[Vocabulary.SUBKIND] = self.subKind
+        else:
+            m.pop(Vocabulary.SUBKIND, None)
+        m[Vocabulary.relation_OP] = self.relation if self.relation is None else self.relation.toJson()
+        m[Vocabulary.rowAttributes_DP] = self.rowAttributes
+        m[Vocabulary.colAttributes_DP] = self.colAttributes
+        m[Vocabulary.labelAttributes_DP] = self.labelAttributes
+        m[Vocabulary.colorAttributes_DP] = self.colorAttributes
+        m[Vocabulary.xAttribute_DP] = self.xAttribute
+        m[Vocabulary.yAttribute_DP] = self.yAttribute
+        m[Vocabulary.errorAttribute_DP] = self.errorAttribute
         return m
 
 
@@ -7367,6 +7594,7 @@ class SchemaBase(BaseObject):
             super().__init__(m)
             self.nRows = 0
             self.dataDirectory = ""
+            self.size = 0
             self.columns = list()
             self.relation = impl.Relation()
         else:
@@ -7381,6 +7609,7 @@ class SchemaBase(BaseObject):
             self.subKind = m.get(Vocabulary.KIND)
         self.nRows = m[Vocabulary.nRows_DP]
         self.dataDirectory = m[Vocabulary.dataDirectory_DP]
+        self.size = m[Vocabulary.size_DP]
         if m.get(Vocabulary.columns_OP) is None:
             self.columns = list()
         else:
@@ -7420,6 +7649,7 @@ class SchemaBase(BaseObject):
             map(lambda x: x.toJson(), self.columns))
         m[Vocabulary.dataDirectory_DP] = self.dataDirectory
         m[Vocabulary.relation_OP] = self.relation if self.relation is None else self.relation.toJson()
+        m[Vocabulary.size_DP] = self.size
         return m
 
 
@@ -7679,6 +7909,7 @@ class ColumnBase(BaseObject):
         if m is None:
             super().__init__(m)
             self.values = None
+            self.cValues = impl.CValues()
         else:
             self.fromJson(m)
 
@@ -7690,6 +7921,11 @@ class ColumnBase(BaseObject):
         if self.subKind is None and m.get(Vocabulary.KIND) != Vocabulary.Column_CLASS:
             self.subKind = m.get(Vocabulary.KIND)
         self.values = m[Vocabulary.values_DP]
+        if m.get(Vocabulary.cValues_OP) is None:
+            self.cValues = impl.CValues()
+        else:
+            self.cValues = CValuesBase.createFromJson(
+                m.get(Vocabulary.cValues_OP))
 
     @classmethod
     def createFromJson(cls, m):
@@ -7707,6 +7943,7 @@ class ColumnBase(BaseObject):
             m[Vocabulary.SUBKIND] = self.subKind
         else:
             m.pop(Vocabulary.SUBKIND, None)
+        m[Vocabulary.cValues_OP] = self.cValues if self.cValues is None else self.cValues.toJson()
         m[Vocabulary.values_DP] = self.values
         return m
 
@@ -7721,6 +7958,7 @@ class SummaryBase(BaseObject):
             self.computedTableSummary = impl.TableSummary()
             self.queryTableSummary = impl.TableSummary()
             self.taskSummary = impl.TaskSummary()
+            self.fileSummary = impl.FileSummary()
         else:
             self.fromJson(m)
 
@@ -7751,6 +7989,11 @@ class SummaryBase(BaseObject):
         else:
             self.taskSummary = TaskSummaryBase.createFromJson(
                 m.get(Vocabulary.taskSummary_OP))
+        if m.get(Vocabulary.fileSummary_OP) is None:
+            self.fileSummary = impl.FileSummary()
+        else:
+            self.fileSummary = FileSummaryBase.createFromJson(
+                m.get(Vocabulary.fileSummary_OP))
 
     @classmethod
     def createFromJson(cls, m):
@@ -7772,6 +8015,7 @@ class SummaryBase(BaseObject):
         m[Vocabulary.computedTableSummary_OP] = self.computedTableSummary if self.computedTableSummary is None else self.computedTableSummary.toJson()
         m[Vocabulary.queryTableSummary_OP] = self.queryTableSummary if self.queryTableSummary is None else self.queryTableSummary.toJson()
         m[Vocabulary.taskSummary_OP] = self.taskSummary if self.taskSummary is None else self.taskSummary.toJson()
+        m[Vocabulary.fileSummary_OP] = self.fileSummary if self.fileSummary is None else self.fileSummary.toJson()
         return m
 
 
@@ -7824,6 +8068,7 @@ class WebAppOperatorBase(BaseObject):
         if m is None:
             super().__init__(m)
             self.isViewOnly = True
+            self.entryType = ""
         else:
             self.fromJson(m)
 
@@ -7835,6 +8080,7 @@ class WebAppOperatorBase(BaseObject):
         if self.subKind is None and m.get(Vocabulary.KIND) != Vocabulary.WebAppOperator_CLASS:
             self.subKind = m.get(Vocabulary.KIND)
         self.isViewOnly = m[Vocabulary.isViewOnly_DP]
+        self.entryType = m[Vocabulary.entryType_DP]
 
     @classmethod
     def createFromJson(cls, m):
@@ -7857,6 +8103,7 @@ class WebAppOperatorBase(BaseObject):
         else:
             m.pop(Vocabulary.SUBKIND, None)
         m[Vocabulary.isViewOnly_DP] = self.isViewOnly
+        m[Vocabulary.entryType_DP] = self.entryType
         return m
 
 
@@ -7948,7 +8195,13 @@ class GlTaskBase(BaseObject):
         GlTaskBase.__bases__ = (impl.Task,)
         if m is None:
             super().__init__(m)
-            self.glQuery = ""
+            self.split = 0
+            self.xCellResolution = 0.0
+            self.yCellResolution = 0.0
+            self.layer = 0
+            self.cubeQueryTask = impl.CubeQueryTask()
+            self.palettes = list()
+            self.range = impl.Rectangle()
         else:
             self.fromJson(m)
 
@@ -7959,7 +8212,26 @@ class GlTaskBase(BaseObject):
         self.subKind = m.get(Vocabulary.SUBKIND)
         if self.subKind is None and m.get(Vocabulary.KIND) != Vocabulary.GlTask_CLASS:
             self.subKind = m.get(Vocabulary.KIND)
-        self.glQuery = m[Vocabulary.glQuery_DP]
+        self.split = m[Vocabulary.split_DP]
+        self.xCellResolution = m[Vocabulary.xCellResolution_DP]
+        self.yCellResolution = m[Vocabulary.yCellResolution_DP]
+        self.layer = m[Vocabulary.layer_DP]
+        if m.get(Vocabulary.cubeQueryTask_OP) is None:
+            self.cubeQueryTask = impl.CubeQueryTask()
+        else:
+            self.cubeQueryTask = CubeQueryTaskBase.createFromJson(
+                m.get(Vocabulary.cubeQueryTask_OP))
+        if m.get(Vocabulary.palettes_OP) is None:
+            self.palettes = list()
+        else:
+            self.palettes = list()
+            for o in m.get(Vocabulary.palettes_OP):
+                self.palettes.append(PaletteBase.createFromJson(o))
+        if m.get(Vocabulary.range_OP) is None:
+            self.range = impl.Rectangle()
+        else:
+            self.range = RectangleBase.createFromJson(
+                m.get(Vocabulary.range_OP))
 
     @classmethod
     def createFromJson(cls, m):
@@ -7977,7 +8249,14 @@ class GlTaskBase(BaseObject):
             m[Vocabulary.SUBKIND] = self.subKind
         else:
             m.pop(Vocabulary.SUBKIND, None)
-        m[Vocabulary.glQuery_DP] = self.glQuery
+        m[Vocabulary.cubeQueryTask_OP] = self.cubeQueryTask if self.cubeQueryTask is None else self.cubeQueryTask.toJson()
+        m[Vocabulary.palettes_OP] = list(
+            map(lambda x: x.toJson(), self.palettes))
+        m[Vocabulary.split_DP] = self.split
+        m[Vocabulary.xCellResolution_DP] = self.xCellResolution
+        m[Vocabulary.yCellResolution_DP] = self.yCellResolution
+        m[Vocabulary.range_OP] = self.range if self.range is None else self.range.toJson()
+        m[Vocabulary.layer_DP] = self.layer
         return m
 
 
@@ -8776,6 +9055,48 @@ class PreProcessorBase(BaseObject):
         return m
 
 
+class FileSummaryBase(BaseObject):
+    def __init__(self, m=None):
+        import tercen.model.impl as impl
+        FileSummaryBase.__bases__ = (impl.SciObject,)
+        if m is None:
+            super().__init__(m)
+            self.n = 0
+            self.size = 0
+        else:
+            self.fromJson(m)
+
+    def fromJson(self, m):
+        import tercen.model.impl as impl
+        FileSummaryBase.__bases__ = (impl.SciObject,)
+        super().fromJson(m)
+        self.subKind = m.get(Vocabulary.SUBKIND)
+        if self.subKind is None and m.get(Vocabulary.KIND) != Vocabulary.FileSummary_CLASS:
+            self.subKind = m.get(Vocabulary.KIND)
+        self.n = m[Vocabulary.n_DP]
+        self.size = m[Vocabulary.size_DP]
+
+    @classmethod
+    def createFromJson(cls, m):
+        import tercen.model.impl as impl
+        kind = m.get(Vocabulary.KIND)
+        if kind == Vocabulary.FileSummary_CLASS:
+            return impl.FileSummary(m)
+        raise ValueError("bad kind : " + kind +
+                         " for class FileSummary in createFromJson")
+
+    def toJson(self):
+        m = super().toJson()
+        m[Vocabulary.KIND] = Vocabulary.FileSummary_CLASS
+        if self.subKind is not None and self.subKind != Vocabulary.FileSummary_CLASS:
+            m[Vocabulary.SUBKIND] = self.subKind
+        else:
+            m.pop(Vocabulary.SUBKIND, None)
+        m[Vocabulary.n_DP] = self.n
+        m[Vocabulary.size_DP] = self.size
+        return m
+
+
 class PortBase(BaseObject):
     def __init__(self, m=None):
         import tercen.model.impl as impl
@@ -9403,6 +9724,7 @@ class FilterExprBase(BaseObject):
             self.filterOp = ""
             self.stringValue = ""
             self.factor = impl.Factor()
+            self.preProcessors = list()
         else:
             self.fromJson(m)
 
@@ -9420,6 +9742,12 @@ class FilterExprBase(BaseObject):
         else:
             self.factor = FactorBase.createFromJson(
                 m.get(Vocabulary.factor_OP))
+        if m.get(Vocabulary.preProcessors_OP) is None:
+            self.preProcessors = list()
+        else:
+            self.preProcessors = list()
+            for o in m.get(Vocabulary.preProcessors_OP):
+                self.preProcessors.append(PreProcessorBase.createFromJson(o))
 
     @classmethod
     def createFromJson(cls, m):
@@ -9442,6 +9770,8 @@ class FilterExprBase(BaseObject):
         m[Vocabulary.filterOp_DP] = self.filterOp
         m[Vocabulary.stringValue_DP] = self.stringValue
         m[Vocabulary.factor_OP] = self.factor if self.factor is None else self.factor.toJson()
+        m[Vocabulary.preProcessors_OP] = list(
+            map(lambda x: x.toJson(), self.preProcessors))
         return m
 
 
@@ -9452,6 +9782,7 @@ class FilterExpr2dBase(BaseObject):
         if m is None:
             super().__init__(m)
             self.factor2 = impl.Factor()
+            self.preProcessors2 = list()
         else:
             self.fromJson(m)
 
@@ -9467,6 +9798,12 @@ class FilterExpr2dBase(BaseObject):
         else:
             self.factor2 = FactorBase.createFromJson(
                 m.get(Vocabulary.factor2_OP))
+        if m.get(Vocabulary.preProcessors2_OP) is None:
+            self.preProcessors2 = list()
+        else:
+            self.preProcessors2 = list()
+            for o in m.get(Vocabulary.preProcessors2_OP):
+                self.preProcessors2.append(PreProcessorBase.createFromJson(o))
 
     @classmethod
     def createFromJson(cls, m):
@@ -9485,6 +9822,8 @@ class FilterExpr2dBase(BaseObject):
         else:
             m.pop(Vocabulary.SUBKIND, None)
         m[Vocabulary.factor2_OP] = self.factor2 if self.factor2 is None else self.factor2.toJson()
+        m[Vocabulary.preProcessors2_OP] = list(
+            map(lambda x: x.toJson(), self.preProcessors2))
         return m
 
 
@@ -9592,6 +9931,55 @@ class OperatorRefBase(BaseObject):
             map(lambda x: x.toJson(), self.propertyValues))
         m[Vocabulary.url_OP] = self.url if self.url is None else self.url.toJson()
         m[Vocabulary.operatorSpec_OP] = self.operatorSpec if self.operatorSpec is None else self.operatorSpec.toJson()
+        return m
+
+
+class RangeRelationBase(BaseObject):
+    def __init__(self, m=None):
+        import tercen.model.impl as impl
+        RangeRelationBase.__bases__ = (impl.Relation,)
+        if m is None:
+            super().__init__(m)
+            self.start = 0
+            self.len = 0
+            self.relation = impl.Relation()
+        else:
+            self.fromJson(m)
+
+    def fromJson(self, m):
+        import tercen.model.impl as impl
+        RangeRelationBase.__bases__ = (impl.Relation,)
+        super().fromJson(m)
+        self.subKind = m.get(Vocabulary.SUBKIND)
+        if self.subKind is None and m.get(Vocabulary.KIND) != Vocabulary.RangeRelation_CLASS:
+            self.subKind = m.get(Vocabulary.KIND)
+        self.start = m[Vocabulary.start_DP]
+        self.len = m[Vocabulary.len_DP]
+        if m.get(Vocabulary.relation_OP) is None:
+            self.relation = impl.Relation()
+        else:
+            self.relation = RelationBase.createFromJson(
+                m.get(Vocabulary.relation_OP))
+
+    @classmethod
+    def createFromJson(cls, m):
+        import tercen.model.impl as impl
+        kind = m.get(Vocabulary.KIND)
+        if kind == Vocabulary.RangeRelation_CLASS:
+            return impl.RangeRelation(m)
+        raise ValueError("bad kind : " + kind +
+                         " for class RangeRelation in createFromJson")
+
+    def toJson(self):
+        m = super().toJson()
+        m[Vocabulary.KIND] = Vocabulary.RangeRelation_CLASS
+        if self.subKind is not None and self.subKind != Vocabulary.RangeRelation_CLASS:
+            m[Vocabulary.SUBKIND] = self.subKind
+        else:
+            m.pop(Vocabulary.SUBKIND, None)
+        m[Vocabulary.relation_OP] = self.relation if self.relation is None else self.relation.toJson()
+        m[Vocabulary.start_DP] = self.start
+        m[Vocabulary.len_DP] = self.len
         return m
 
 
@@ -11082,42 +11470,45 @@ class ViewStepBase(BaseObject):
         return m
 
 
-class ApiCallProfileBase(BaseObject):
+class StrValuesBase(BaseObject):
     def __init__(self, m=None):
         import tercen.model.impl as impl
-        ApiCallProfileBase.__bases__ = (impl.Profile,)
+        StrValuesBase.__bases__ = (impl.CValues,)
         if m is None:
             super().__init__(m)
-            self.nCalls = 0
+            self.values = list()
         else:
             self.fromJson(m)
 
     def fromJson(self, m):
         import tercen.model.impl as impl
-        ApiCallProfileBase.__bases__ = (impl.Profile,)
+        StrValuesBase.__bases__ = (impl.CValues,)
         super().fromJson(m)
         self.subKind = m.get(Vocabulary.SUBKIND)
-        if self.subKind is None and m.get(Vocabulary.KIND) != Vocabulary.ApiCallProfile_CLASS:
+        if self.subKind is None and m.get(Vocabulary.KIND) != Vocabulary.StrValues_CLASS:
             self.subKind = m.get(Vocabulary.KIND)
-        self.nCalls = m[Vocabulary.nCalls_DP]
+        if m.get(Vocabulary.values_DP) is None:
+            self.values = list()
+        else:
+            self.values = m[Vocabulary.values_DP]
 
     @classmethod
     def createFromJson(cls, m):
         import tercen.model.impl as impl
         kind = m.get(Vocabulary.KIND)
-        if kind == Vocabulary.ApiCallProfile_CLASS:
-            return impl.ApiCallProfile(m)
+        if kind == Vocabulary.StrValues_CLASS:
+            return impl.StrValues(m)
         raise ValueError("bad kind : " + kind +
-                         " for class ApiCallProfile in createFromJson")
+                         " for class StrValues in createFromJson")
 
     def toJson(self):
         m = super().toJson()
-        m[Vocabulary.KIND] = Vocabulary.ApiCallProfile_CLASS
-        if self.subKind is not None and self.subKind != Vocabulary.ApiCallProfile_CLASS:
+        m[Vocabulary.KIND] = Vocabulary.StrValues_CLASS
+        if self.subKind is not None and self.subKind != Vocabulary.StrValues_CLASS:
             m[Vocabulary.SUBKIND] = self.subKind
         else:
             m.pop(Vocabulary.SUBKIND, None)
-        m[Vocabulary.nCalls_DP] = self.nCalls
+        m[Vocabulary.values_DP] = self.values
         return m
 
 
@@ -11170,6 +11561,45 @@ class ColorsBase(BaseObject):
         m[Vocabulary.factors_OP] = list(
             map(lambda x: x.toJson(), self.factors))
         m[Vocabulary.palette_OP] = self.palette if self.palette is None else self.palette.toJson()
+        return m
+
+
+class ApiCallProfileBase(BaseObject):
+    def __init__(self, m=None):
+        import tercen.model.impl as impl
+        ApiCallProfileBase.__bases__ = (impl.Profile,)
+        if m is None:
+            super().__init__(m)
+            self.nCalls = 0
+        else:
+            self.fromJson(m)
+
+    def fromJson(self, m):
+        import tercen.model.impl as impl
+        ApiCallProfileBase.__bases__ = (impl.Profile,)
+        super().fromJson(m)
+        self.subKind = m.get(Vocabulary.SUBKIND)
+        if self.subKind is None and m.get(Vocabulary.KIND) != Vocabulary.ApiCallProfile_CLASS:
+            self.subKind = m.get(Vocabulary.KIND)
+        self.nCalls = m[Vocabulary.nCalls_DP]
+
+    @classmethod
+    def createFromJson(cls, m):
+        import tercen.model.impl as impl
+        kind = m.get(Vocabulary.KIND)
+        if kind == Vocabulary.ApiCallProfile_CLASS:
+            return impl.ApiCallProfile(m)
+        raise ValueError("bad kind : " + kind +
+                         " for class ApiCallProfile in createFromJson")
+
+    def toJson(self):
+        m = super().toJson()
+        m[Vocabulary.KIND] = Vocabulary.ApiCallProfile_CLASS
+        if self.subKind is not None and self.subKind != Vocabulary.ApiCallProfile_CLASS:
+            m[Vocabulary.SUBKIND] = self.subKind
+        else:
+            m.pop(Vocabulary.SUBKIND, None)
+        m[Vocabulary.nCalls_DP] = self.nCalls
         return m
 
 
@@ -11492,51 +11922,6 @@ class FormulaPropertyBase(BaseObject):
         return m
 
 
-class UserSecretBase(BaseObject):
-    def __init__(self, m=None):
-        import tercen.model.impl as impl
-        UserSecretBase.__bases__ = (impl.PersistentObject,)
-        if m is None:
-            super().__init__(m)
-            self.userId = ""
-            self.salt = ""
-            self.hashPassword = ""
-        else:
-            self.fromJson(m)
-
-    def fromJson(self, m):
-        import tercen.model.impl as impl
-        UserSecretBase.__bases__ = (impl.PersistentObject,)
-        super().fromJson(m)
-        self.subKind = m.get(Vocabulary.SUBKIND)
-        if self.subKind is None and m.get(Vocabulary.KIND) != Vocabulary.UserSecret_CLASS:
-            self.subKind = m.get(Vocabulary.KIND)
-        self.userId = m[Vocabulary.userId_DP]
-        self.salt = m[Vocabulary.salt_DP]
-        self.hashPassword = m[Vocabulary.hashPassword_DP]
-
-    @classmethod
-    def createFromJson(cls, m):
-        import tercen.model.impl as impl
-        kind = m.get(Vocabulary.KIND)
-        if kind == Vocabulary.UserSecret_CLASS:
-            return impl.UserSecret(m)
-        raise ValueError("bad kind : " + kind +
-                         " for class UserSecret in createFromJson")
-
-    def toJson(self):
-        m = super().toJson()
-        m[Vocabulary.KIND] = Vocabulary.UserSecret_CLASS
-        if self.subKind is not None and self.subKind != Vocabulary.UserSecret_CLASS:
-            m[Vocabulary.SUBKIND] = self.subKind
-        else:
-            m.pop(Vocabulary.SUBKIND, None)
-        m[Vocabulary.userId_DP] = self.userId
-        m[Vocabulary.salt_DP] = self.salt
-        m[Vocabulary.hashPassword_DP] = self.hashPassword
-        return m
-
-
 class GroupByRelationBase(BaseObject):
     def __init__(self, m=None):
         import tercen.model.impl as impl
@@ -11583,4 +11968,57 @@ class GroupByRelationBase(BaseObject):
             m.pop(Vocabulary.SUBKIND, None)
         m[Vocabulary.relation_OP] = self.relation if self.relation is None else self.relation.toJson()
         m[Vocabulary.group_DP] = self.group
+        return m
+
+
+class UserSecretBase(BaseObject):
+    def __init__(self, m=None):
+        import tercen.model.impl as impl
+        UserSecretBase.__bases__ = (impl.PersistentObject,)
+        if m is None:
+            super().__init__(m)
+            self.userId = ""
+            self.salt = ""
+            self.hashPassword = ""
+            self.meta = list()
+        else:
+            self.fromJson(m)
+
+    def fromJson(self, m):
+        import tercen.model.impl as impl
+        UserSecretBase.__bases__ = (impl.PersistentObject,)
+        super().fromJson(m)
+        self.subKind = m.get(Vocabulary.SUBKIND)
+        if self.subKind is None and m.get(Vocabulary.KIND) != Vocabulary.UserSecret_CLASS:
+            self.subKind = m.get(Vocabulary.KIND)
+        self.userId = m[Vocabulary.userId_DP]
+        self.salt = m[Vocabulary.salt_DP]
+        self.hashPassword = m[Vocabulary.hashPassword_DP]
+        if m.get(Vocabulary.meta_OP) is None:
+            self.meta = list()
+        else:
+            self.meta = list()
+            for o in m.get(Vocabulary.meta_OP):
+                self.meta.append(PairBase.createFromJson(o))
+
+    @classmethod
+    def createFromJson(cls, m):
+        import tercen.model.impl as impl
+        kind = m.get(Vocabulary.KIND)
+        if kind == Vocabulary.UserSecret_CLASS:
+            return impl.UserSecret(m)
+        raise ValueError("bad kind : " + kind +
+                         " for class UserSecret in createFromJson")
+
+    def toJson(self):
+        m = super().toJson()
+        m[Vocabulary.KIND] = Vocabulary.UserSecret_CLASS
+        if self.subKind is not None and self.subKind != Vocabulary.UserSecret_CLASS:
+            m[Vocabulary.SUBKIND] = self.subKind
+        else:
+            m.pop(Vocabulary.SUBKIND, None)
+        m[Vocabulary.userId_DP] = self.userId
+        m[Vocabulary.salt_DP] = self.salt
+        m[Vocabulary.hashPassword_DP] = self.hashPassword
+        m[Vocabulary.meta_OP] = list(map(lambda x: x.toJson(), self.meta))
         return m

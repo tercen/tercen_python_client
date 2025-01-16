@@ -558,6 +558,26 @@ class PersistentServiceBase (HttpClientService):
             self.onError(e)
         return answer
 
+    def getObjects(self, startId, endId, limit, useFactory):
+        answer = None
+        try:
+            uri = URI.create("api/v1/po" + "/" + "getObjects")
+            params = {}
+            params["startId"] = startId
+            params["endId"] = endId
+            params["limit"] = limit
+            params["useFactory"] = useFactory
+            response = self.getHttpClient().post(
+                self.getServiceUri(uri).toString(), None, encodeTSON(params))
+            if response.code() != 200:
+                self.onResponseError(response)
+            else:
+                answer = [tercen.model.base.PersistentObjectBase.createFromJson(
+                    sch) for sch in decodeTSON(response)]
+        except BaseException as e:
+            self.onError(e)
+        return answer
+
 
 class ActivityServiceBase (HttpClientService):
     def getBaseUri(self):
@@ -668,6 +688,26 @@ class TableSchemaServiceBase (HttpClientService):
     def findSchemaByDataDirectory(self, startKey, endKey, limit=200, skip=0, descending=True, useFactory=False):
         return self.findStartKeys("findSchemaByDataDirectory", startKey, endKey, limit, skip, descending, useFactory)
 
+    def uploadTable(self, file, bytes):
+        answer = None
+        try:
+            uri = URI.create("api/v1/schema" + "/" + "uploadTable")
+            parts = []
+            parts.append(MultiPart({"Content-Type": "application/json"},
+                         json.JSONEncoder().encode([file.toJson()]).encode("utf-8")))
+            parts.append(
+                MultiPart({"Content-Type": "application/octet-stream"}, bytes))
+            response = self.getHttpClient().multipart(
+                self.getServiceUri(uri).toString(), None, parts)
+            if response.code() != 200:
+                self.onResponseError(response)
+            else:
+                answer = tercen.model.base.SchemaBase.createFromJson(
+                    decodeTSON(response))
+        except BaseException as e:
+            self.onError(e)
+        return answer
+
     def findByQueryHash(self, ids):
         answer = None
         try:
@@ -744,10 +784,48 @@ class TableSchemaServiceBase (HttpClientService):
             self.onError(e)
         return answer
 
+    def streamTable(self, tableId, cnames, offset, limit, binaryFormat):
+        answer = None
+        try:
+            uri = URI.create("api/v1/schema" + "/" + "streamTable")
+            params = {}
+            params["tableId"] = tableId
+            params["cnames"] = cnames
+            params["offset"] = offset
+            params["limit"] = limit
+            params["binaryFormat"] = binaryFormat
+            response = self.getHttpClient().post(
+                self.getServiceUri(uri).toString(), None, encodeTSON(params))
+            if response.code() != 200:
+                self.onResponseError(response)
+            else:
+                answer = response.stream
+        except BaseException as e:
+            self.onError(e)
+        return answer
+
     def selectFileContentStream(self, tableId, filename):
         answer = None
         try:
             uri = URI.create("api/v1/schema" + "/" + "selectFileContentStream")
+            params = {}
+            params["tableId"] = tableId
+            params["filename"] = filename
+            geturi = self.getServiceUri(uri).replaceQueryParameters(
+                {"params": json.JSONEncoder().encode(params)})
+            response = self.getHttpClient().get(geturi.toString(), None)
+            if response.code() != 200:
+                self.onResponseError(response)
+            else:
+                answer = response.stream
+        except BaseException as e:
+            self.onError(e)
+        return answer
+
+    def getFileMimetypeStream(self, tableId, filename):
+        answer = None
+        try:
+            uri = URI.create("api/v1/schema" + "/" + "getFileMimetypeStream")
             params = {}
             params["tableId"] = tableId
             params["filename"] = filename
@@ -888,7 +966,7 @@ class TaskServiceBase (HttpClientService):
             if response.code() != 200:
                 self.onResponseError(response)
             else:
-                answer = decodeTSON(response).get(0)
+                answer = decodeTSON(response)[0]
         except BaseException as e:
             self.onError(e)
         return answer
@@ -983,6 +1061,23 @@ class UserSecretServiceBase (HttpClientService):
     def findSecretByUserId(self, keys, useFactory=False):
         return self.findKeys("secret", keys, useFactory)
 
+    def getSecret(self, id, name):
+        answer = None
+        try:
+            uri = URI.create("api/v1/userSecret" + "/" + "getSecret")
+            params = {}
+            params["id"] = id
+            params["name"] = name
+            response = self.getHttpClient().post(
+                self.getServiceUri(uri).toString(), None, encodeTSON(params))
+            if response.code() != 200:
+                self.onResponseError(response)
+            else:
+                answer = decodeTSON(response)[0]
+        except BaseException as e:
+            self.onError(e)
+        return answer
+
 
 class PatchRecordServiceBase (HttpClientService):
     def getBaseUri(self):
@@ -1052,7 +1147,7 @@ class EventServiceBase (HttpClientService):
             if response.code() != 200:
                 self.onResponseError(response)
             else:
-                answer = decodeTSON(response).get(0)
+                answer = decodeTSON(response)[0]
         except BaseException as e:
             self.onError(e)
         return answer
@@ -1151,7 +1246,7 @@ class UserServiceBase (HttpClientService):
             if response.code() != 200:
                 self.onResponseError(response)
             else:
-                answer = decodeTSON(response).get(0)
+                answer = decodeTSON(response)[0]
         except BaseException as e:
             self.onError(e)
         return answer
@@ -1238,7 +1333,7 @@ class UserServiceBase (HttpClientService):
             if response.code() != 200:
                 self.onResponseError(response)
             else:
-                answer = decodeTSON(response).get(0)
+                answer = decodeTSON(response)[0]
         except BaseException as e:
             self.onError(e)
         return answer
@@ -1377,7 +1472,7 @@ class UserServiceBase (HttpClientService):
             if response.code() != 200:
                 self.onResponseError(response)
             else:
-                answer = decodeTSON(response).get(0)
+                answer = decodeTSON(response)[0]
         except BaseException as e:
             self.onError(e)
         return answer
@@ -1393,7 +1488,6 @@ class UserServiceBase (HttpClientService):
             if response.code() != 200:
                 self.onResponseError(response)
             else:
-                
                 answer = decodeTSON(response)[0]
         except BaseException as e:
             self.onError(e)
@@ -1412,7 +1506,7 @@ class UserServiceBase (HttpClientService):
             if response.code() != 200:
                 self.onResponseError(response)
             else:
-                answer = decodeTSON(response).get(0)
+                answer = decodeTSON(response)[0]
         except BaseException as e:
             self.onError(e)
         return answer
@@ -1543,7 +1637,7 @@ class UserServiceBase (HttpClientService):
             if response.code() != 200:
                 self.onResponseError(response)
             else:
-                answer = decodeTSON(response).get(0)
+                answer = decodeTSON(response)[0]
         except BaseException as e:
             self.onError(e)
         return answer
@@ -1609,6 +1703,25 @@ class ProjectDocumentServiceBase (HttpClientService):
             params = {}
             params["documentId"] = documentId
             params["projectId"] = projectId
+            response = self.getHttpClient().post(
+                self.getServiceUri(uri).toString(), None, encodeTSON(params))
+            if response.code() != 200:
+                self.onResponseError(response)
+            else:
+                answer = tercen.model.base.ProjectDocumentBase.createFromJson(
+                    decodeTSON(response))
+        except BaseException as e:
+            self.onError(e)
+        return answer
+
+    def getFromPath(self, projectId, path, useFactory):
+        answer = None
+        try:
+            uri = URI.create("api/v1/pd" + "/" + "getFromPath")
+            params = {}
+            params["projectId"] = projectId
+            params["path"] = path
+            params["useFactory"] = useFactory
             response = self.getHttpClient().post(
                 self.getServiceUri(uri).toString(), None, encodeTSON(params))
             if response.code() != 200:
