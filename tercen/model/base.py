@@ -684,7 +684,7 @@ class PersistentObjectBase(BaseObject):
         PersistentObjectBase.__bases__ = (impl.IdObject,)
         if m is None:
             super().__init__(m)
-            self.isDeleted = True
+            self.isDeleted = False
             self.rev = ""
         else:
             self.fromJson(m)
