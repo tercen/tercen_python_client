@@ -11,8 +11,6 @@ class IdObject(IdObjectBase):
 class PersistentObject(PersistentObjectBase):
     def __init__(self, m=None):
         super().__init__(m)
-        self.isDeleted = False
-        
 
 class Document(DocumentBase):
     def __init__(self, m=None):
@@ -21,7 +19,6 @@ class Document(DocumentBase):
 class User(UserBase):
     def __init__(self, m=None):
         super().__init__(m)
-        self.isPublic = False
 
 class Team(TeamBase):
     def __init__(self, m=None):
@@ -104,6 +101,14 @@ class Chart(ChartBase):
         super().__init__(m)
 
 class ChartHeatmap(ChartHeatmapBase):
+    def __init__(self, m=None):
+        super().__init__(m)
+
+class CValues(CValuesBase):
+    def __init__(self, m=None):
+        super().__init__(m)
+
+class I32Values(I32ValuesBase):
     def __init__(self, m=None):
         super().__init__(m)
 
@@ -260,6 +265,10 @@ class MeltStep(MeltStepBase):
         super().__init__(m)
 
 class CrosstabTable(CrosstabTableBase):
+    def __init__(self, m=None):
+        super().__init__(m)
+
+class F64Values(F64ValuesBase):
     def __init__(self, m=None):
         super().__init__(m)
 
@@ -459,6 +468,10 @@ class InMemoryRelation(InMemoryRelationBase):
     def __init__(self, m=None):
         super().__init__(m)
 
+class PairwiseRelation(PairwiseRelationBase):
+    def __init__(self, m=None):
+        super().__init__(m)
+
 class RunProfile(RunProfileBase):
     def __init__(self, m=None):
         super().__init__(m)
@@ -639,6 +652,10 @@ class PreProcessor(PreProcessorBase):
     def __init__(self, m=None):
         super().__init__(m)
 
+class FileSummary(FileSummaryBase):
+    def __init__(self, m=None):
+        super().__init__(m)
+
 class Port(PortBase):
     def __init__(self, m=None):
         super().__init__(m)
@@ -700,6 +717,10 @@ class FactorsProperty(FactorsPropertyBase):
         super().__init__(m)
 
 class OperatorRef(OperatorRefBase):
+    def __init__(self, m=None):
+        super().__init__(m)
+
+class RangeRelation(RangeRelationBase):
     def __init__(self, m=None):
         super().__init__(m)
 
@@ -823,11 +844,15 @@ class ViewStep(ViewStepBase):
     def __init__(self, m=None):
         super().__init__(m)
 
-class ApiCallProfile(ApiCallProfileBase):
+class StrValues(StrValuesBase):
     def __init__(self, m=None):
         super().__init__(m)
 
 class Colors(ColorsBase):
+    def __init__(self, m=None):
+        super().__init__(m)
+
+class ApiCallProfile(ApiCallProfileBase):
     def __init__(self, m=None):
         super().__init__(m)
 
@@ -859,11 +884,11 @@ class FormulaProperty(FormulaPropertyBase):
     def __init__(self, m=None):
         super().__init__(m)
 
-class UserSecret(UserSecretBase):
+class GroupByRelation(GroupByRelationBase):
     def __init__(self, m=None):
         super().__init__(m)
 
-class GroupByRelation(GroupByRelationBase):
+class UserSecret(UserSecretBase):
     def __init__(self, m=None):
         super().__init__(m)
 
