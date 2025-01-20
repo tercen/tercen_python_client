@@ -44,6 +44,17 @@ class TestFileService(unittest.TestCase):
         self.client = TercenClient(self.serviceUri)
         self.client.userService.connect(self.username, self.passw)
         self.data = self.create_data()
+        self.project = Project()
+        self.file = FileDocument()
+
+    def tearDown(self):
+        # if( self.file.id != ""):
+            # self.client.fileService.delete(self.file.id, self.file.rev)
+        if( self.project.id != ""):
+            self.client.projectService.delete(self.project.id, self.project.rev)
+        
+
+        return super().tearDown()
 
     def create_data(self):
         numVars = 3
@@ -66,36 +77,36 @@ class TestFileService(unittest.TestCase):
         project = Project()
         project.name = 'python_project_file'
         project.acl.owner = 'test'
-        project = self.client.projectService.create(project)
+        self.project = self.client.projectService.create(project)
         file = FileDocument()
         file.name = "hello.txt"
         file.acl.owner = 'test'
-        file.projectId = project.id
+        file.projectId = self.project.id
         bytes_data = "hello\n\nhello\n\n42".encode("utf_8")
-        file = self.client.fileService.upload(file, bytes_data)
-        data = self.client.fileService.download(file.id)
+        self.file = self.client.fileService.upload(file, bytes_data)
+        data = self.client.fileService.download(self.file.id)
         assert data.read() == bytes_data
-        self.client.teamService.delete(project.id, project.rev)
+        # self.client.teamService.delete(project.id, project.rev)
         
         
     def test_download_to_file(self):
         project = Project()
         project.name = 'python_project_file'
         project.acl.owner = 'test'
-        project = self.client.projectService.create(project)
+        self.project = self.client.projectService.create(project)
         file = FileDocument()
         file.name = "hello.txt"
         file.acl.owner = 'test'
-        file.projectId = project.id
+        file.projectId = self.project.id
         bytes_data = "hello\n\nhello\n\n42".encode("utf_8")
-        file = self.client.fileService.upload(file, bytes_data)
+        self.file = self.client.fileService.upload(file, bytes_data)
         fpath = get_temp_filepath(ext='txt', workflowId=None)
-        download_to_file(self.client, file, fpath, maxTries=10, interval=5)
+        download_to_file(self.client, self.file, fpath, maxTries=10, interval=5)
         # data = self.client.fileService.download(file.id)
         with open(fpath, "rb") as f:
             data = f.read()
         assert data == bytes_data
-        self.client.teamService.delete(project.id, project.rev)
+        # self.client.teamService.delete(project.id, project.rev)
 
 
     def test_upload_download_large_file(self):
@@ -107,19 +118,19 @@ class TestFileService(unittest.TestCase):
         project = Project()
         project.name = 'python_project_file'
         project.acl.owner = 'test'
-        project = self.client.projectService.create(project)
+        self.project = self.client.projectService.create(project)
         file = FileDocument()
         file.name = "hello.txt"
         file.acl.owner = 'test'
-        file.projectId = project.id 
+        file.projectId = self.project.id 
 
         
 
         # bytes_data = "hello\n\nhello\n\n42".encode("utf_8")
-        file = self.client.fileService.upload(file, bytes_data)
-        data = self.client.fileService.download(file.id)
+        self.file = self.client.fileService.upload(file, bytes_data)
+        data = self.client.fileService.download(self.file.id)
         assert data.read() == bytes_data
-        self.client.teamService.delete(project.id, project.rev)
+        # self.client.teamService.delete(project.id, project.rev)
 
 
     def test_upload_from_file(self):
@@ -130,19 +141,14 @@ class TestFileService(unittest.TestCase):
         project = Project()
         project.name = 'python_project_file'
         project.acl.owner = 'test'
-        project = self.client.projectService.create(project)
+        self.project = self.client.projectService.create(project)
         file = FileDocument()
         file.name = "hello.txt"
         file.acl.owner = 'test'
-        file.projectId = project.id 
+        file.projectId = self.project.id 
 
-        
-
-        # bytes_data = "hello\n\nhello\n\n42".encode("utf_8")
-        print("uploading")
-        file = self.client.fileService.uploadFromFile(file, './tests/data/hospitals.csv')
-        print("done")
-        data = self.client.fileService.download(file.id)
+        self.file = self.client.fileService.uploadFromFile(file, './tests/data/hospitals.csv')
+        data = self.client.fileService.download(self.file.id)
         tmpFile = tempfile.gettempdir() + "/tempfile"
         with open(tmpFile, "wb") as f:
             f.write(data.read())
@@ -161,9 +167,9 @@ class TestFileService(unittest.TestCase):
 
         
         # assert data.read() == bytes_data
-        self.client.teamService.delete(project.id, project.rev)
+        # self.client.teamService.delete(project.id, project.rev)
         
-        print(".")
+
 
 
     def test_upload_file_as_table(self): 
@@ -172,27 +178,27 @@ class TestFileService(unittest.TestCase):
         project = Project()
         project.name = 'python_project_file'
         project.acl.owner = 'test'
-        project = self.client.projectService.create(project)
+        self.project = self.client.projectService.create(project)
         
         file = FileDocument()
         file.name = "test_file_table.csv"
         file.acl.owner = 'test'
-        file.projectId = project.id
+        file.projectId = self.project.id
         # bytes_data = encodeTSON(doc.toJson()).getvalue()
-        file = self.client.fileService.uploadTable(file, table.toJson())
+        self.file = self.client.fileService.uploadTable(file, table.toJson())
 
         task = CSVTask()
         task.state = InitState()
-        task.fileDocumentId = file.id
-        task.projectId = project.id
-        task.owner = project.acl.owner
+        task.fileDocumentId = self.file.id
+        task.projectId = self.project.id
+        task.owner = self.project.acl.owner
 
         task = self.client.taskService.create( task )
         self.client.taskService.runTask(task.id)
-        csvTask = self.client.taskService.waitDone(task.id)
+        self.client.taskService.waitDone(task.id)
 
-        self.client.fileService.delete(file.id, file.rev)
-        self.client.teamService.delete(project.id, project.rev)
+        # self.client.fileService.delete(file.id, file.rev)
+        # self.client.teamService.delete(project.id, project.rev)
 
 
 

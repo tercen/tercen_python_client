@@ -82,12 +82,13 @@ class TestTercen(unittest.TestCase):
     def test_save(self) -> None:
         '''simple'''
         df = self.context.select(['.y'])
+        
 
         df = df.with_columns((pl.col(".y") * 2).alias("y2"))
         
         df = self.context.add_namespace(df) 
 
-        
+        print(df)
         rdf_smp = utl.as_relation(df.clone())
         jdf_smp = utl.as_join_operator(rdf_smp, [ ], [ ])
 

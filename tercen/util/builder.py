@@ -162,11 +162,11 @@ class WorkflowBuilder():
 
         inNames = colNames.copy()
         inNames.append(''.join([rel_id, '._rids']))
-        inNames.append(''.join([rel_id, '.tlbId']))
+        # inNames.append(''.join(['', '']))
 
         outNames = colNames.copy()
         outNames.append('rowId')
-        outNames.append('tableId')
+        # outNames.append('tableId')
 
         renameRel.inNames = inNames
         renameRel.outNames = outNames
@@ -177,7 +177,7 @@ class WorkflowBuilder():
 
         renameRel.relation = simpleRel
 
-        tableStepModel.relation = renameRel 
+        tableStepModel.relation = simpleRel #renameRel 
         tableStep.model = tableStepModel
 
         stepSt = StepState()
@@ -586,7 +586,7 @@ class WorkflowBuilder():
         cbQuery.rowColumns = self.__factors_from_graphical(crosstabModel.rowTable.graphicalFactors)
 
         cbTask.query = cbQuery
-        cbTask.schemaIds = [schema.id]
+        cbTask.schemaIds = [] #[schema.id]
         cbTask.projectId = self.proj.id
         cbTask.owner = self.proj.acl.owner
 

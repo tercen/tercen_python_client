@@ -34,7 +34,11 @@ class TestUserService(unittest.TestCase):
 
             self.serviceUri = ''.join([conf["SERVICE_URL"], ":", conf["SERVICE_PORT"]])
         self.client = TercenClient(self.serviceUri)
-        session = self.client.userService.connect(self.username, self.passw)
+        self.session = self.client.userService.connect(self.username, self.passw)
+    
+    # def tearDown(self):
+        # self.service.close()
+
 
     def test_create_project(self):
         self.client.fileService.__class__
