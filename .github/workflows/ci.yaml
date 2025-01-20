@@ -35,6 +35,10 @@ jobs:
       - name: Run UnitTests
         #run: python -m unittest tests/test*
         run: python -m unittest tests/test_multitable*
+      - name: 'Create Tercen Logs'
+        if: always()  
+        run: docker logs start-tercen_tercen_1 
+        working-directory: ${{ github.action_path }}
       - name: 'Upload Tercen Logs'
         if: always()
         uses: actions/upload-artifact@v3
