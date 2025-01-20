@@ -35,6 +35,13 @@ jobs:
       - name: Run UnitTests
         #run: python -m unittest tests/test*
         run: python -m unittest tests/test_multitable*
+      - name: 'Upload Tercen Logs'
+        if: always()
+        uses: actions/upload-artifact@v3
+        with:
+          name: TercenLogs
+          path: ${{ github.action_path }}/tercen_logs.log
+          retention-days: 2
 
 
 
