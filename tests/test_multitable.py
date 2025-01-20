@@ -36,8 +36,8 @@ class TestTercen(unittest.TestCase):
             username = envs['TERCEN_USERNAME']
         else:
             isLocal = True
-            username = 'test'
-            passw = 'test'
+            username = 'admin'
+            passw = 'admin'
             
 
             serviceUri = ''.join([conf["SERVICE_URL"], ":", conf["SERVICE_PORT"]])
