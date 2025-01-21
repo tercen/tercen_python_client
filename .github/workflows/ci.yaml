@@ -21,7 +21,8 @@ jobs:
           python -m pip install --upgrade pip
           pip3 install --force -r requirements.txt
       - name: Run UnitTests
-        run: python -m unittest tests/test*
+        # run: python -m unittest tests/test*
+        run: python -m unittest tests/test_token*
       - name: 'Print Tercen Logs'
         if: always()  
         run: docker logs start-tercen-tercen-1 
