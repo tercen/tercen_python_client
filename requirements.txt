@@ -7,5 +7,6 @@ scipy==1.11.*
 polars==0.20.*
 pipreqs==0.4.*
 urllib3==2.2.*
+PyJWT==2.3.*
 
 
