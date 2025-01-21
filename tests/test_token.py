@@ -40,9 +40,9 @@ class TestUserService(unittest.TestCase):
         token = self.client.userService.createToken(userId="admin", validityInSeconds=2)
         token_json = jwt.decode( token ,  algorithms=["HS256"], options={"verify_signature": False})
 
-        assert(token_json is dict)
         assert(token_json['data'] != None)
         assert(token_json['data']['u'] == 'admin')
+        time.sleep(3)        
 
     def test_validate_token(self):
         token = self.client.userService.createToken(userId="admin", validityInSeconds=2)
