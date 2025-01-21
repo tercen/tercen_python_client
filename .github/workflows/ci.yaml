@@ -1,28 +1,16 @@
-# This is a basic workflow to help you get started with Actions
-# 1 - Install workflow on tercen stage
-#   1.1 - Set workflow Id and step Id as environment variables?
-# 2 - run tests
-# 3 - build the wheel(?) [ python setup.py bdist_wheel]
 name: CI
 
-# Controls when the action will run. Triggers the workflow on push or pull request
-# events but only for the master branch
 on:
   push:
     branches: [ main, master, stage, prod ]
   pull_request:
     branches: [ master, stage, prod ]
 
-# A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
-  # This workflow contains a single job called "build"
   build:
-    # The type of runner that the job will run on
     runs-on: ubuntu-latest
 
-    # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
-      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v2
       - uses: tercen/actions/start-tercen@main
       - uses: actions/setup-python@v5
@@ -35,17 +23,10 @@ jobs:
       - name: Run UnitTests
         #run: python -m unittest tests/test*
         run: python -m unittest tests/test_multitable*
-      - name: 'Create Tercen Logs'
+      - name: 'Print Tercen Logs'
         if: always()  
         run: docker logs start-tercen-tercen-1 
         working-directory: ${{ github.action_path }}
-      - name: 'Upload Tercen Logs'
-        if: always()
-        uses: actions/upload-artifact@v3
-        with:
-          name: TercenLogs
-          path: ${{ github.action_path }}/tercen_logs.log
-          retention-days: 2
 
 
 
