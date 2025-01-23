@@ -34,7 +34,7 @@ class TercenContext:
 
         if not args["serviceUri"] is None:
             serviceUri = args["serviceUri"]
-
+        self.taskId = ''
 
         devContext = False
         if taskId == None:
@@ -372,8 +372,8 @@ class TercenContext:
 
             newEnv.append( newPair)
 
-        if not self.context.taskId is None:
-            newEnv = self.context.client.workerService.updateTaskEnv( self.context.taskId, newEnv )
+        if not self.taskId is None and self.taskId != '':
+            newEnv = self.context.client.workerService.updateTaskEnv( self.taskId, newEnv )
 
         return newEnv
 
