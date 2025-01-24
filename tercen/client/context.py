@@ -372,8 +372,9 @@ class TercenContext:
 
             newEnv.append( newPair)
 
-        if not self.taskId is None and self.taskId != '':
-            newEnv = self.context.client.workerService.updateTaskEnv( self.taskId, newEnv )
+        if not self.task is None:
+            self.log("Requesting resources: {}".format(ram))
+            newEnv = self.context.client.workerService.updateTaskEnv( self.task.id, newEnv )
 
         return newEnv
 
