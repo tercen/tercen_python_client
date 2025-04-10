@@ -247,8 +247,8 @@ def as_simple_relation(context, obj, relationName=None, projectId=None, owner=No
     file.name = relationName
     file.acl.owner = owner
     file.projectId = projectId
-    bytes_data = json.dumps(tbl.toJson()).encode("utf_8")
-    file = context.context.client.fileService.upload(file, bytes_data)
+    # bytes_data = json.dumps(tbl.toJson()).encode("utf_8")
+    # file = context.context.client.fileService.upload(file, bytes_data)
     file = context.client.fileService.uploadTable(file, tbl.toJson() )
 
     csvTask = CSVTask()
