@@ -263,6 +263,7 @@ def as_simple_relation(context, obj, relationName=None, projectId=None, owner=No
 
     sch = context.context.client.tableSchemaService.get(csvTask.schemaId)
     sch.meta.append(p)
+    sch.name = relationName
     context.context.client.tableSchemaService.update(sch)
     
     rel = SimpleRelation()
