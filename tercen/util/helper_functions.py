@@ -2,18 +2,26 @@ import pandas as pd
 import polars as pl
 import numpy as np
 import gzip
-
+import json
 from io import BytesIO
 from hashlib import sha256
-import tempfile, string, random, pickle, shutil
+import tempfile
+import string
+import random
+import pickle
+import shutil
 
 import pytson as ptson
 
-import uuid, os, hashlib, base64, time
+import uuid
+import os
+import hashlib
+import base64
+import time
 from tercen.model.impl import Table, Column, InMemoryRelation, Relation, \
-                        SimpleRelation, Schema, \
-                        CompositeRelation, JoinOperator, ColumnPair, Pair, \
-                        RenameRelation, FileDocument, CubeQueryTask
+    SimpleRelation, Schema, CSVTask, InitState, \
+    CompositeRelation, JoinOperator, ColumnPair, Pair, \
+    RenameRelation, FileDocument, CubeQueryTask
 
 from http.client import IncompleteRead
 
@@ -25,44 +33,40 @@ def dataframe_to_table(df, values_as_list=False) -> Table:
         df_lib = "pandas"
 
     tbl = Table()
-    tbl.nRows = int(  df.shape[0] )
+    tbl.nRows = int(df.shape[0])
     tbl.columns = []
 
-    
     if df_lib == "polars":
         colnames = df.columns
-        dtypes = [ str.lower(str(dt)) for dt in  df.dtypes]
+        dtypes = [str.lower(str(dt)) for dt in df.dtypes]
         for i in range(0, len(dtypes)):
             if dtypes[i] == 'utf8':
                 dtypes[i] = 'object'
 
-        
     else:
         colnames = list(df)
         dtypes = df.dtypes.tolist()
 
-    
     for i in range(0, len(colnames)):
         column = Column()
         column.name = colnames[i]
         if df_lib == "polars":
-            values = df.drop_in_place( colnames[i]).to_numpy()
+            values = df.drop_in_place(colnames[i]).to_numpy()
         else:
-            values = df.loc[:,colnames[i]].values
+            values = df.loc[:, colnames[i]].values
             df = df.drop(colnames[i], axis=1)
-        
 
         # FIXME Not handling categorical (factor) and  boolean yet (dtype == bool)
 
         strType = False
 
-        if( (dtypes[i] == "string" or dtypes[i] == "object") and isinstance(values[0], str) ):
+        if ((dtypes[i] == "string" or dtypes[i] == "object") and isinstance(values[0], str)):
             column.type = 'string'
             strType = True
-        elif( dtypes[i] == "float64" or dtypes[i] == "float32"):
+        elif (dtypes[i] == "float64" or dtypes[i] == "float32"):
             column.type = 'double'
 
-        elif( dtypes[i] == "int64" or dtypes[i] == "int32"):
+        elif (dtypes[i] == "int64" or dtypes[i] == "int32"):
             column.type = 'int32'
 
         else:
@@ -72,23 +76,22 @@ def dataframe_to_table(df, values_as_list=False) -> Table:
         if np.any(nanChecks):
             if strType == True:
                 values[nanChecks] = ""
-               
 
         if values_as_list == True:
             column.values = values.tolist()
         else:
             column.values = values
         column.nRows = tbl.nRows
-        
-        tbl.columns.append( column )
+
+        tbl.columns.append(column)
 
     # df is returned so we are changing the input df
     return (tbl, df)
 
 
-def tson_to_polars(tson:dict) -> pl.DataFrame:
+def tson_to_polars(tson: dict) -> pl.DataFrame:
     df = None
-    
+
     for col in tson.pop("columns"):
         ctype = col.pop("type")
         cname = col.pop("name")
@@ -102,14 +105,15 @@ def tson_to_polars(tson:dict) -> pl.DataFrame:
             dtype = pl.Object
         if df is None:
             df = pl.DataFrame({
-                cname:vals}, schema={cname:dtype})
+                cname: vals}, schema={cname: dtype})
         else:
-            df = pl.concat([df,pl.DataFrame({
-                cname:vals}, schema={cname:dtype})], how="horizontal")
+            df = pl.concat([df, pl.DataFrame({
+                cname: vals}, schema={cname: dtype})], how="horizontal")
 
     return df
 
-def tson_to_pandas(tson:dict) -> pl.DataFrame:
+
+def tson_to_pandas(tson: dict) -> pl.DataFrame:
     df = None
     for col in tson.pop("columns"):
         ctype = col.pop("type")
@@ -120,38 +124,36 @@ def tson_to_pandas(tson:dict) -> pl.DataFrame:
             dtype = object
         if df is None:
             df = pd.DataFrame({
-                col.pop("name"):col.pop("values")}, dtype=dtype)
+                col.pop("name"): col.pop("values")}, dtype=dtype)
         else:
-            df = pd.concat([df,pd.DataFrame({
-                col.pop("name"):col.pop("values")},dtype=dtype)], axis=1)
+            df = pd.concat([df, pd.DataFrame({
+                col.pop("name"): col.pop("values")}, dtype=dtype)], axis=1)
 
     # PRevents int columns, like .ci and .ri to be coded as indices of the dataframe
-    #df.reset_index(inplace=True)
+    # df.reset_index(inplace=True)
     return df
-
 
 
 class TercenBytes():
     def __init__(self, data):
         self.chunkSize = 16 * 1024
-        self.c0 = -1 #self.data[0:self.chunkSize]
+        self.c0 = -1  # self.data[0:self.chunkSize]
         self.cf = -1
         self.data = data
 
-
     def __next__(self):
         if self.c0 == -1:
-            self.c0 = 0 
+            self.c0 = 0
             self.cf = self.chunkSize
         else:
-            self.c0 = self.c0 + self.chunkSize 
-            self.cf = self.cf + self.chunkSize 
+            self.c0 = self.c0 + self.chunkSize
+            self.cf = self.cf + self.chunkSize
 
         if self.cf > len(self.data):
             self.cf = len(self.data)
 
         if self.c0 < self.cf and self.c0 < len(self.data):
-            return  self.data[self.c0:self.cf]
+            return self.data[self.c0:self.cf]
 
         else:
             raise StopIteration
@@ -164,23 +166,23 @@ class TercenBytes():
 def dataframe_to_bytes(df, clone=False):
     nDigits = 10
     fName = tempfile.gettempdir().join('/')
-    fName.join(random.choices(string.ascii_uppercase + string.digits, k=nDigits))
+    fName.join(random.choices(
+        string.ascii_uppercase + string.digits, k=nDigits))
 
-    if clone == True and df.__class__  == pl.DataFrame:
-        tbl = dataframe_to_table( df.clone() )[0]
+    if clone == True and df.__class__ == pl.DataFrame:
+        tbl = dataframe_to_table(df.clone())[0]
     else:
-        tbl = dataframe_to_table( df )[0]
+        tbl = dataframe_to_table(df)[0]
 
-    tsonObj = ptson.encodeTSON( tbl.toJson() ) 
-
+    tsonObj = ptson.encodeTSON(tbl.toJson())
 
     return tsonObj.getvalue()
 
 
 # @TODO adjust for polars, or deprecate
-def bytes_to_pandas( tableBytes ) -> pd.DataFrame:
+def bytes_to_pandas(tableBytes) -> pd.DataFrame:
     dwnTbl = Table()
-    
+
     buf = BytesIO()
     buf.write(tableBytes)
     buf.seek(0)
@@ -196,9 +198,10 @@ def bytes_to_pandas( tableBytes ) -> pd.DataFrame:
 
     return dwnDf
 
-def bytes_to_dataframe( tableBytes, df_engine="polars" ) -> pd.DataFrame:
+
+def bytes_to_dataframe(tableBytes, df_engine="polars") -> pd.DataFrame:
     dwnTbl = Table()
-    
+
     buf = BytesIO()
     buf.write(tableBytes)
     buf.seek(0)
@@ -207,7 +210,7 @@ def bytes_to_dataframe( tableBytes, df_engine="polars" ) -> pd.DataFrame:
     dwnTbl.fromJson(dwnTson)
 
     if df_engine == "pandas":
-                # From table to pandas
+        # From table to pandas
         dwnDf = pd.DataFrame()
         for i in range(0, len(dwnTbl.columns)):
             col = dwnTbl.columns[i]
@@ -217,17 +220,61 @@ def bytes_to_dataframe( tableBytes, df_engine="polars" ) -> pd.DataFrame:
         dwnDf = pl.DataFrame()
         for i in range(0, len(dwnTbl.columns)):
             col = dwnTbl.columns[i]
-            dwnDf = dwnDf.with_column( pl.col(col.values).alias(col.name))
-
+            dwnDf = dwnDf.with_column(pl.col(col.values).alias(col.name))
 
     return dwnDf
 
 
-def as_relation(obj, relationName=None) -> Relation:
+def as_simple_relation(context, obj, relationName=None, projectId=None, owner=None):
+    if isinstance(obj.__class__, SimpleRelation):
+        return obj
+    elif issubclass(obj.__class__, Schema):
+        rel = SimpleRelation()
+        rel.id = obj.id
+        return rel
+    elif isinstance(obj, pd.DataFrame) or isinstance(obj, pl.DataFrame) or isinstance(obj, pl.LazyFrame):
+        tbl = dataframe_to_table(obj, values_as_list=True)[0]
+    else:
+        raise ValueError(
+            "as_simple_relation -- pandas data.frame or tercen::Table is required")
+
+    if (relationName is None):
+        relationName = "Table"
+
+    file = FileDocument()
+    p = Pair( m={"key":"hidden","value":"true"} )
+    file.meta.append(p)
+    file.name = relationName
+    file.acl.owner = owner
+    file.projectId = projectId
+    bytes_data = json.dumps(tbl.toJson()).encode("utf_8")
+    file = context.context.client.fileService.upload(file, bytes_data)
+    file = context.client.fileService.uploadTable(file, tbl.toJson() )
+
+    csvTask = CSVTask()
+    csvTask.state = InitState()
+    csvTask.owner = owner
+    csvTask.projectId = projectId
+    csvTask.fileDocumentId = file.id
     
+    csvTask = context.context.client.taskService.create(csvTask)
+    context.context.client.taskService.runTask(csvTask.id)
+    csvTask = context.context.client.taskService.waitDone(csvTask.id)
+
+    sch = context.context.client.tableSchemaService.get(csvTask.schemaId)
+    sch.meta.append(p)
+    context.context.client.tableSchemaService.update(sch)
+    
+    rel = SimpleRelation()
+    rel.id = csvTask.schemaId
+    return rel
+
+
+
+def as_relation(obj, relationName=None) -> Relation:
+
     if issubclass(obj.__class__, Relation):
         return obj
-
     if isinstance(obj, pd.DataFrame) or isinstance(obj, pl.DataFrame) or isinstance(obj, pl.LazyFrame):
         tbl = dataframe_to_table(obj)[0]
     elif issubclass(obj.__class__, Table):
@@ -237,7 +284,22 @@ def as_relation(obj, relationName=None) -> Relation:
         rel.id = obj.id
         return rel
     else:
-        raise ValueError("as_relation -- pandas data.frame or tercen::Table is required")
+        raise ValueError(
+            "as_relation -- pandas data.frame or tercen::Table is required")
+# //     var csvTask = sci.CSVTask()
+# //       ..state = sci.InitState()
+# //       ..owner = task.owner
+# //       ..projectId = task.projectId
+# //       ..fileDocumentId = resultFile.id;
+
+# //     csvTask = await factory.taskService.create(csvTask) as sci.CSVTask;
+
+# //     await factory.taskService.runTask(csvTask.id);
+# //     await factory.taskService.waitDone(csvTask.id);
+
+# //     csvTask = await factory.taskService.get(csvTask.id) as sci.CSVTask;
+
+# //     var schema = await factory.tableSchemaService.get(csvTask.schemaId);
 
     rel = InMemoryRelation()
 
@@ -251,7 +313,7 @@ def as_relation(obj, relationName=None) -> Relation:
     return rel
 
 
-def left_join_relation( left, right, lby, rby) -> Relation:
+def left_join_relation(left, right, lby, rby) -> Relation:
     if lby.__class__ == str:
         lby = [lby]
 
@@ -260,13 +322,15 @@ def left_join_relation( left, right, lby, rby) -> Relation:
 
     compositeRelation = as_composite_relation(left)
     if compositeRelation.joinOperators == None or len(compositeRelation.joinOperators) == 0:
-        compositeRelation.joinOperators  = [ as_join_operator(right, lby, rby) ]
+        compositeRelation.joinOperators = [as_join_operator(right, lby, rby)]
     else:
-        compositeRelation.joinOperators.append( as_join_operator(right, lby, rby) )
+        compositeRelation.joinOperators.append(
+            as_join_operator(right, lby, rby))
 
     return compositeRelation
 
-def as_composite_relation( object) -> Relation:
+
+def as_composite_relation(object) -> Relation:
     relation = as_relation(object)
     if issubclass(relation.__class__, CompositeRelation):
         composite = relation
@@ -276,32 +340,34 @@ def as_composite_relation( object) -> Relation:
         composite.mainRelation = relation
     else:
         raise "as_composite_relation -- a Relation is required"
-    
+
     return composite
 
 
-def as_join_operator( object, lby, rby ) -> JoinOperator:
+def as_join_operator(object, lby, rby) -> JoinOperator:
     relation = as_relation(object)
     join = JoinOperator()
     join.rightRelation = relation
     join.leftPair = mk_pair(lby, rby)
     return join
 
+
 def mk_pair(lColumns, rColumns) -> ColumnPair:
     pair = ColumnPair()
-    pair.lColumns = list( lColumns )
-    pair.rColumns = list( rColumns )
+    pair.lColumns = list(lColumns)
+    pair.rColumns = list(rColumns)
     return pair
 
 
+def logical_index(logicalList) -> list:
+    return [i for i, x in enumerate(logicalList) if x]
 
-def logical_index( logicalList ) -> list:
-    return [ i for i, x in enumerate(logicalList) if x ]
 
-def get_from_idx_list( l, idx ) -> list:
+def get_from_idx_list(l, idx) -> list:
     return [l[i] for i in idx]
 
-def unique_and_nonempty( strList) -> list:
+
+def unique_and_nonempty(strList) -> list:
     res = []
     # Get unique values
     uniqueList = list(set(strList))
@@ -328,7 +394,7 @@ def image_file_to_df(file_path):
     else:
         mimetype = 'unknown'
 
-    checksum = hashlib.md5(open(file_path,'rb').read()).hexdigest()
+    checksum = hashlib.md5(open(file_path, 'rb').read()).hexdigest()
 
     output_str = []
 
@@ -337,65 +403,66 @@ def image_file_to_df(file_path):
         fc = f.read()
         output_str.append([base64.b64encode(fc)])
 
-
     o = output_str[0][0]
 
     outs = o.decode('utf-8')
     imgDf = pd.DataFrame({
-        "filename":[filename],
-        "mimetype":[mimetype],
-        "checksum":[checksum],
-        ".content":[outs]
+        "filename": [filename],
+        "mimetype": [mimetype],
+        "checksum": [checksum],
+        ".content": [outs]
     })
 
     return imgDf
+
 
 def text_to_markdown_df(filename, txt):
 
     mimetype = "text/markdown"
     txt = txt.replace("[", "**")\
-                .replace("]", "**")\
-                .replace("\n", "\n\n")
+        .replace("]", "**")\
+        .replace("\n", "\n\n")
 
     txtBytes = txt.encode("utf-8")
     checksum = hashlib.md5(txtBytes).hexdigest()
 
-    output_str = [ base64.b64encode(txtBytes) ]
-
+    output_str = [base64.b64encode(txtBytes)]
 
     outs = output_str[0].decode('utf-8')
     txtDf = pd.DataFrame({
-        "filename":[filename],
-        "mimetype":[mimetype],
-        "checksum":[checksum],
-        ".content":[outs]
+        "filename": [filename],
+        "mimetype": [mimetype],
+        "checksum": [checksum],
+        ".content": [outs]
     })
 
     return txtDf
 
+
 def get_temp_dir(workflowId=None, overwrite=True):
     # workflowId = context.get_workflow_id()
     if workflowId is None:
-        workflowId = ''.join(random.choice(string.ascii_uppercase + string.digits) for _ in range(12))
-    tmpFolder = tempfile.gettempdir() + "/"  + workflowId 
-    if os.path.exists(tmpFolder) and overwrite==True:
+        workflowId = ''.join(random.choice(
+            string.ascii_uppercase + string.digits) for _ in range(12))
+    tmpFolder = tempfile.gettempdir() + "/" + workflowId
+    if os.path.exists(tmpFolder) and overwrite == True:
         shutil.rmtree(tmpFolder)
-    
+
     os.makedirs(tmpFolder, exist_ok=True)
     return tmpFolder
 
+
 def get_temp_filepath(ext='', workflowId=None):
-    
-    if ext != '' and str.find(ext, '.') < 0: 
+
+    if ext != '' and str.find(ext, '.') < 0:
         ext = ''.join([".", ext])
 
     letters = string.ascii_letters
     fname = ''.join(random.choice(letters) for i in range(32))
     tempDir = get_temp_dir(workflowId)
     file_path = ''.join((tempDir, '/', fname,
-                ext))
+                         ext))
 
-    
     return file_path
 
 
@@ -409,7 +476,7 @@ def flatten(l):
                 ll.append(k)
         else:
             ll.append(i)
-      
+
     return ll
 
 
@@ -417,6 +484,7 @@ def get_list(vec, idxVec):
     newVec = []
     [newVec.append(vec[i]) for i in idxVec]
     return newVec
+
 
 def where(vec):
     return [i for i, x in enumerate(vec) if x]
@@ -428,13 +496,14 @@ def read_in_chunks(file_object, chunk_size=1024 * 64):
         if not data:
             break
         yield data
-        
+
+
 def download_to_file(client, fileDoc, fname, maxTries=10, interval=5, isGzip=False):
     downloadTry = 1
     downloadSuccessful = False
 
     data = None
-    while(downloadTry < maxTries):
+    while (downloadTry < maxTries):
         try:
             print("Downloading {} [Try {}]".format(fileDoc.name, downloadTry))
             resp = client.fileService.download(fileDoc.id)
@@ -462,27 +531,28 @@ def download_to_file(client, fileDoc, fname, maxTries=10, interval=5, isGzip=Fal
             downloadTry += 1
             time.sleep(interval)
 
-
     if not downloadSuccessful:
-        raise RuntimeError("Failed to download or extract {}".format(fileDoc.name))
+        raise RuntimeError(
+            "Failed to download or extract {}".format(fileDoc.name))
 
     # return pickle.loads(data)
 
-def download_filedocs(fileDocs, context, ext="" ):
+
+def download_filedocs(fileDocs, context, ext=""):
     savedFilePaths = []
     baseDir = tempfile.gettempdir() + \
-              '/' +\
-              ''.join(random.choices(string.ascii_uppercase + string.digits, k=4))
-    
+        '/' +\
+        ''.join(random.choices(string.ascii_uppercase + string.digits, k=4))
+
     if not os.path.exists(baseDir):
         os.mkdir(baseDir)
 
     for fd in fileDocs:
         fname = baseDir + '/' + \
-                ''.join(random.choices(string.ascii_uppercase + string.digits, k=8)) + \
-                ext
+            ''.join(random.choices(string.ascii_uppercase + string.digits, k=8)) + \
+            ext
         resp = context.context.client.fileService.download(fd.id)
-        #touch
+        # touch
         f = open(fname, "wb")
         f.close()
 
@@ -494,6 +564,7 @@ def download_filedocs(fileDocs, context, ext="" ):
 
     return savedFilePaths
 
+
 def filter_by_type(vec, type):
     outVec = []
     for o in vec:
@@ -501,6 +572,7 @@ def filter_by_type(vec, type):
             outVec.append(o)
 
     return outVec
+
 
 def get_inmemory_relations(relation):
     relations = []
@@ -521,19 +593,23 @@ def get_inmemory_relations(relation):
 
     return relations
 
+
 def get_document_id(queryRelation, aliasId, colName):
     inMemRels = get_inmemory_relations(queryRelation)
 
     for rel in inMemRels:
         tbl = rel.inMemoryTable
-        
-        documentIds = get_list(tbl.columns, where([c.name == ".documentId" for c in tbl.columns ]))
-        documentAliasIds = get_list(tbl.columns, where([c.name == colName for c in tbl.columns ]))
+
+        documentIds = get_list(tbl.columns, where(
+            [c.name == ".documentId" for c in tbl.columns]))
+        documentAliasIds = get_list(tbl.columns, where(
+            [c.name == colName for c in tbl.columns]))
 
         if not documentIds is None and not documentAliasIds is None:
-            idx = where([id == aliasId for id in documentAliasIds[0].values ])
+            idx = where([id == aliasId for id in documentAliasIds[0].values])
             if not idx is None and len(idx) > 0:
                 return documentIds[0].values[idx[0]]
+
 
 def get_data(context, fileDoc, is_data=True):
     maxTries = 10
@@ -541,12 +617,11 @@ def get_data(context, fileDoc, is_data=True):
     downloadSuccessful = False
 
     data = None
-    while(downloadTry < maxTries):
+    while (downloadTry < maxTries):
         try:
             print("Downloading {} [Try {}]".format(fileDoc.name, downloadTry))
             resp = context.context.client.fileService.download(fileDoc.id)
-            
-            
+
             with gzip.open(resp, 'rb') as gFile:
                 data = gFile.read()
                 downloadSuccessful = True
@@ -556,11 +631,12 @@ def get_data(context, fileDoc, is_data=True):
             downloadTry += 1
             time.sleep(5)
 
-
     if not downloadSuccessful or data is None:
-        raise RuntimeError("tercen.util.helper_functions.get_data: Failed to download or extract {}".format(fileDoc.name))
+        raise RuntimeError(
+            "tercen.util.helper_functions.get_data: Failed to download or extract {}".format(fileDoc.name))
 
     return pickle.loads(data)
+
 
 def append_img_to_df(df, imagePath, pltCi=0):
     if df is None:
@@ -571,6 +647,6 @@ def append_img_to_df(df, imagePath, pltCi=0):
         tmpDf.insert(0, ".ri", int(pltCi))
         df = pd.concat([df, tmpDf])
     return df
-    
+
 # def random_string(size=6, chars=string.ascii_uppercase + string.digits):
 # return ''.join(random.choice(chars) for _ in range(size))

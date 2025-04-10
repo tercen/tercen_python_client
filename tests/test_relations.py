@@ -113,6 +113,22 @@ class TestTercen(unittest.TestCase):
             assert(c0 == c1)
             npt.assert_allclose(df[df.columns[i]].to_numpy(), resDf[resDf.columns[i]].to_numpy(), self.tol)
 
+    def test_as_simple_relation(self) -> None:
+        df = self.context.select(['.y', '.ci' ])
+        df2 = self.context.cselect(['Rating.Imaging'])
+        df2 = df2.with_columns( pl.Series(".ci", values=range(0, df2.shape[0])  ).cast(pl.Int32) )
+
+
+        df3 = df.join(df2, on=".ci")
+        
+
+        simpleRel = utl.as_simple_relation( self.context, df3, "TestRel", self.wkfBuilder.proj.id, 'test')
+        
+
+        schOut = self.context.context.client.tableSchemaService.get(simpleRel.id)
+        assert(schOut.id != "")
+        # df2 = self.context.cselect(['.ci', 'Rating.Imaging'])
+
     def test_save_col(self) -> None:
         df = self.context.select(['.y', '.ci', '.ri'])
 

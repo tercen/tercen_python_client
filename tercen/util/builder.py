@@ -44,13 +44,14 @@ class WorkflowBuilder():
         if workflowName is None:
             workflowName = ''.joint(['python_workflow_', self.__randomString(4)])
 
-        start_key = ["test", False, "2035"]
-        end_key = ["test", False, ""]
+        start_key = ["test", True, "0000"]
+        end_key = ["test", True, "9999"]
         projects = self.client.projectService.findByTeamAndIsPublicAndLastModifiedDate(start_key, end_key)
 
         self.proj = None
         for p in projects:
             if p.name == projectName:
+                print("FOUND PROJECT, deleting")
                 self.client.projectService.delete(p.id, p.rev)
                 # self.proj = p
                 # break
@@ -717,8 +718,11 @@ class WorkflowBuilder():
 
 
     def clean_up_workflow(self):
-        self.client.workflowService.delete(self.workflow.id, self.workflow.rev)
-        self.client.fileService.delete(self.fileDoc.id, self.fileDoc.rev)
-        self.client.projectService.delete(self.proj.id, self.proj.rev)
+        try:
+            self.client.workflowService.delete(self.workflow.id, self.workflow.rev)
+            self.client.fileService.delete(self.fileDoc.id, self.fileDoc.rev)
+            self.client.projectService.delete(self.proj.id, self.proj.rev)
+        except:
+            print("Couldn't clear, but it's ok")
 
 

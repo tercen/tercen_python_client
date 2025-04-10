@@ -90,6 +90,7 @@ class TestTercen(unittest.TestCase):
 
         self.addCleanup(self.clear_workflow)
         
+        
     def clear_workflow(self):
         self.wkfBuilder.clean_up_workflow()
 

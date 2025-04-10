@@ -133,7 +133,7 @@ class TestTercen(unittest.TestCase):
 
     def test_select_stream(self) -> None:
         selNames = ['.y']
-
+        
         resDf = self.context.select_stream( selNames )
         
         
