@@ -148,6 +148,8 @@ class TestFileService(unittest.TestCase):
         file.projectId = self.project.id 
 
         self.file = self.client.fileService.uploadFromFile(file, './tests/data/hospitals.csv')
+
+        assert(self.file.isDeleted == False)
         data = self.client.fileService.download(self.file.id)
         tmpFile = tempfile.gettempdir() + "/tempfile"
         with open(tmpFile, "wb") as f:
@@ -186,7 +188,7 @@ class TestFileService(unittest.TestCase):
         file.projectId = self.project.id
         # bytes_data = encodeTSON(doc.toJson()).getvalue()
         self.file = self.client.fileService.uploadTable(file, table.toJson())
-
+        assert(self.file.isDeleted == False)
         task = CSVTask()
         task.state = InitState()
         task.fileDocumentId = self.file.id

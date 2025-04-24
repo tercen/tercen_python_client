@@ -65,6 +65,7 @@ def export_to_project_as_csv(context: TercenContext, df,
     sch = context.context.client.tableSchemaService.get(taskDone.schemaId)
     sch.folderId = folderId
     sch.relation = rel
+    sch.isDeleted = False
     for m in meta:
         sch.addMeta(m.key, m.value)
 
@@ -112,6 +113,12 @@ def export_df_to_project(context, data, fname,
 
     context.log("Exporting {}: Uploading".format(fname))
     file = context.client.fileService.uploadFromFile(file, fname)
+
+    #FIXME This should not be necessary, there is an error elsewhere
+    if( file.isDeleted == True ):
+        file.isDeleted = False
+        context.client.fileService.update(file)
+
 
     if inplace == True:
         return (file, data )
