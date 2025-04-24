@@ -19,14 +19,13 @@ def export_to_project_as_csv(context: TercenContext, df,
                             meta: list[Pair] = []):
     fname = "{}.csv".format(fname)
 
-    if not timestamp is None and folderId is None:
-        if exportPrefix != "":
+    if not timestamp is None:
+        if not exportPrefix is None and exportPrefix != "":
             exportPrefix += "_"
-        folderPath = get_folder_structure(
-            folderId, context) + "/" + exportPrefix + timestamp
-        newFolder = context.context.client.folderService.getOrCreate(
-            projectId, folderPath)
+        folderPath = get_folder_structure(folderId, context) + "/" + exportPrefix + timestamp
+        newFolder = context.context.client.folderService.getOrCreate(projectId, folderPath)
         folderId = newFolder.id
+
 
     if folderId is None:
         folderId = ""
@@ -38,7 +37,6 @@ def export_to_project_as_csv(context: TercenContext, df,
     file.acl.owner = user
     file.projectId = projectId
     file.isDeleted = False
-
     file.folderId = folderId
     file.metadata.contentType = "application/octet-stream"
 
@@ -65,7 +63,7 @@ def export_to_project_as_csv(context: TercenContext, df,
     sch = context.context.client.tableSchemaService.get(taskDone.schemaId)
     sch.folderId = folderId
     sch.relation = rel
-    sch.isDeleted = False
+
     for m in meta:
         sch.addMeta(m.key, m.value)
 
