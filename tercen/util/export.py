@@ -14,12 +14,12 @@ from tercen.util.io import get_folder_structure
 
 def export_to_project_as_csv(context: TercenContext, df, 
                             rel: Relation, fname: str, projectId: str,
-                            folderId: str, user: str, timestamp: str = None, exportPrefix: str = "", 
+                            user: str, folderId: str = None, timestamp: str = None, exportPrefix: str = "", 
                             workflowId: str = None,
                             meta: list[Pair] = []):
     fname = "{}.csv".format(fname)
 
-    if not timestamp is None:
+    if not timestamp is None and folderId is None:
         if exportPrefix != "":
             exportPrefix += "_"
         folderPath = get_folder_structure(
@@ -27,6 +27,9 @@ def export_to_project_as_csv(context: TercenContext, df,
         newFolder = context.context.client.folderService.getOrCreate(
             projectId, folderPath)
         folderId = newFolder.id
+
+    if folderId is None:
+        folderId = ""
 
     context.log("Exporting {}: Writing temp file".format(fname))
 
@@ -97,7 +100,7 @@ def export_df_to_project(context, data, fname,
     file.name = fname.split("/")[-1]
     file.acl.owner = user
     file.projectId = projectId
-
+    file.isDeleted = False
     file.folderId = folderId
     file.metadata.contentEncoding = "gzip"
 
