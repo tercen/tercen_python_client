@@ -233,6 +233,7 @@ def as_simple_relation(context, obj, relationName=None, projectId=None, owner=No
         rel.id = obj.id
         return rel
     elif isinstance(obj, pd.DataFrame) or isinstance(obj, pl.DataFrame) or isinstance(obj, pl.LazyFrame):
+        # NOTE: values_as_list=True is required for toJson() - JSON cannot serialize numpy arrays
         tbl = dataframe_to_table(obj, values_as_list=True)[0]
     else:
         raise ValueError(

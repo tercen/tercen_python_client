@@ -45,6 +45,7 @@ def export_to_project_as_csv(context: TercenContext, df,
 
     context.log("Exporting {}: Uploading".format(fname))
 
+    # NOTE: values_as_list=True is required for toJson() - JSON cannot serialize numpy arrays
     fileDoc = context.context.client.fileService.uploadTable(file,
                                                              dataframe_to_table(df, values_as_list=True)[0].toJson())
 

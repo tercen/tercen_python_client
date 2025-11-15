@@ -492,6 +492,8 @@ class OperatorContextDev(TercenContext):
         else:
             self.client.userService.tercenClient.token = authToken
             self.client.httpClient.authorization = authToken
+            # Set session to None when using authToken to avoid AttributeError
+            self.session = None
 
         self.workflowId = workflowId
         #TODO FIXME Check why the cubequery here and the one retrieved from the task are different
@@ -550,7 +552,7 @@ class OperatorContextDev(TercenContext):
         fileDoc = self.client.fileService.uploadTable( fileDoc, result.toJson() )
 
         print("task is null, create a task")
-        if self.session.serverVersion is None:
+        if self.session is None or self.session.serverVersion is None:
             task = ComputationTask()
         else:
             task = RunComputationTask()
@@ -579,23 +581,32 @@ class OperatorContextDev(TercenContext):
 
         dff = self.__select_from_schema(ts, '') 
         cols = dff.columns
+        
+        # Add missing .ci and .ri columns if they don't exist
         if not ".ci" in cols:
             dff = dff.with_columns(pl.lit(0).alias('.ci'))
-            c = dff.columns
-            idx = [len(c)-1]
-            [ idx.append(cn) for cn in range(0, len(c)-1)]
-            
-            dff = dff.select( [c[i] for i in idx]  )
             
         if not ".ri" in cols:
             dff = dff.with_columns(pl.lit(0).alias('.ri'))
-            c = dff.columns
-            
-            idx = [len(c)-1]
-            [ idx.append(cn) for cn in range(0, len(c)-1)]
-
-            dff = dff.select( [c[i] for i in idx]  )
-            
+        
+        # Reorder columns to match the original input order
+        # The server may return columns in a different order, so we need to fix it
+        # Get the original column order from the input table
+        original_cols = [col.name for col in result.tables[0].columns]
+        
+        # Add .ci and .ri if they weren't in the original (they get added by server)
+        if ".ci" not in original_cols:
+            original_cols.insert(0, ".ci")
+        if ".ri" not in original_cols:
+            original_cols.insert(0, ".ri")
+        
+        # Reorder the result to match original order
+        # Only include columns that exist in the result
+        final_order = [c for c in original_cols if c in dff.columns]
+        # Add any extra columns that weren't in the original (shouldn't happen, but be safe)
+        final_order.extend([c for c in dff.columns if c not in final_order])
+        
+        dff = dff.select(final_order)
 
         return dff
 
@@ -608,12 +619,7 @@ class OperatorContextDev(TercenContext):
             where = utl.logical_index([ c.type != 'uint64' and c.type != 'int64' for c in schema.columns ])
             names = [ c.name for c in utl.get_from_idx_list( schema.columns, where) ]
 
-        df = pd.DataFrame()
-
-        res = self.client.tableSchemaService.selectStream( schema.id, names, offset, nr)
-
-
-
+        # Remove unused variable and double API call
         return utl.tson_to_polars(
             decodeTSON(self.client.tableSchemaService.selectStream(schema.id, names, offset, nr)) 
             )

@@ -38,33 +38,51 @@ class WorkflowBuilder():
         return ''.join(random.choice(letters) for i in range(nChar)) 
 
     def create_workflow(self, projectName=None, workflowName = None):
+        # generate unique names if not provided
         if projectName is None:
-            projectName = ''.joint(['python_project_', self.__randomString(4)])
+            projectName = ''.join(['python_project_', self.__randomString(4)])
 
         if workflowName is None:
-            workflowName = ''.joint(['python_workflow_', self.__randomString(4)])
+            workflowName = ''.join(['python_workflow_', self.__randomString(4)])
 
         start_key = ["test", True, "0000"]
         end_key = ["test", True, "9999"]
         projects = self.client.projectService.findByTeamAndIsPublicAndLastModifiedDate(start_key, end_key)
 
-        self.proj = None
-        for p in projects:
-            if p.name == projectName:
-                print("FOUND PROJECT, deleting")
-                self.client.projectService.delete(p.id, p.rev)
-                # self.proj = p
-                # break
+        # try to ensure the project name is available; if not, add a random suffix and retry
+        max_attempts = 5
+        attempt = 0
+        created = False
+        while attempt < max_attempts and not created:
+            # clean up any exact-name matches (best-effort)
+            for p in projects:
+                if p.name == projectName:
+                    try:
+                        print("FOUND PROJECT, deleting")
+                        self.client.projectService.delete(p.id, p.rev)
+                    except Exception:
+                        # ignore failures to delete existing project
+                        pass
 
-        
-        if not self.proj is None:
-            self.client.projectService.delete(self.proj.id, self.proj.rev)
+            proj = Project()
+            proj.name = projectName
+            proj.acl.owner = self.user
+            try:
+                self.proj = self.client.projectService.create(proj)
+                created = True
+            except Exception as e:
+                # If name not available, append random suffix and retry
+                attempt += 1
+                projectName = ''.join([projectName, '_', self.__randomString(3)])
+                # refresh projects list
+                projects = self.client.projectService.findByTeamAndIsPublicAndLastModifiedDate(start_key, end_key)
 
-        proj = Project()
-        
-        proj.name = 'python_auto_project'
-        proj.acl.owner = self.user
-        self.proj = self.client.projectService.create(proj)
+        if not created:
+            # fallback: create with an explicit random name
+            proj = Project()
+            proj.name = ''.join(['python_auto_project_', self.__randomString(6)])
+            proj.acl.owner = self.user
+            self.proj = self.client.projectService.create(proj)
 
 
         self.workflow = None
@@ -121,6 +139,7 @@ class WorkflowBuilder():
         fileDoc.acl.owner = self.proj.acl.owner
         fileDoc.metadata.contentEncoding = "application/octet-stream"
 
+        # NOTE: values_as_list=True is required for toJson() - JSON cannot serialize numpy arrays
         self.fileDoc = self.client.fileService.uploadTable(fileDoc, utl.dataframe_to_table(df, values_as_list=True)[0].toJson() )
 
         task = CSVTask()
